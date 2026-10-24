@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalendarz 3D + Widoki + CSV</title>
+    <style>
+        :root { 
+            --bg-color: #e0e5ec; --grid-bg: #e0e5ec; --text-main: #2d3748; --text-muted: #718096; 
+            --border-color: rgba(163, 177, 198, 0.4); --line-color: rgba(163, 177, 198, 0.4); 
+            --shadow-outer: 9px 9px 16px rgba(163, 177, 198, 0.6), -9px -9px 16px rgba(255, 255, 255, 0.7); 
+            --shadow-inner: inset 6px 6px 10px rgba(163, 177, 198, 0.5), inset -6px -6px 10px rgba(255, 255, 255, 0.7); 
+            --btn-hover: #d1d8e0; --modal-bg: rgba(224, 229, 236, 0.95); --accent: #3b82f6; --highlight: #ef4444; 
+            --night-bg: rgba(0, 0, 0, 0.05); --day-bg: transparent;
+        }
+        [data-theme*="dark"] { --night-bg: rgba(0, 0, 0, 0.25); --day-bg: rgba(255, 255, 255, 0.02); }
+        [data-theme="dark"] { --bg-color: #1a1e24; --grid-bg: #1a1e24; --text-main: #e2e8f0; --text-muted: #a0aec0; --border-color: rgba(255, 255, 255, 0.2); --line-color: rgba(255, 255, 255, 0.05); --shadow-outer: 8px 8px 16px rgba(0, 0, 0, 0.6), -8px -8px 16px rgba(45, 52, 60, 0.5); --shadow-inner: inset 6px 6px 10px rgba(0, 0, 0, 0.6), inset -6px -6px 10px rgba(45, 52, 60, 0.3); --btn-hover: #15181d; --modal-bg: rgba(26, 30, 36, 0.95); --accent: #60a5fa; --highlight: #ef4444; }
+        
+        body { font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; padding: 15px 20px; background-color: var(--bg-color); color: var(--text-main); transition: background-color 0.4s, color 0.4s; height: 100vh; box-sizing: border-box; display: flex; flex-direction: column; overflow: hidden; }
+        
+        .top-controls { display: flex; flex-direction: column; max-width: 1400px; width: 100%; margin: 0 auto 15px auto; gap: 15px; flex-shrink: 0; }
+        .nav-row { display: flex; justify-content: space-between; align-items: center; gap: 15px; flex-wrap: wrap; width: 100%; }
+        .controls-group { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; } 
+        .header-container { display: flex; justify-content: space-between; align-items: center; flex-grow: 1; flex-wrap: wrap; gap: 10px; margin: 0 10px; }
+        
+        .header-title { display: flex; flex-direction: column; align-items: center; justify-content: center; text-shadow: 2px 2px 4px rgba(0,0,0,0.1); min-width: 200px; }
+        #week-title { font-size: 1.8rem; font-weight: 700; text-align: center; }
+        
+        .clock-wrapper { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+        #live-clock { font-size: 3.6rem; font-weight: 900; color: var(--highlight); line-height: 1; letter-spacing: 2px; }
+        
+        .nav-btn, .theme-select { background-color: var(--bg-color); border: none; border-radius: 12px; padding: 10px 16px; font-size: 0.95rem; font-weight: 600; color: var(--text-main); cursor: pointer; box-shadow: var(--shadow-outer); transition: all 0.2s ease; outline: none; font-family: inherit; white-space: nowrap; }
+        .theme-select { appearance: none; padding-right: 35px; background-image: url('data:image/svg+xml;utf8,<svg fill="currentColor" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>'); background-repeat: no-repeat; background-position-x: 95%; background-position-y: 50%; }
+        .nav-btn:hover, .theme-select:hover { background-color: var(--btn-hover); }
+        .nav-btn:active { box-shadow: var(--shadow-inner); transform: scale(0.98); }
+
+        .color-picker-btn { width: 42px; height: 42px; padding: 0; border: none; border-radius: 12px; cursor: pointer; background: transparent; overflow: hidden; box-shadow: var(--shadow-outer); flex-shrink: 0; }
+        .color-picker-btn::-webkit-color-swatch-wrapper { padding: 0; }
+        .color-picker-btn::-webkit-color-swatch { border: none; border-radius: 12px; border: 2px solid rgba(255,255,255,0.2); }
+
+        .view-container { display: none; background: var(--grid-bg); border-radius: 20px; box-shadow: var(--shadow-outer); max-width: 1400px; width: 100%; flex-grow: 1; margin: 0 auto; padding: 10px; transition: all 0.4s; overflow: hidden; box-sizing: border-box; }
+        
+        #view-day-week { display: flex; position: relative; height: calc(100vh - 120px); }
+        .time-labels { width: 70px; flex-shrink: 0; border-right: 2px solid var(--border-color); display: flex; flex-direction: column; }
+        .time-label { flex-grow: 1; text-align: right; padding-right: 12px; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); box-sizing: border-box; display: flex; align-items: flex-start; justify-content: flex-end; transform: translateY(-7px); }
+        
+        .days-wrapper { display: flex; flex-grow: 1; position: relative; border-radius: 12px; box-shadow: var(--shadow-inner); height: 100%; overflow: hidden; }
+        .day-column { flex: 1; position: relative; border-right: 1px solid var(--border-color); height: 100%; transition: background-color 0.3s; }
+        .day-column:last-child { border-right: none; }
+        .day-column:hover { background-color: rgba(163, 177, 198, 0.05); }
+        .day-column.drag-over { background-color: rgba(239, 68, 68, 0.15) !important; box-shadow: inset 0 0 10px rgba(239, 68, 68, 0.3); }
+        
+        .day-grid-bg { position: absolute; top: 40px; bottom: 0; left: 0; right: 0; z-index: 1; pointer-events: none; background-image: linear-gradient(to bottom, var(--line-color) 1px, transparent 1px), linear-gradient(to bottom, var(--night-bg) 0%, var(--night-bg) 25%, var(--day-bg) 25%, var(--day-bg) 91.666%, var(--night-bg) 91.666%, var(--night-bg) 100%); background-size: 100% calc(100% / 24), 100% 100%; }
+
+        .current-day-highlight { background-color: rgba(239, 68, 68, 0.05) !important; }
+        .day-header.current-day-text { border-bottom: 2px solid var(--highlight); color: var(--highlight); }
+        .day-header { text-align: center; padding: 8px 0; font-weight: 700; background: var(--grid-bg); border-bottom: 2px solid var(--border-color); position: sticky; top: 0; z-index: 20; height: 40px; line-height: 1.1; pointer-events: none; box-sizing: border-box; }
+        .day-date-sub { display: block; font-size: 0.75rem; font-weight: 500; color: inherit; opacity: 0.8; }
+        
+        #current-time-line { position: absolute; height: 2px; background-color: var(--highlight); box-shadow: 0 0 8px var(--highlight); z-index: 15; display: none; pointer-events: none; transition: left 0.3s ease; }
+        #current-time-line::before { content: ''; position: absolute; left: -6px; top: -5px; width: 12px; height: 12px; border-radius: 50%; background-color: var(--highlight); box-shadow: 0 0 10px var(--highlight), inset 2px 2px 4px rgba(255,255,255,0.5); }
+
+        #view-month { flex-direction: column; padding: 15px; }
+        .month-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; background: var(--border-color); border: 2px solid var(--border-color); border-radius: 12px; overflow: hidden; box-shadow: var(--shadow-inner); height: 100%; }
+        .month-header-cell { background: var(--grid-bg); padding: 8px; text-align: center; font-weight: bold; color: var(--text-main); }
+        .month-cell { background: var(--grid-bg); padding: 6px; display: flex; flex-direction: column; gap: 4px; cursor: pointer; overflow: hidden; box-sizing: border-box; }
+        .month-cell:hover { background: rgba(163, 177, 198, 0.1); }
+        .month-cell.empty { background: rgba(0,0,0,0.03); cursor: default; }
+        [data-theme*="dark"] .month-cell.empty { background: rgba(255,255,255,0.02); }
+        .month-cell-day { text-align: right; font-size: 0.9rem; font-weight: bold; color: var(--text-muted); margin-bottom: 2px; pointer-events: none; }
+        .month-event-pill { font-size: 0.7rem; padding: 2px 4px; border-radius: 4px; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; box-shadow: 1px 1px 3px rgba(0,0,0,0.2); pointer-events: none; font-weight: 600; }
+
+        #view-year { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; padding: 15px; overflow-y: auto; }
+        .year-month-block { background: var(--grid-bg); border-radius: 12px; padding: 10px; box-shadow: var(--shadow-inner); }
+        .year-month-title { text-align: center; font-weight: bold; margin-bottom: 8px; color: var(--text-main); }
+        .year-days-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center; font-size: 0.75rem; }
+        .year-day-h { font-weight: bold; color: var(--text-muted); margin-bottom: 3px; }
+        .year-day-cell { padding: 3px 0; border-radius: 4px; color: var(--text-main); cursor: pointer; transition: background 0.2s; box-sizing: border-box; }
+        .year-day-cell:hover { background: rgba(163, 177, 198, 0.2); }
+        .year-day-cell.has-event { background: var(--accent); color: white; font-weight: bold; box-shadow: 1px 1px 3px rgba(0,0,0,0.3); }
+
+        .event-block { position: absolute; left: 10px; right: 10px; z-index: 5; }
+        .event-block.local-event { cursor: grab; }
+        .event-block.local-event:active { cursor: grabbing; opacity: 0.8; }
+        .event-box { position: relative; width: 100%; height: 100%; }
+        .event-block:hover { z-index: 25; }
+        
+        .event-content { position: absolute; top: 15px; left: 4px; right: 4px; bottom: 0; border-radius: 16px; border-left: 2px solid rgba(255,255,255,0.3); border-right: 2px solid rgba(255,255,255,0.3); border-bottom: 8px solid; z-index: 10; padding: 22px 6px 6px 6px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); display: flex; flex-direction: column; justify-content: flex-start; align-items: center; gap: 4px; color: white; font-size: 0.75rem; font-weight: 700; }
+        .event-content::before { content: ''; position: absolute; inset: 0; background: rgba(0,0,0,0.15); border-radius: inherit; pointer-events: none; }
+        .event-lid { position: absolute; top: 0; left: -6px; right: -6px; height: 35px; border-radius: 16px 16px 8px 8px; border-top: 2px solid rgba(255,255,255,0.5); border-left: 2px solid rgba(255,255,255,0.3); border-right: 2px solid rgba(255,255,255,0.3); border-bottom: 5px solid; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06); z-index: 20; transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1); display: flex; align-items: center; justify-content: center; text-align: center; font-size: 0.8rem; font-weight: 800; text-shadow: 1px 1px 2px rgba(0,0,0,0.3); overflow: hidden; padding: 0 6px; pointer-events: none; }
+        .event-lid::after { content: ''; position: absolute; inset: 0; background: linear-gradient(rgba(255,255,255,0.25), transparent); border-radius: inherit; pointer-events: none; }
+        .event-block:hover .event-lid { transform: translateY(-12px); }
+        .event-content span, .event-content .event-actions { position: relative; z-index: 2; text-shadow: 1px 1px 2px rgba(0,0,0,0.4); }
+        
+        .event-actions { display: flex; gap: 4px; margin-top: auto; padding-bottom: 2px; }
+        .event-actions button { background: rgba(255,255,255,0.3); border: none; color: inherit; border-radius: 6px; cursor: pointer; padding: 4px 6px; font-weight: 800; font-size: 0.85rem; transition: background 0.2s, transform 0.1s; backdrop-filter: blur(2px); }
+        .event-actions button:hover { background: rgba(255,255,255,0.7); transform: scale(1.1); color: #1e293b; text-shadow: none; }
+
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 100; overflow-y: auto; padding: 20px; }
+        .modal-box { background: var(--modal-bg); padding: 25px; border-radius: 20px; width: 100%; max-width: 400px; box-shadow: var(--shadow-outer); display: flex; flex-direction: column; gap: 15px; color: var(--text-main); margin: auto; }
+        .modal-box h3 { margin: 0 0 5px 0; text-align: center; }
+        .modal-box input[type="text"], .modal-box select { background: var(--bg-color); border: none; padding: 12px; border-radius: 10px; color: var(--text-main); font-family: inherit; font-size: 1rem; box-shadow: var(--shadow-inner); outline: none; width: 100%; box-sizing: border-box;}
+        
+        .modal-legend-title { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: -10px; text-align: center; }
+        .legend-container { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; padding: 10px; border-radius: 12px; background: rgba(0,0,0,0.03); box-shadow: var(--shadow-inner); }
+        [data-theme*="dark"] .legend-container { background: rgba(255,255,255,0.02); }
+        .legend-item { display: flex; align-items: center; gap: 4px; font-size: 0.7rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        .legend-color { width: 14px; height: 14px; border-radius: 3px; border-top: 1px solid rgba(255,255,255,0.4); box-shadow: 2px 2px 4px rgba(0,0,0,0.1); }
+
+        .time-row { display: flex; gap: 10px; align-items: center; margin-bottom: 5px; }
+        .time-row select { flex: 1; font-weight: 700; font-size: 1.1rem; text-align: center; appearance: none; background-image: url('data:image/svg+xml;utf8,<svg fill="currentColor" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>'); background-repeat: no-repeat; background-position-x: 90%; background-position-y: 50%; }
+        .time-row span { font-weight: 900; font-size: 1.2rem; color: var(--text-muted); }
+
+        .modal-btns { display: flex; gap: 10px; margin-top: 5px; }
+        .modal-btns button { flex: 1; text-align: center; }
+        .btn-save { background: var(--accent) !important; color: white !important; }
+    </style>
+</head>
+<body>
+
+    <div class="top-controls">
+        <div class="nav-row">
+            <div class="controls-group">
+                <select id="app-theme" class="theme-select">
+                    <option value="light">⚪ Klasyczny Jasny</option>
+                    <option value="dark">⚫ Klasyczny Ciemny</option>
+                </select>
+
+                <input type="color" id="bg-color-picker" class="color-picker-btn" title="Wybierz własny kolor z palety">
+                
+                <select id="view-select" class="theme-select">
+                    <option value="day">Dzień</option>
+                    <option value="week" selected>Tydzień 1 (Pon-Nie)</option>
+                    <option value="week2">Tydzień 2 (Wczoraj + 6 dni)</option>
+                    <option value="month">Miesiąc</option>
+                    <option value="year">Rok</option>
+                </select>
+
+                <!-- Przycisk importu pliku CSV -->
+                <input type="file" id="csv-upload" accept=".csv" style="display: none;">
+                <button class="nav-btn" onclick="document.getElementById('csv-upload').click()" style="color: var(--accent);">📁 Importuj z Excela</button>
+            </div>
+
+            <div class="header-container">
+                <button id="btn-prev" class="nav-btn">&#10094; Wstecz</button>
+                <div class="header-title">
+                    <span id="week-title">Ładowanie...</span>
+                </div>
+                <div class="clock-wrapper">
+                    <button id="btn-next" class="nav-btn">Dalej &#10095;</button>
+                    <div id="live-clock">--:--</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- WIDOK DZIEŃ / TYDZIEŃ -->
+    <div id="view-day-week" class="view-container">
+        <div class="time-labels" id="time-labels"></div>
+        <div class="days-wrapper" id="days-wrapper">
+            <div id="current-time-line"></div>
+        </div>
+    </div>
+
+    <!-- WIDOK MIESIĄC -->
+    <div id="view-month" class="view-container">
+        <div class="month-grid" id="month-grid"></div>
+    </div>
+
+    <!-- WIDOK ROK -->
+    <div id="view-year" class="view-container"></div>
+
+    <!-- OKNO DO DODAWANIA / EDYCJI WYDARZEŃ -->
+    <div class="modal-overlay" id="event-modal">
+        <div class="modal-box">
+            <h3 id="modal-title">Zarządzaj wpisem</h3>
+            <input type="text" id="ev-title" placeholder="Nazwa wydarzenia..." autocomplete="off">
+            
+            <div class="modal-legend-title">Dostępne kategorie</div>
+            <div class="legend-container" id="legend-container"></div>
+            
+            <label style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: -10px; margin-top: 10px;">Wybierz Kategorię:</label>
+            <select id="ev-category"></select>
+
+            <label style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: -10px;">Godzina rozpoczęcia:</label>
+            <div class="time-row">
+                <select id="ev-start-h"></select><span>:</span><select id="ev-start-m"></select>
+            </div>
+            
+            <label style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: -10px;">Godzina zakończenia:</label>
+            <div class="time-row">
+                <select id="ev-end-h"></select><span>:</span><select id="ev-end-m"></select>
+            </div>
+
+            <input type="hidden" id="ev-date"> 
+            <div class="modal-btns">
+                <button class="nav-btn" onclick="zamknijModal()">Anuluj</button>
+                <button class="nav-btn btn-save" onclick="zapiszWydarzenieLokalne()">Zapisz</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const CATEGORIES = {
+            'praca': { name: 'Praca', gradient: 'linear-gradient(135deg, #3b82f6, #1d4ed8)', borderLid: '#2563eb', borderBox: '#1e40af' },
+            'zmiana-dzienna': { name: 'Zmiana Dzienna', gradient: 'linear-gradient(135deg, #d8b4e2, #b886cd)', borderLid: '#a66bbd', borderBox: '#8a4ca3', textColor: '#fff44f' },
+            'zmiana-nocna': { name: 'Zmiana Nocna', gradient: 'linear-gradient(135deg, #59357a, #3b1b5e)', borderLid: '#2d124c', borderBox: '#1e0a36', textColor: '#fff44f' },
+            'dom': { name: 'Dom / Rodzina', gradient: 'linear-gradient(135deg, #10b981, #047857)', borderLid: '#059669', borderBox: '#064e3b' },
+            'zdrowie': { name: 'Zdrowie', gradient: 'linear-gradient(135deg, #14b8a6, #0f766e)', borderLid: '#0d9488', borderBox: '#115e59' },
+            'rozrywka': { name: 'Rozrywka / Sport', gradient: 'linear-gradient(135deg, #a855f7, #7e22ce)', borderLid: '#9333ea', borderBox: '#6b21a8' },
+            'wazne': { name: 'Ważne / Pilne', gradient: 'linear-gradient(135deg, #ef4444, #b91c1c)', borderLid: '#dc2626', borderBox: '#991b1b' },
+            'inne': { name: 'Inne', gradient: 'linear-gradient(135deg, #94a3b8, #475569)', borderLid: '#64748b', borderBox: '#334155' }
+        };
+
+        const hoursOptions = Array.from({length: 24}, (_, i) => `<option value="${String(i).padStart(2,'0')}">${String(i).padStart(2,'0')}</option>`).join('');
+        const minsOptions = Array.from({length: 60}, (_, i) => `<option value="${String(i).padStart(2,'0')}">${String(i).padStart(2,'0')}</option>`).join('');
+        
+        document.getElementById('ev-start-h').innerHTML = hoursOptions; document.getElementById('ev-end-h').innerHTML = hoursOptions;
+        document.getElementById('ev-start-m').innerHTML = minsOptions; document.getElementById('ev-end-m').innerHTML = minsOptions;
+
+        function inicjalizujKategorie() {
+            const legendContainer = document.getElementById('legend-container');
+            const selectCategory = document.getElementById('ev-category');
+            
+            Object.keys(CATEGORIES).forEach(key => {
+                const cat = CATEGORIES[key];
+                const item = document.createElement('div');
+                item.className = 'legend-item';
+                item.innerHTML = `<div class="legend-color" style="background: ${cat.gradient}; border-bottom-color: ${cat.borderLid};"></div><span>${cat.name}</span>`;
+                legendContainer.appendChild(item);
+
+                const option = document.createElement('option');
+                option.value = key; option.innerText = cat.name;
+                selectCategory.appendChild(option);
+            });
+        }
+        inicjalizujKategorie();
+
+        function zgadnijKategorie(title) {
+            const t = (title || "").toLowerCase();
+            if (t.includes('dzienna')) return 'zmiana-dzienna';
+            if (t.includes('nocna')) return 'zmiana-nocna';
+            if (t.includes('lekarz') || t.includes('dentysta') || t.includes('badanie') || t.includes('wizyta')) return 'zdrowie';
+            if (t.includes('spotkanie') || t.includes('praca') || t.includes('dyżur') || t.includes('szkolenie')) return 'praca';
+            if (t.includes('kino') || t.includes('impreza') || t.includes('basen') || t.includes('trening') || t.includes('mecz') || t.includes('wyjazd')) return 'rozrywka';
+            if (t.includes('urodziny') || t.includes('szkoła') || t.includes('wywiadówka') || t.includes('zakupy')) return 'dom';
+            if (t.includes('ważne') || t.includes('zapłacić') || t.includes('rat') || t.includes('rachunek') || t.includes('!')) return 'wazne';
+            return 'inne';
+        }
+
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('live-clock').innerText = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+        }
+        setInterval(updateClock, 1000); updateClock();
+
+        function applySmartContrast(hex) {
+            const root = document.documentElement;
+            root.style.setProperty('--grid-bg', hex);
+            root.style.setProperty('--bg-color', hex);
+            
+            let r = parseInt(hex.substring(1, 3), 16);
+            let g = parseInt(hex.substring(3, 5), 16);
+            let b = parseInt(hex.substring(5, 7), 16);
+            let brightness = (r * 299 + g * 587 + b * 114) / 1000;
+
+            if (brightness > 128) { 
+                root.style.setProperty('--text-main', '#1a202c'); root.style.setProperty('--text-muted', '#4a5568'); root.style.setProperty('--border-color', 'rgba(0, 0, 0, 0.25)'); root.style.setProperty('--line-color', 'rgba(0, 0, 0, 0.15)'); root.style.setProperty('--shadow-outer', '9px 9px 16px rgba(0,0,0,0.12), -9px -9px 16px rgba(255,255,255,0.8)'); root.style.setProperty('--shadow-inner', 'inset 6px 6px 10px rgba(0,0,0,0.1), inset -6px -6px 10px rgba(255,255,255,0.8)'); root.style.setProperty('--night-bg', 'rgba(0, 0, 0, 0.08)'); root.style.setProperty('--day-bg', 'transparent');
+            } else { 
+                root.style.setProperty('--text-main', '#f7fafc'); root.style.setProperty('--text-muted', '#cbd5e0'); root.style.setProperty('--border-color', 'rgba(255, 255, 255, 0.25)'); root.style.setProperty('--line-color', 'rgba(255, 255, 255, 0.15)'); root.style.setProperty('--shadow-outer', '8px 8px 16px rgba(0, 0, 0, 0.8), -8px -8px 16px rgba(255, 255, 255, 0.1)'); root.style.setProperty('--shadow-inner', 'inset 6px 6px 10px rgba(0, 0, 0, 0.6), inset -6px -6px 10px rgba(255,255,255, 0.05)'); root.style.setProperty('--night-bg', 'rgba(0, 0, 0, 0.3)'); root.style.setProperty('--day-bg', 'rgba(255, 255, 255, 0.03)');
+            }
+        }
+
+        const themeSelect = document.getElementById('app-theme');
+        const colorPicker = document.getElementById('bg-color-picker');
+        const savedCustomBg = localStorage.getItem('custom-bg-color');
+        
+        if (savedCustomBg) { colorPicker.value = savedCustomBg; applySmartContrast(savedCustomBg); } 
+        else { const savedTheme = localStorage.getItem('app-theme') || 'light'; if (savedTheme !== 'light') { document.body.setAttribute('data-theme', savedTheme); } themeSelect.value = savedTheme; colorPicker.value = savedTheme === 'dark' ? "#1a1e24" : "#e0e5ec"; }
+
+        themeSelect.addEventListener('change', (e) => {
+            const theme = e.target.value;
+            if (theme === 'light') document.body.removeAttribute('data-theme');
+            else document.body.setAttribute('data-theme', theme);
+            localStorage.setItem('app-theme', theme);
+            ['--grid-bg', '--bg-color', '--text-main', '--text-muted', '--border-color', '--line-color', '--shadow-outer', '--shadow-inner', '--night-bg', '--day-bg'].forEach(prop => document.documentElement.style.removeProperty(prop));
+            localStorage.removeItem('custom-bg-color');
+            colorPicker.value = theme === 'dark' ? "#1a1e24" : "#e0e5ec"; 
+        });
+
+        colorPicker.addEventListener('input', (e) => { const c = e.target.value; applySmartContrast(c); localStorage.setItem('custom-bg-color', c); });
+
+        const viewSelect = document.getElementById('view-select');
+        let currentView = localStorage.getItem('app-view') || 'week'; viewSelect.value = currentView;
+        viewSelect.addEventListener('change', (e) => { currentView = e.target.value; localStorage.setItem('app-view', currentView); odswiezWidok(); });
+
+        let aktualnaDataPrzegladania = new Date(); 
+        let wydarzeniaGoogle = []; 
+        let wydarzeniaLokalne = JSON.parse(localStorage.getItem('mojeWydarzenia')) || []; 
+        let domColumns = []; 
+        let editingEventId = null;
+        
+        const timeLabels = document.getElementById('time-labels');
+        const emptyHeader = document.createElement('div');
+        emptyHeader.className = 'day-header'; emptyHeader.style.borderBottom = "2px solid transparent"; emptyHeader.innerHTML = "&nbsp;<br>&nbsp;"; timeLabels.appendChild(emptyHeader);
+        for (let i = 0; i < 24; i++) { const label = document.createElement('div'); label.className = 'time-label'; label.innerText = `${i}:00`; timeLabels.appendChild(label); }
+
+        // --- SKRYPT IMPORTU CSV ---
+        document.getElementById('csv-upload').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(event) { importCSV(event.target.result); };
+            reader.readAsText(file, 'UTF-8');
+        });
+
+        function importCSV(csvText) {
+            const lines = csvText.split(/\r?\n/);
+            let addedCount = 0;
+            
+            for (let i = 1; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if(!line) continue;
+                
+                const separator = line.includes(';') ? ';' : ',';
+                const parts = line.split(separator);
+                
+                if (parts.length >= 5) {
+                    const tytul = parts[0].trim().replace(/(^"|"$)/g, '');
+                    const kategoriaRaw = parts[1].trim().replace(/(^"|"$)/g, '');
+                    const kategoria = CATEGORIES[kategoriaRaw] ? kategoriaRaw : zgadnijKategorie(tytul);
+                    let dataStr = parts[2].trim().replace(/(^"|"$)/g, '');
+                    const startCzas = parts[3].trim().replace(/(^"|"$)/g, '');
+                    const endCzas = parts[4].trim().replace(/(^"|"$)/g, '');
+
+                    // Poprawka na polskie daty z kropkami DD.MM.YYYY
+                    if (dataStr.includes('.')) {
+                        let dParts = dataStr.split('.');
+                        if (dParts.length === 3) {
+                            let d = dParts[0].padStart(2, '0');
+                            let m = dParts[1].padStart(2, '0');
+                            let y = dParts[2].length === 2 ? "20" + dParts[2] : dParts[2];
+                            dataStr = `${y}-${m}-${d}`;
+                        }
+                    }
+
+                    if(dataStr && startCzas && endCzas) {
+                        const start = new Date(`${dataStr}T${startCzas}:00`);
+                        const end = new Date(`${dataStr}T${endCzas}:00`);
+                        if(end < start) { end.setDate(end.getDate() + 1); }
+
+                        if(!isNaN(start.getTime()) && !isNaN(end.getTime())) {
+                            wydarzeniaLokalne.push({
+                                id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
+                                title: tytul,
+                                category: kategoria,
+                                start: start.toISOString(),
+                                end: end.toISOString()
+                            });
+                            addedCount++;
+                        }
+                    }
+                }
+            }
+            if (addedCount > 0) {
+                localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne));
+                odswiezWidok();
+                alert(`Pomyślnie zaimportowano ${addedCount} wpisów z pliku CSV.`);
+            } else {
+                alert('Brak danych lub błędny format. Upewnij się, że plik ma 5 kolumn: Tytuł; Kategoria; Data; Od; Do');
+            }
+            document.getElementById('csv-upload').value = '';
+        }
+
+        // --- SKRYPTY RYSOWANIA KALENDARZA ---
+        document.getElementById('btn-prev').addEventListener('click', () => {
+            if (currentView === 'day') aktualnaDataPrzegladania.setDate(aktualnaDataPrzegladania.getDate() - 1);
+            else if (currentView === 'week' || currentView === 'week2') aktualnaDataPrzegladania.setDate(aktualnaDataPrzegladania.getDate() - 7);
+            else if (currentView === 'month') aktualnaDataPrzegladania.setMonth(aktualnaDataPrzegladania.getMonth() - 1);
+            else if (currentView === 'year') aktualnaDataPrzegladania.setFullYear(aktualnaDataPrzegladania.getFullYear() - 1); odswiezWidok(); 
+        });
+
+        document.getElementById('btn-next').addEventListener('click', () => {
+            if (currentView === 'day') aktualnaDataPrzegladania.setDate(aktualnaDataPrzegladania.getDate() + 1);
+            else if (currentView === 'week' || currentView === 'week2') aktualnaDataPrzegladania.setDate(aktualnaDataPrzegladania.getDate() + 7);
+            else if (currentView === 'month') aktualnaDataPrzegladania.setMonth(aktualnaDataPrzegladania.getMonth() + 1);
+            else if (currentView === 'year') aktualnaDataPrzegladania.setFullYear(aktualnaDataPrzegladania.getFullYear() + 1); odswiezWidok(); 
+        });
+
+        function isToday(d) { const now = new Date(); return d.getDate() === now.getDate() && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear(); }
+
+        function odswiezWidok() {
+            document.getElementById('view-day-week').style.display = 'none'; document.getElementById('view-month').style.display = 'none'; document.getElementById('view-year').style.display = 'none';
+            let sformatowaneLokalne = wydarzeniaLokalne.map(ev => ({ ...ev, start: new Date(ev.start), end: new Date(ev.end) }));
+            sformatowaneLokalne.forEach(ev => { const autoCategory = zgadnijKategorie(ev.title); if (autoCategory === 'zmiana-dzienna' || autoCategory === 'zmiana-nocna') { ev.category = autoCategory; } });
+            let wszystkieWydarzenia = [...wydarzeniaGoogle, ...sformatowaneLokalne];
+            const tytulEl = document.getElementById('week-title');
+
+            if (currentView === 'day' || currentView === 'week' || currentView === 'week2') {
+                document.getElementById('view-day-week').style.display = 'flex'; budujDzienTydzien(sformatowaneLokalne);
+                if (currentView === 'day') {
+                    let dz = String(aktualnaDataPrzegladania.getDate()).padStart(2, '0'); let ms = String(aktualnaDataPrzegladania.getMonth() + 1).padStart(2, '0');
+                    tytulEl.innerText = `${dz}.${ms}.${aktualnaDataPrzegladania.getFullYear()}`;
+                } else if (currentView === 'week') {
+                    tytulEl.innerText = `Tydzień ${getWeekNumber(aktualnaDataPrzegladania)} ${formatujZakresTygodnia(aktualnaDataPrzegladania, false)}`;
+                } else if (currentView === 'week2') {
+                    tytulEl.innerText = `Tydzień Przewijany ${formatujZakresTygodnia(aktualnaDataPrzegladania, true)}`;
+                }
+            } else if (currentView === 'month') {
+                document.getElementById('view-month').style.display = 'flex'; budujMiesiac(wszystkieWydarzenia);
+                const miesiace = ['Styczeń','Luty','Marzec','Kwiecień','Maj','Czerwiec','Lipiec','Sierpień','Wrzesień','Październik','Listopad','Grudzień'];
+                tytulEl.innerText = `${miesiace[aktualnaDataPrzegladania.getMonth()]} ${aktualnaDataPrzegladania.getFullYear()}`;
+            } else if (currentView === 'year') {
+                document.getElementById('view-year').style.display = 'grid'; budujRok(wszystkieWydarzenia);
+                tytulEl.innerText = `${aktualnaDataPrzegladania.getFullYear()}`;
+            }
+        }
+
+        function budujDzienTydzien(sformatowaneLokalne) {
+            const wrapper = document.getElementById('days-wrapper'); wrapper.innerHTML = '<div id="current-time-line"></div>'; domColumns = [];
+            let numDays = currentView === 'day' ? 1 : 7; const daysNames = ['Niedziela', 'Poniedziałek', 'Wtorek', 'Środa', 'Czwartek', 'Piątek', 'Sobota'];
+            let viewStart = new Date(aktualnaDataPrzegladania);
+            if (currentView === 'week') { const viewDay = viewStart.getDay(); viewStart.setDate(viewStart.getDate() - viewDay + (viewDay === 0 ? -6 : 1)); } 
+            else if (currentView === 'week2') { viewStart.setDate(viewStart.getDate() - 1); }
+            viewStart.setHours(0,0,0,0);
+
+            for (let i = 0; i < numDays; i++) {
+                let d = new Date(viewStart); d.setDate(d.getDate() + i);
+                const col = document.createElement('div'); col.className = 'day-column';
+                if(isToday(d)) col.classList.add('current-day-highlight'); col.dataset.date = d.toISOString(); 
+                const gridBg = document.createElement('div'); gridBg.className = 'day-grid-bg'; col.appendChild(gridBg);
+                const header = document.createElement('div'); header.className = 'day-header';
+                if(isToday(d)) header.classList.add('current-day-text');
+                let dz = String(d.getDate()).padStart(2, '0'); let ms = String(d.getMonth() + 1).padStart(2, '0');
+                header.innerHTML = `${daysNames[d.getDay()]}<span class="day-date-sub">${dz}.${ms}</span>`;
+                col.appendChild(header); wrapper.appendChild(col); domColumns.push(col);
+
+                col.addEventListener('click', (e) => {
+                    if(e.target !== col && e.target !== gridBg) return; 
+                    const rect = col.getBoundingClientRect(); const kontenerWysokosc = col.clientHeight - 40; const godzinaWysokosc = kontenerWysokosc / 24;
+                    let kliknietaGodzina = Math.floor((e.clientY - rect.top - 40) / godzinaWysokosc); 
+                    if (kliknietaGodzina < 0) kliknietaGodzina = 0; if (kliknietaGodzina > 23) kliknietaGodzina = 23;
+                    otworzModal(d, kliknietaGodzina);
+                });
+
+                col.addEventListener('dragover', (e) => { e.preventDefault(); col.classList.add('drag-over'); });
+                col.addEventListener('dragleave', (e) => { col.classList.remove('drag-over'); });
+                col.addEventListener('drop', (e) => {
+                    e.preventDefault(); col.classList.remove('drag-over');
+                    const eventId = e.dataTransfer.getData('text/plain'); if (!eventId) return;
+                    const eventIndex = wydarzeniaLokalne.findIndex(ev => ev.id === eventId);
+                    if (eventIndex > -1) {
+                        const rect = col.getBoundingClientRect(); const kontenerWysokosc = col.clientHeight - 40; const godzinaWysokosc = kontenerWysokosc / 24; const upuszczenieY = e.clientY - rect.top - 40;
+                        let nowaGodzinaFloat = upuszczenieY / godzinaWysokosc; if (nowaGodzinaFloat < 0) nowaGodzinaFloat = 0; if (nowaGodzinaFloat > 23.75) nowaGodzinaFloat = 23.75; 
+                        const kwadranse = Math.round(nowaGodzinaFloat * 4) / 4; const nowaGodzina = Math.floor(kwadranse); const noweMinuty = Math.round((kwadranse - nowaGodzina) * 60);
+                        const stareEv = wydarzeniaLokalne[eventIndex]; const czasTrwania = new Date(stareEv.end).getTime() - new Date(stareEv.start).getTime();
+                        const docelowaDataKolumny = new Date(col.dataset.date); docelowaDataKolumny.setHours(nowaGodzina, noweMinuty, 0, 0); const nowyKoniec = new Date(docelowaDataKolumny.getTime() + czasTrwania);
+
+                        if (e.ctrlKey) { wydarzeniaLokalne.push({ id: Date.now().toString() + Math.random().toString(36).substr(2, 5), title: stareEv.title, category: stareEv.category, start: docelowaDataKolumny.toISOString(), end: nowyKoniec.toISOString() }); } 
+                        else { wydarzeniaLokalne[eventIndex].start = docelowaDataKolumny.toISOString(); wydarzeniaLokalne[eventIndex].end = nowyKoniec.toISOString(); }
+                        localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne)); odswiezWidok();
+                    }
+                });
+            }
+
+            renderEvents(wydarzeniaGoogle, viewStart, numDays, false);
+            renderEvents(sformatowaneLokalne, viewStart, numDays, true);
+            updateCurrentTimeLine(viewStart, numDays);
+        }
+
+        function renderEvents(events, viewStart, numDays, isLocal = false) {
+            const endOfWeek = new Date(viewStart); endOfWeek.setDate(endOfWeek.getDate() + numDays - 1); endOfWeek.setHours(23,59,59,999);
+            events.forEach(event => {
+                if (!event.start || !event.end || event.end <= viewStart || event.start >= endOfWeek) return;
+                let obecnyPoczatekCzesc = new Date(event.start); const ostatecznyKoniec = new Date(event.end);
+                const catId = event.category || 'inne'; const catDef = CATEGORIES[catId] || CATEGORIES['inne'];
+
+                while (obecnyPoczatekCzesc < ostatecznyKoniec) {
+                    let koniecBiezacegoDnia = new Date(obecnyPoczatekCzesc); koniecBiezacegoDnia.setHours(23, 59, 59, 999);
+                    let obecnyKoniecCzesc = new Date(Math.min(koniecBiezacegoDnia, ostatecznyKoniec));
+
+                    if (obecnyPoczatekCzesc >= viewStart && obecnyPoczatekCzesc <= endOfWeek) {
+                        const diffTime = Math.abs(obecnyPoczatekCzesc - viewStart); const dayIndex = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+                        if (dayIndex >= 0 && dayIndex < numDays) {
+                            const kolumnaEl = domColumns[dayIndex]; const zawartoscWysokosc = kolumnaEl.clientHeight - 40; const godzinaWysokosc = zawartoscWysokosc / 24;
+                            const startHour = obecnyPoczatekCzesc.getHours() + (obecnyPoczatekCzesc.getMinutes() / 60); const endHour = obecnyKoniecCzesc.getHours() + (obecnyKoniecCzesc.getMinutes() / 60) + (obecnyKoniecCzesc.getSeconds() > 0 || obecnyKoniecCzesc.getMilliseconds() > 0 ? 0.01 : 0);
+                            const topPosition = startHour * godzinaWysokosc; const blockHeight = (endHour - startHour) * godzinaWysokosc;
+                            const block = document.createElement('div'); block.className = 'event-block';
+                            
+                            if(isLocal && event.id) {
+                                block.classList.add('local-event'); block.setAttribute('draggable', 'true'); block.title = "Złap by przenieść, przytrzymaj CTRL by skopiować";
+                                block.addEventListener('dragstart', (e) => { e.dataTransfer.setData('text/plain', event.id); e.dataTransfer.effectAllowed = 'copyMove'; setTimeout(() => block.style.opacity = '0.5', 0); });
+                                block.addEventListener('dragend', () => { block.style.opacity = '1'; });
+                            }
+                            
+                            block.style.top = `${topPosition + 40}px`; block.style.height = `${Math.max(blockHeight, 55)}px`; 
+                            const box = document.createElement('div'); box.className = 'event-box';
+                            let tytul = event.title || "Wydarzenie"; if (obecnyPoczatekCzesc.getTime() > event.start.getTime()) tytul = `(cd.) ${tytul}`;
+                            const lid = document.createElement('div'); lid.className = 'event-lid'; lid.style.background = catDef.gradient; lid.style.borderBottomColor = catDef.borderLid; lid.style.color = catDef.textColor || 'white'; lid.innerText = tytul;
+                            const content = document.createElement('div'); content.className = 'event-content'; content.style.background = catDef.gradient; content.style.borderBottomColor = catDef.borderBox; content.style.color = catDef.textColor || 'white';
+                            const godzStartFormat = String(event.start.getHours()).padStart(2,'0') + ":" + String(event.start.getMinutes()).padStart(2,'0');
+                            const timeSpan = document.createElement('span'); timeSpan.innerText = godzStartFormat; content.appendChild(timeSpan);
+
+                            if (isLocal && event.id) {
+                                const actions = document.createElement('div'); actions.className = 'event-actions';
+                                const editBtn = document.createElement('button'); editBtn.innerHTML = '✎'; editBtn.title = "Edytuj"; editBtn.onclick = (e) => { e.stopPropagation(); otworzModal(null, null, event.id); };
+                                const dupBtn = document.createElement('button'); dupBtn.innerHTML = '⧉'; dupBtn.title = "Skopiuj"; dupBtn.onclick = (e) => { e.stopPropagation(); wydarzeniaLokalne.push({ id: Date.now().toString() + Math.random().toString(36).substr(2, 5), title: event.title, category: event.category, start: event.start.toISOString(), end: event.end.toISOString() }); localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne)); odswiezWidok(); };
+                                const delBtn = document.createElement('button'); delBtn.innerHTML = '×'; delBtn.title = "Usuń"; delBtn.onclick = (e) => { e.stopPropagation(); usunLokalne(event.id); };
+                                actions.appendChild(editBtn); actions.appendChild(dupBtn); actions.appendChild(delBtn); content.appendChild(actions);
+                            }
+                            box.appendChild(content); box.appendChild(lid); block.appendChild(box); kolumnaEl.appendChild(kolumnaEl);
+                            kolumnaEl.appendChild(block);
+                        }
+                    }
+                    obecnyPoczatekCzesc = new Date(koniecBiezacegoDnia.getTime() + 1);
+                }
+            });
+        }
+
+        function budujMiesiac(wszystkieWydarzenia) { 
+            const grid = document.getElementById('month-grid'); grid.innerHTML = '';
+            const rok = aktualnaDataPrzegladania.getFullYear(); const miesiac = aktualnaDataPrzegladania.getMonth();
+            const dniTyg = ['Pon', 'Wto', 'Śro', 'Czw', 'Pią', 'Sob', 'Nie']; dniTyg.forEach(d => { let h = document.createElement('div'); h.className = 'month-header-cell'; h.innerText = d; grid.appendChild(h); });
+            let pierwszyDzien = new Date(rok, miesiac, 1); let startDniaTyg = pierwszyDzien.getDay() - 1; if(startDniaTyg === -1) startDniaTyg = 6; let dniWMiesiacu = new Date(rok, miesiac + 1, 0).getDate();
+            for(let i = 0; i < startDniaTyg; i++) { let cell = document.createElement('div'); cell.className = 'month-cell empty'; grid.appendChild(cell); }
+            for(let i = 1; i <= dniWMiesiacu; i++) { let cell = document.createElement('div'); cell.className = 'month-cell'; let dataKafelka = new Date(rok, miesiac, i); if(isToday(dataKafelka)) cell.classList.add('current-day-highlight'); cell.innerHTML = `<div class="month-cell-day">${i}</div>`; cell.addEventListener('click', () => { currentView = 'day'; aktualnaDataPrzegladania = dataKafelka; viewSelect.value = 'day'; odswiezWidok(); }); let startDnia = new Date(rok, miesiac, i, 0, 0, 0); let koniecDnia = new Date(rok, miesiac, i, 23, 59, 59); let evDzis = wszystkieWydarzenia.filter(ev => ev.start <= koniecDnia && ev.end >= startDnia); evDzis.forEach(ev => { let el = document.createElement('div'); el.className = 'month-event-pill'; const catDef = CATEGORIES[ev.category] || CATEGORIES['inne']; el.style.background = catDef.gradient; el.style.borderBottom = `2px solid ${catDef.borderLid}`; el.style.color = catDef.textColor || 'white'; el.innerText = ev.title; cell.appendChild(el); }); grid.appendChild(cell); }
+        }
+
+        function budujRok(wszystkieWydarzenia) { 
+            const grid = document.getElementById('view-year'); grid.innerHTML = ''; const rok = aktualnaDataPrzegladania.getFullYear();
+            const miesiaceNazwy = ['Styczeń','Luty','Marzec','Kwiecień','Maj','Czerwiec','Lipiec','Sierpień','Wrzesień','Październik','Listopad','Grudzień'];
+            for(let m = 0; m < 12; m++) {
+                let block = document.createElement('div'); block.className = 'year-month-block'; let tytul = document.createElement('div'); tytul.className = 'year-month-title'; tytul.innerText = miesiaceNazwy[m]; block.appendChild(tytul);
+                let daysGrid = document.createElement('div'); daysGrid.className = 'year-days-grid'; ['P','W','Ś','C','P','S','N'].forEach(d => { let h = document.createElement('div'); h.className = 'year-day-h'; h.innerText = d; daysGrid.appendChild(h); });
+                let pierwszyDzien = new Date(rok, m, 1); let startDnia = pierwszyDzien.getDay() - 1; if(startDnia === -1) startDnia = 6; let dniWMc = new Date(rok, m + 1, 0).getDate();
+                for(let i=0; i<startDnia; i++) { daysGrid.appendChild(document.createElement('div')); }
+                for(let i=1; i<=dniWMc; i++) { let cell = document.createElement('div'); cell.className = 'year-day-cell'; cell.innerText = i; let dStart = new Date(rok, m, i, 0,0,0); let dEnd = new Date(rok, m, i, 23,59,59); let dataDlaKomorki = new Date(rok, m, i); if(isToday(dataDlaKomorki)) cell.classList.add('current-day-highlight'); cell.addEventListener('click', () => { currentView = 'day'; aktualnaDataPrzegladania = dataDlaKomorki; viewSelect.value = 'day'; odswiezWidok(); }); let evDzis = wszystkieWydarzenia.filter(ev => ev.start <= dEnd && ev.end >= dStart); if(evDzis.length > 0) { const mainCat = CATEGORIES[evDzis[0].category] || CATEGORIES['inne']; cell.style.background = mainCat.gradient; cell.style.color = mainCat.textColor || 'white'; cell.style.fontWeight = "bold"; cell.style.boxShadow = `1px 1px 3px rgba(0,0,0,0.3)`; } daysGrid.appendChild(cell); } block.appendChild(daysGrid); grid.appendChild(block);
+            }
+        }
+
+        function updateCurrentTimeLine(viewStart, numDays) {
+            const now = new Date(); const line = document.getElementById('current-time-line');
+            if(!line || domColumns.length === 0) return;
+            const viewEnd = new Date(viewStart); viewEnd.setDate(viewEnd.getDate() + numDays - 1); viewEnd.setHours(23,59,59,999);
+            if (now >= viewStart && now <= viewEnd) { line.style.display = 'block'; const kolumnaEl = domColumns[0]; const zawartoscWysokosc = kolumnaEl.clientHeight - 40; const godzinaWysokosc = zawartoscWysokosc / 24; const topPos = (now.getHours() + (now.getMinutes() / 60)) * godzinaWysokosc; line.style.top = `${topPos + 40}px`; line.style.width = `calc(100% / ${numDays})`; let dayIndex = Math.floor((now.getTime() - viewStart.getTime()) / (1000 * 60 * 60 * 24)); line.style.left = `calc(${dayIndex} * (100% / ${numDays}))`; } else { line.style.display = 'none'; }
+        }
+
+        function otworzModal(data, godzina, idZdarzenia = null) {
+            document.getElementById('event-modal').style.display = 'flex'; editingEventId = idZdarzenia; 
+            if (editingEventId) {
+                document.getElementById('modal-title').innerText = "Edytuj wpis"; const ev = wydarzeniaLokalne.find(e => e.id === editingEventId); const st = new Date(ev.start); const en = new Date(ev.end);
+                document.getElementById('ev-title').value = ev.title; document.getElementById('ev-category').value = ev.category || 'inne'; document.getElementById('ev-date').value = st.toISOString(); document.getElementById('ev-start-h').value = String(st.getHours()).padStart(2, '0'); document.getElementById('ev-start-m').value = String(st.getMinutes()).padStart(2, '0'); document.getElementById('ev-end-h').value = String(en.getHours()).padStart(2, '0'); document.getElementById('ev-end-m').value = String(en.getMinutes()).padStart(2, '0');
+            } else {
+                document.getElementById('modal-title').innerText = "Dodaj wpis"; document.getElementById('ev-title').value = ''; document.getElementById('ev-category').value = 'inne'; document.getElementById('ev-date').value = data.toISOString(); let gPocz = String(godzina).padStart(2, '0'); let gKon = String(godzina + 1 > 23 ? 23 : godzina + 1).padStart(2, '0'); document.getElementById('ev-start-h').value = gPocz; document.getElementById('ev-start-m').value = '00'; document.getElementById('ev-end-h').value = gKon; document.getElementById('ev-end-m').value = '00';
+            }
+            document.getElementById('ev-title').focus();
+        }
+        
+        function zamknijModal() { document.getElementById('event-modal').style.display = 'none'; editingEventId = null; }
+        
+        function zapiszWydarzenieLokalne() {
+            const title = document.getElementById('ev-title').value || "Zadanie"; const category = document.getElementById('ev-category').value; const stH = document.getElementById('ev-start-h').value; const stM = document.getElementById('ev-start-m').value; const enH = document.getElementById('ev-end-h').value; const enM = document.getElementById('ev-end-m').value;
+            const bazowaData = new Date(document.getElementById('ev-date').value); const startDate = new Date(bazowaData); startDate.setHours(parseInt(stH, 10), parseInt(stM, 10), 0); const endDate = new Date(bazowaData); endDate.setHours(parseInt(enH, 10), parseInt(enM, 10), 0);
+            if (editingEventId) { const index = wydarzeniaLokalne.findIndex(ev => ev.id === editingEventId); if (index !== -1) { wydarzeniaLokalne[index].title = title; wydarzeniaLokalne[index].category = category; wydarzeniaLokalne[index].start = startDate.toISOString(); wydarzeniaLokalne[index].end = endDate.toISOString(); } } 
+            else { wydarzeniaLokalne.push({ id: Date.now().toString(), title: title, category: category, start: startDate.toISOString(), end: endDate.toISOString() }); }
+            localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne)); zamknijModal(); odswiezWidok();
+        }
+        
+        function usunLokalne(idStr) { wydarzeniaLokalne = wydarzeniaLokalne.filter(ev => ev.id !== idStr); localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne)); odswiezWidok(); }
+
+        function formatujZakresTygodnia(dataZrodlowa, isWeek2) {
+            const dataPocz = new Date(dataZrodlowa); 
+            if(!isWeek2) { const dzienTyg = dataPocz.getDay(); dataPocz.setDate(dataPocz.getDate() - dzienTyg + (dzienTyg === 0 ? -6 : 1)); }
+            else { dataPocz.setDate(dataPocz.getDate() - 1); }
+            const dataKoncowa = new Date(dataPocz); dataKoncowa.setDate(dataPocz.getDate() + 6);
+            const pDzien = String(dataPocz.getDate()).padStart(2, '0'); const pMiesiac = String(dataPocz.getMonth() + 1).padStart(2, '0');
+            const kDzien = String(dataKoncowa.getDate()).padStart(2, '0'); const kMiesiac = String(dataKoncowa.getMonth() + 1).padStart(2, '0');
+            return pMiesiac === kMiesiac ? `(${pDzien} - ${kDzien}.${kMiesiac}.${dataKoncowa.getFullYear()})` : `(${pDzien}.${pMiesiac} - ${kDzien}.${kMiesiac}.${dataKoncowa.getFullYear()})`;
+        }
+        function getWeekNumber(d) { const date = new Date(d.getTime()); date.setUTCDate(date.getUTCDate() + 4 - (date.getUTCDay() || 7)); return Math.ceil((((date - new Date(Date.UTC(date.getUTCFullYear(), 0, 1))) / 86400000) + 1) / 7); }
+
+        // --- FETCH Z GOOGLE ---
+       async function fetchAndRenderCalendar() {
+            const googleCalendarUrl = 'https://calendar.google.com/calendar/ical/jungaleszek@gmail.com/private-b88aede3fb01578fed3295fde84787e9/basic.ics';
+            
+            // Metoda /get pakuje odpowiedź w JSON, co pozwala ominąć blokadę origin 'null' dla plików z dysku
+            const proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent(googleCalendarUrl);
+            
+            try { 
+                const response = await fetch(proxyUrl);
+                if (response.ok) { 
+                    const data = await response.json();
+                    const textData = data.contents; // Wyciągamy rozpakowany tekst kalendarza
+                    
+                    if (textData && textData.includes("BEGIN:VCALENDAR")) {
+                        wydarzeniaGoogle = parseICal(textData); 
+                        odswiezWidok(); 
+                    } else {
+                        console.error("Błąd: Pobrane dane nie są poprawnym kalendarzem iCal.");
+                    }
+                } else {
+                    console.error("Błąd serwera proxy HTTP:", response.status);
+                }
+            } catch (e) { 
+                console.error("Błąd pobierania kalendarza Google:", e); 
+            } 
+        }
+
+        function parseICal(icalText) {
+            const events = []; const lines = icalText.split(/\r?\n/); let currentEvent = null;
+            for (let i = 0; i < lines.length; i++) {
+                let line = lines[i];
+                while (i + 1 < lines.length && (lines[i+1].startsWith(' ') || lines[i+1].startsWith('\t'))) { i++; line += lines[i].substring(1); }
+                if (line === 'BEGIN:VEVENT') { currentEvent = {}; } 
+                else if (line === 'END:VEVENT') { 
+                    if (currentEvent && currentEvent.start) events.push(currentEvent);
+                    currentEvent = null; 
+                } 
+                else if (currentEvent) {
+                    if (line.startsWith('SUMMARY:')) { currentEvent.title = line.substring(8); currentEvent.category = zgadnijKategorie(currentEvent.title); } 
+                    else if (line.startsWith('DTSTART')) { currentEvent.start = parseICalDate(line); } 
+                    else if (line.startsWith('DTEND')) { currentEvent.end = parseICalDate(line); }
+                }
+            } return events;
+        }
+
+        function parseICalDate(line) {
+            const parts = line.split(':'); if (parts.length < 2) return null;
+            let dStr = parts[1];
+            const y = dStr.substring(0, 4), m = dStr.substring(4, 6), d = dStr.substring(6, 8);
+            if (dStr.length === 8) return new Date(y, m - 1, d);
+            const hr = dStr.substring(9, 11), min = dStr.substring(11, 13), sec = dStr.substring(13, 15);
+            return dStr.endsWith('Z') ? new Date(Date.UTC(y, m - 1, d, hr, min, sec)) : new Date(y, m - 1, d, hr, min, sec);
+        }
+        
+        // --- KLUCZOWE: RYSOWANIE OD RAZU ---
+        odswiezWidok(); 
+        fetchAndRenderCalendar();
+        
+        setInterval(() => {
+            if(currentView === 'day' || currentView === 'week' || currentView === 'week2') {
+                let viewStart = new Date(aktualnaDataPrzegladania);
+                if(currentView === 'week') { const vd = viewStart.getDay(); viewStart.setDate(viewStart.getDate() - vd + (vd === 0 ? -6 : 1)); }
+                else if (currentView === 'week2') { viewStart.setDate(viewStart.getDate() - 1); }
+                viewStart.setHours(0,0,0,0);
+                updateCurrentTimeLine(viewStart, currentView === 'day' ? 1 : 7);
+            }
+        }, 60000); 
+    </script>
+</body>
+</html>

@@ -139,6 +139,10 @@
                 <!-- Przycisk importu pliku CSV -->
                 <input type="file" id="csv-upload" accept=".csv" style="display: none;">
                 <button class="nav-btn" onclick="document.getElementById('csv-upload').click()" style="color: var(--accent);">📁 Importuj z Excela</button>
+
+                <!-- Nowy przycisk dla Kalendarza Google (plik .ics) -->
+                <input type="file" id="ics-upload" accept=".ics" style="display: none;">
+                <button class="nav-btn" onclick="document.getElementById('ics-upload').click()" style="color: var(--highlight);">📅 Wgraj plik z Google</button>
             </div>
 
             <div class="header-container">
@@ -305,7 +309,7 @@
         emptyHeader.className = 'day-header'; emptyHeader.style.borderBottom = "2px solid transparent"; emptyHeader.innerHTML = "&nbsp;<br>&nbsp;"; timeLabels.appendChild(emptyHeader);
         for (let i = 0; i < 24; i++) { const label = document.createElement('div'); label.className = 'time-label'; label.innerText = `${i}:00`; timeLabels.appendChild(label); }
 
-        // --- SKRYPT IMPORTU CSV ---
+        // --- SKRYPT IMPORTU CSV Z EXCELA ---
         document.getElementById('csv-upload').addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (!file) return;
@@ -371,6 +375,25 @@
             }
             document.getElementById('csv-upload').value = '';
         }
+
+        // --- SKRYPT IMPORTU PLIKU ICS Z GOOGLE KALENDARZA ---
+        document.getElementById('ics-upload').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const textData = event.target.result;
+                if (textData && textData.includes("BEGIN:VCALENDAR")) {
+                    wydarzeniaGoogle = parseICal(textData);
+                    odswiezWidok();
+                    alert(`Wczytano ${wydarzeniaGoogle.length} wydarzeń z pliku Kalendarza Google.`);
+                } else {
+                    alert("Błąd: Pobrany plik nie jest prawidłowym kalendarzem iCal.");
+                }
+                document.getElementById('ics-upload').value = '';
+            };
+            reader.readAsText(file, 'UTF-8');
+        });
 
         // --- SKRYPTY RYSOWANIA KALENDARZA ---
         document.getElementById('btn-prev').addEventListener('click', () => {
@@ -579,53 +602,44 @@
         }
         function getWeekNumber(d) { const date = new Date(d.getTime()); date.setUTCDate(date.getUTCDate() + 4 - (date.getUTCDay() || 7)); return Math.ceil((((date - new Date(Date.UTC(date.getUTCFullYear(), 0, 1))) / 86400000) + 1) / 7); }
 
-       // --- FETCH Z GOOGLE ---
         async function fetchAndRenderCalendar() {
             const googleCalendarUrl = 'https://calendar.google.com/calendar/ical/jungaleszek@gmail.com/private-b88aede3fb01578fed3295fde84787e9/basic.ics';
             
             try { 
-                // Próba 1: AllOrigins (pakuje w JSON)
                 const res1 = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(googleCalendarUrl));
                 if (res1.ok) { 
                     const data = await res1.json(); 
                     if (data.contents && data.contents.includes("BEGIN:VCALENDAR")) {
                         wydarzeniaGoogle = parseICal(data.contents); 
                         odswiezWidok(); 
-                        console.log("Sukces: Pobrano przez AllOrigins");
                         return; 
                     }
                 }
-            } catch (e) { console.log("Proxy 1 (AllOrigins) zawiodło."); }
+            } catch (e) { }
 
             try { 
-                // Próba 2: CorsProxy (SUROWY link)
                 const res2 = await fetch('https://corsproxy.io/?' + googleCalendarUrl);
                 if (res2.ok) { 
                     const text2 = await res2.text(); 
                     if (text2 && text2.includes("BEGIN:VCALENDAR")) {
                         wydarzeniaGoogle = parseICal(text2); 
                         odswiezWidok(); 
-                        console.log("Sukces: Pobrano przez CorsProxy");
                         return; 
                     }
                 }
-            } catch (e) { console.log("Proxy 2 (CorsProxy) zawiodło."); }
+            } catch (e) { }
 
             try { 
-                // Próba 3: CodeTabs (awaryjny surowy tekst)
                 const res3 = await fetch('https://api.codetabs.com/v1/proxy?quest=' + googleCalendarUrl);
                 if (res3.ok) { 
                     const text3 = await res3.text(); 
                     if (text3 && text3.includes("BEGIN:VCALENDAR")) {
                         wydarzeniaGoogle = parseICal(text3); 
                         odswiezWidok(); 
-                        console.log("Sukces: Pobrano przez CodeTabs");
                         return; 
                     }
                 }
-            } catch (e) { console.log("Proxy 3 (CodeTabs) zawiodło."); }
-
-            console.error("Wszystkie serwery proxy zostały zablokowane.");
+            } catch (e) { }
         }
 
         function parseICal(icalText) {
@@ -655,9 +669,8 @@
             return dStr.endsWith('Z') ? new Date(Date.UTC(y, m - 1, d, hr, min, sec)) : new Date(y, m - 1, d, hr, min, sec);
         }
         
-        // --- KLUCZOWE: RYSOWANIE OD RAZU ---
         odswiezWidok(); 
-        fetchAndRenderCalendar();
+        fetchAndRenderCalendar(); // Próba automatycznego pobrania w tle
         
         setInterval(() => {
             if(currentView === 'day' || currentView === 'week' || currentView === 'week2') {

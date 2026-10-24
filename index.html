@@ -583,27 +583,29 @@
        async function fetchAndRenderCalendar() {
             const googleCalendarUrl = 'https://calendar.google.com/calendar/ical/jungaleszek@gmail.com/private-b88aede3fb01578fed3295fde84787e9/basic.ics';
             
-            // Metoda /get pakuje odpowiedź w JSON, co pozwala ominąć blokadę origin 'null' dla plików z dysku
-            const proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent(googleCalendarUrl);
-            
-            try { 
-                const response = await fetch(proxyUrl);
-                if (response.ok) { 
-                    const data = await response.json();
-                    const textData = data.contents; // Wyciągamy rozpakowany tekst kalendarza
-                    
-                    if (textData && textData.includes("BEGIN:VCALENDAR")) {
-                        wydarzeniaGoogle = parseICal(textData); 
-                        odswiezWidok(); 
-                    } else {
-                        console.error("Błąd: Pobrane dane nie są poprawnym kalendarzem iCal.");
+            // Lista zapasowych serwerów proxy - skrypt sprawdzi je po kolei, aż do skutku
+            const proxies = [
+                'https://corsproxy.io/?' + encodeURIComponent(googleCalendarUrl),
+                'https://api.allorigins.win/raw?url=' + encodeURIComponent(googleCalendarUrl),
+                'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(googleCalendarUrl)
+            ];
+
+            for (let proxyUrl of proxies) {
+                try { 
+                    const response = await fetch(proxyUrl);
+                    if (response.ok) { 
+                        const textData = await response.text(); 
+                        if (textData && textData.includes("BEGIN:VCALENDAR")) {
+                            wydarzeniaGoogle = parseICal(textData); 
+                            odswiezWidok(); 
+                            return; // Sukces - przerywamy sprawdzanie kolejnych serwerów
+                        }
                     }
-                } else {
-                    console.error("Błąd serwera proxy HTTP:", response.status);
+                } catch (e) { 
+                    console.log("Zastępczy serwer proxy zawiódł, sprawdzam kolejny na liście..."); 
                 }
-            } catch (e) { 
-                console.error("Błąd pobierania kalendarza Google:", e); 
-            } 
+            }
+            console.error("Awaria - wszystkie trzy serwery proxy odrzuciły połączenie.");
         }
 
         function parseICal(icalText) {

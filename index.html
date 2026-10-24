@@ -579,33 +579,53 @@
         }
         function getWeekNumber(d) { const date = new Date(d.getTime()); date.setUTCDate(date.getUTCDate() + 4 - (date.getUTCDay() || 7)); return Math.ceil((((date - new Date(Date.UTC(date.getUTCFullYear(), 0, 1))) / 86400000) + 1) / 7); }
 
-        // --- FETCH Z GOOGLE ---
-       async function fetchAndRenderCalendar() {
+       // --- FETCH Z GOOGLE ---
+        async function fetchAndRenderCalendar() {
             const googleCalendarUrl = 'https://calendar.google.com/calendar/ical/jungaleszek@gmail.com/private-b88aede3fb01578fed3295fde84787e9/basic.ics';
             
-            // Lista zapasowych serwerów proxy - skrypt sprawdzi je po kolei, aż do skutku
-            const proxies = [
-                'https://corsproxy.io/?' + encodeURIComponent(googleCalendarUrl),
-                'https://api.allorigins.win/raw?url=' + encodeURIComponent(googleCalendarUrl),
-                'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(googleCalendarUrl)
-            ];
-
-            for (let proxyUrl of proxies) {
-                try { 
-                    const response = await fetch(proxyUrl);
-                    if (response.ok) { 
-                        const textData = await response.text(); 
-                        if (textData && textData.includes("BEGIN:VCALENDAR")) {
-                            wydarzeniaGoogle = parseICal(textData); 
-                            odswiezWidok(); 
-                            return; // Sukces - przerywamy sprawdzanie kolejnych serwerów
-                        }
+            try { 
+                // Próba 1: AllOrigins (pakuje w JSON)
+                const res1 = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(googleCalendarUrl));
+                if (res1.ok) { 
+                    const data = await res1.json(); 
+                    if (data.contents && data.contents.includes("BEGIN:VCALENDAR")) {
+                        wydarzeniaGoogle = parseICal(data.contents); 
+                        odswiezWidok(); 
+                        console.log("Sukces: Pobrano przez AllOrigins");
+                        return; 
                     }
-                } catch (e) { 
-                    console.log("Zastępczy serwer proxy zawiódł, sprawdzam kolejny na liście..."); 
                 }
-            }
-            console.error("Awaria - wszystkie trzy serwery proxy odrzuciły połączenie.");
+            } catch (e) { console.log("Proxy 1 (AllOrigins) zawiodło."); }
+
+            try { 
+                // Próba 2: CorsProxy (SUROWY link)
+                const res2 = await fetch('https://corsproxy.io/?' + googleCalendarUrl);
+                if (res2.ok) { 
+                    const text2 = await res2.text(); 
+                    if (text2 && text2.includes("BEGIN:VCALENDAR")) {
+                        wydarzeniaGoogle = parseICal(text2); 
+                        odswiezWidok(); 
+                        console.log("Sukces: Pobrano przez CorsProxy");
+                        return; 
+                    }
+                }
+            } catch (e) { console.log("Proxy 2 (CorsProxy) zawiodło."); }
+
+            try { 
+                // Próba 3: CodeTabs (awaryjny surowy tekst)
+                const res3 = await fetch('https://api.codetabs.com/v1/proxy?quest=' + googleCalendarUrl);
+                if (res3.ok) { 
+                    const text3 = await res3.text(); 
+                    if (text3 && text3.includes("BEGIN:VCALENDAR")) {
+                        wydarzeniaGoogle = parseICal(text3); 
+                        odswiezWidok(); 
+                        console.log("Sukces: Pobrano przez CodeTabs");
+                        return; 
+                    }
+                }
+            } catch (e) { console.log("Proxy 3 (CodeTabs) zawiodło."); }
+
+            console.error("Wszystkie serwery proxy zostały zablokowane.");
         }
 
         function parseICal(icalText) {

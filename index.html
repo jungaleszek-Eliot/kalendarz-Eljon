@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kalendarz 3D + Widoki + CSV</title>
+    <title>Kalendarz 3D + Widoki + Zegar</title>
     <style>
         :root { 
             --bg-color: #e0e5ec; --grid-bg: #e0e5ec; --text-main: #2d3748; --text-muted: #718096; 
@@ -23,11 +23,10 @@
         .controls-group { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; } 
         .header-container { display: flex; justify-content: space-between; align-items: center; flex-grow: 1; flex-wrap: wrap; gap: 10px; margin: 0 10px; }
         
-        .header-title { display: flex; flex-direction: column; align-items: center; justify-content: center; text-shadow: 2px 2px 4px rgba(0,0,0,0.1); min-width: 200px; }
+        .header-title { display: flex; flex-direction: column; align-items: center; justify-content: center; text-shadow: 2px 2px 4px rgba(0,0,0,0.1); flex-grow: 1; text-align: center; }
         #week-title { font-size: 1.8rem; font-weight: 700; text-align: center; }
         
         .clock-wrapper { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
-        #live-clock { font-size: 3.6rem; font-weight: 900; color: var(--highlight); line-height: 1; letter-spacing: 2px; }
         
         .nav-btn, .theme-select { background-color: var(--bg-color); border: none; border-radius: 12px; padding: 10px 16px; font-size: 0.95rem; font-weight: 600; color: var(--text-main); cursor: pointer; box-shadow: var(--shadow-outer); transition: all 0.2s ease; outline: none; font-family: inherit; white-space: nowrap; }
         .theme-select { appearance: none; padding-right: 35px; background-image: url('data:image/svg+xml;utf8,<svg fill="currentColor" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>'); background-repeat: no-repeat; background-position-x: 95%; background-position-y: 50%; }
@@ -40,7 +39,14 @@
 
         .view-container { display: none; background: var(--grid-bg); border-radius: 20px; box-shadow: var(--shadow-outer); max-width: 1400px; width: 100%; flex-grow: 1; margin: 0 auto; padding: 10px; transition: all 0.4s; overflow: hidden; box-sizing: border-box; }
         
-        #view-day-week { display: flex; position: relative; height: calc(100vh - 120px); }
+        /* NOWY PODZIAŁ WIDOKU DNI/TYGODNIA - MIEJSCE NA MODUŁY Z LEWEJ */
+        #view-day-week { display: flex; gap: 15px; position: relative; height: calc(100vh - 120px); background: transparent; box-shadow: none; padding: 0; }
+        
+        .dashboard-panel { width: 250px; flex-shrink: 0; display: flex; flex-direction: column; gap: 15px; }
+        .large-clock-widget { background: var(--grid-bg); border-radius: 16px; box-shadow: var(--shadow-inner); padding: 25px 10px; text-align: center; font-size: 4.8rem; font-weight: 900; color: var(--highlight); letter-spacing: 2px; }
+        
+        .calendar-main-area { display: flex; flex-grow: 1; position: relative; border-radius: 20px; box-shadow: var(--shadow-outer); overflow: hidden; background: var(--grid-bg); padding: 10px; }
+        
         .time-labels { width: 70px; flex-shrink: 0; border-right: 2px solid var(--border-color); display: flex; flex-direction: column; }
         .time-label { flex-grow: 1; text-align: right; padding-right: 12px; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); box-sizing: border-box; display: flex; align-items: flex-start; justify-content: flex-end; transform: translateY(-7px); }
         
@@ -130,19 +136,12 @@
                 
                 <select id="view-select" class="theme-select">
                     <option value="day">Dzień</option>
-                    <option value="week" selected>Tydzień 1 (Pon-Nie)</option>
-                    <option value="week2">Tydzień 2 (Wczoraj + 6 dni)</option>
+                    <option value="weekA" selected>Tydzień A (Dzisiaj + 6 dni)</option>
+                    <option value="weekB">Tydzień B (Wczoraj + 6 dni)</option>
+                    <option value="weekC">Tydzień C (Pon-Nie)</option>
                     <option value="month">Miesiąc</option>
                     <option value="year">Rok</option>
                 </select>
-
-                <!-- Przycisk importu pliku CSV -->
-                <input type="file" id="csv-upload" accept=".csv" style="display: none;">
-                <button class="nav-btn" onclick="document.getElementById('csv-upload').click()" style="color: var(--accent);">📁 Importuj z Excela</button>
-
-                <!-- Nowy przycisk dla Kalendarza Google (plik .ics) -->
-                <input type="file" id="ics-upload" accept=".ics" style="display: none;">
-                <button class="nav-btn" onclick="document.getElementById('ics-upload').click()" style="color: var(--highlight);">📅 Wgraj plik z Google</button>
             </div>
 
             <div class="header-container">
@@ -152,17 +151,23 @@
                 </div>
                 <div class="clock-wrapper">
                     <button id="btn-next" class="nav-btn">Dalej &#10095;</button>
-                    <div id="live-clock">--:--</div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- WIDOK DZIEŃ / TYDZIEŃ -->
-    <div id="view-day-week" class="view-container">
-        <div class="time-labels" id="time-labels"></div>
-        <div class="days-wrapper" id="days-wrapper">
-            <div id="current-time-line"></div>
+    <!-- WIDOK DZIEŃ / TYDZIEŃ Z NOWYM LEWYM PANELEM NA MODUŁY -->
+    <div id="view-day-week">
+        <div class="dashboard-panel">
+            <div class="large-clock-widget" id="large-live-clock">--:--</div>
+            <!-- W to miejsce dodamy docelowo więcej elementów -->
+        </div>
+        
+        <div class="calendar-main-area">
+            <div class="time-labels" id="time-labels"></div>
+            <div class="days-wrapper" id="days-wrapper">
+                <div id="current-time-line"></div>
+            </div>
         </div>
     </div>
 
@@ -254,7 +259,10 @@
 
         function updateClock() {
             const now = new Date();
-            document.getElementById('live-clock').innerText = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+            const clockEl = document.getElementById('large-live-clock');
+            if(clockEl) {
+                clockEl.innerText = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+            }
         }
         setInterval(updateClock, 1000); updateClock();
 
@@ -295,7 +303,7 @@
         colorPicker.addEventListener('input', (e) => { const c = e.target.value; applySmartContrast(c); localStorage.setItem('custom-bg-color', c); });
 
         const viewSelect = document.getElementById('view-select');
-        let currentView = localStorage.getItem('app-view') || 'week'; viewSelect.value = currentView;
+        let currentView = localStorage.getItem('app-view') || 'weekA'; viewSelect.value = currentView;
         viewSelect.addEventListener('change', (e) => { currentView = e.target.value; localStorage.setItem('app-view', currentView); odswiezWidok(); });
 
         let aktualnaDataPrzegladania = new Date(); 
@@ -309,103 +317,16 @@
         emptyHeader.className = 'day-header'; emptyHeader.style.borderBottom = "2px solid transparent"; emptyHeader.innerHTML = "&nbsp;<br>&nbsp;"; timeLabels.appendChild(emptyHeader);
         for (let i = 0; i < 24; i++) { const label = document.createElement('div'); label.className = 'time-label'; label.innerText = `${i}:00`; timeLabels.appendChild(label); }
 
-        // --- SKRYPT IMPORTU CSV Z EXCELA ---
-        document.getElementById('csv-upload').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(event) { importCSV(event.target.result); };
-            reader.readAsText(file, 'UTF-8');
-        });
-
-        function importCSV(csvText) {
-            const lines = csvText.split(/\r?\n/);
-            let addedCount = 0;
-            
-            for (let i = 1; i < lines.length; i++) {
-                const line = lines[i].trim();
-                if(!line) continue;
-                
-                const separator = line.includes(';') ? ';' : ',';
-                const parts = line.split(separator);
-                
-                if (parts.length >= 5) {
-                    const tytul = parts[0].trim().replace(/(^"|"$)/g, '');
-                    const kategoriaRaw = parts[1].trim().replace(/(^"|"$)/g, '');
-                    const kategoria = CATEGORIES[kategoriaRaw] ? kategoriaRaw : zgadnijKategorie(tytul);
-                    let dataStr = parts[2].trim().replace(/(^"|"$)/g, '');
-                    const startCzas = parts[3].trim().replace(/(^"|"$)/g, '');
-                    const endCzas = parts[4].trim().replace(/(^"|"$)/g, '');
-
-                    // Poprawka na polskie daty z kropkami DD.MM.YYYY
-                    if (dataStr.includes('.')) {
-                        let dParts = dataStr.split('.');
-                        if (dParts.length === 3) {
-                            let d = dParts[0].padStart(2, '0');
-                            let m = dParts[1].padStart(2, '0');
-                            let y = dParts[2].length === 2 ? "20" + dParts[2] : dParts[2];
-                            dataStr = `${y}-${m}-${d}`;
-                        }
-                    }
-
-                    if(dataStr && startCzas && endCzas) {
-                        const start = new Date(`${dataStr}T${startCzas}:00`);
-                        const end = new Date(`${dataStr}T${endCzas}:00`);
-                        if(end < start) { end.setDate(end.getDate() + 1); }
-
-                        if(!isNaN(start.getTime()) && !isNaN(end.getTime())) {
-                            wydarzeniaLokalne.push({
-                                id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
-                                title: tytul,
-                                category: kategoria,
-                                start: start.toISOString(),
-                                end: end.toISOString()
-                            });
-                            addedCount++;
-                        }
-                    }
-                }
-            }
-            if (addedCount > 0) {
-                localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne));
-                odswiezWidok();
-                alert(`Pomyślnie zaimportowano ${addedCount} wpisów z pliku CSV.`);
-            } else {
-                alert('Brak danych lub błędny format. Upewnij się, że plik ma 5 kolumn: Tytuł; Kategoria; Data; Od; Do');
-            }
-            document.getElementById('csv-upload').value = '';
-        }
-
-        // --- SKRYPT IMPORTU PLIKU ICS Z GOOGLE KALENDARZA ---
-        document.getElementById('ics-upload').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                const textData = event.target.result;
-                if (textData && textData.includes("BEGIN:VCALENDAR")) {
-                    wydarzeniaGoogle = parseICal(textData);
-                    odswiezWidok();
-                    alert(`Wczytano ${wydarzeniaGoogle.length} wydarzeń z pliku Kalendarza Google.`);
-                } else {
-                    alert("Błąd: Pobrany plik nie jest prawidłowym kalendarzem iCal.");
-                }
-                document.getElementById('ics-upload').value = '';
-            };
-            reader.readAsText(file, 'UTF-8');
-        });
-
-        // --- SKRYPTY RYSOWANIA KALENDARZA ---
         document.getElementById('btn-prev').addEventListener('click', () => {
             if (currentView === 'day') aktualnaDataPrzegladania.setDate(aktualnaDataPrzegladania.getDate() - 1);
-            else if (currentView === 'week' || currentView === 'week2') aktualnaDataPrzegladania.setDate(aktualnaDataPrzegladania.getDate() - 7);
+            else if (currentView.startsWith('week')) aktualnaDataPrzegladania.setDate(aktualnaDataPrzegladania.getDate() - 7);
             else if (currentView === 'month') aktualnaDataPrzegladania.setMonth(aktualnaDataPrzegladania.getMonth() - 1);
             else if (currentView === 'year') aktualnaDataPrzegladania.setFullYear(aktualnaDataPrzegladania.getFullYear() - 1); odswiezWidok(); 
         });
 
         document.getElementById('btn-next').addEventListener('click', () => {
             if (currentView === 'day') aktualnaDataPrzegladania.setDate(aktualnaDataPrzegladania.getDate() + 1);
-            else if (currentView === 'week' || currentView === 'week2') aktualnaDataPrzegladania.setDate(aktualnaDataPrzegladania.getDate() + 7);
+            else if (currentView.startsWith('week')) aktualnaDataPrzegladania.setDate(aktualnaDataPrzegladania.getDate() + 7);
             else if (currentView === 'month') aktualnaDataPrzegladania.setMonth(aktualnaDataPrzegladania.getMonth() + 1);
             else if (currentView === 'year') aktualnaDataPrzegladania.setFullYear(aktualnaDataPrzegladania.getFullYear() + 1); odswiezWidok(); 
         });
@@ -419,15 +340,17 @@
             let wszystkieWydarzenia = [...wydarzeniaGoogle, ...sformatowaneLokalne];
             const tytulEl = document.getElementById('week-title');
 
-            if (currentView === 'day' || currentView === 'week' || currentView === 'week2') {
+            if (currentView === 'day' || currentView.startsWith('week')) {
                 document.getElementById('view-day-week').style.display = 'flex'; budujDzienTydzien(sformatowaneLokalne);
                 if (currentView === 'day') {
                     let dz = String(aktualnaDataPrzegladania.getDate()).padStart(2, '0'); let ms = String(aktualnaDataPrzegladania.getMonth() + 1).padStart(2, '0');
                     tytulEl.innerText = `${dz}.${ms}.${aktualnaDataPrzegladania.getFullYear()}`;
-                } else if (currentView === 'week') {
-                    tytulEl.innerText = `Tydzień ${getWeekNumber(aktualnaDataPrzegladania)} ${formatujZakresTygodnia(aktualnaDataPrzegladania, false)}`;
-                } else if (currentView === 'week2') {
-                    tytulEl.innerText = `Tydzień Przewijany ${formatujZakresTygodnia(aktualnaDataPrzegladania, true)}`;
+                } else if (currentView === 'weekA') {
+                    tytulEl.innerText = `Tydzień A ${formatujZakresTygodnia(aktualnaDataPrzegladania, 'A')}`;
+                } else if (currentView === 'weekB') {
+                    tytulEl.innerText = `Tydzień B ${formatujZakresTygodnia(aktualnaDataPrzegladania, 'B')}`;
+                } else if (currentView === 'weekC') {
+                    tytulEl.innerText = `Tydzień C ${formatujZakresTygodnia(aktualnaDataPrzegladania, 'C')}`;
                 }
             } else if (currentView === 'month') {
                 document.getElementById('view-month').style.display = 'flex'; budujMiesiac(wszystkieWydarzenia);
@@ -443,8 +366,13 @@
             const wrapper = document.getElementById('days-wrapper'); wrapper.innerHTML = '<div id="current-time-line"></div>'; domColumns = [];
             let numDays = currentView === 'day' ? 1 : 7; const daysNames = ['Niedziela', 'Poniedziałek', 'Wtorek', 'Środa', 'Czwartek', 'Piątek', 'Sobota'];
             let viewStart = new Date(aktualnaDataPrzegladania);
-            if (currentView === 'week') { const viewDay = viewStart.getDay(); viewStart.setDate(viewStart.getDate() - viewDay + (viewDay === 0 ? -6 : 1)); } 
-            else if (currentView === 'week2') { viewStart.setDate(viewStart.getDate() - 1); }
+            
+            if (currentView === 'weekB') { 
+                viewStart.setDate(viewStart.getDate() - 1); 
+            } else if (currentView === 'weekC') { 
+                const viewDay = viewStart.getDay(); 
+                viewStart.setDate(viewStart.getDate() - viewDay + (viewDay === 0 ? -6 : 1)); 
+            }
             viewStart.setHours(0,0,0,0);
 
             for (let i = 0; i < numDays; i++) {
@@ -591,15 +519,21 @@
         
         function usunLokalne(idStr) { wydarzeniaLokalne = wydarzeniaLokalne.filter(ev => ev.id !== idStr); localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne)); odswiezWidok(); }
 
-        function formatujZakresTygodnia(dataZrodlowa, isWeek2) {
+        function formatujZakresTygodnia(dataZrodlowa, type) {
             const dataPocz = new Date(dataZrodlowa); 
-            if(!isWeek2) { const dzienTyg = dataPocz.getDay(); dataPocz.setDate(dataPocz.getDate() - dzienTyg + (dzienTyg === 0 ? -6 : 1)); }
-            else { dataPocz.setDate(dataPocz.getDate() - 1); }
+            if (type === 'B') {
+                dataPocz.setDate(dataPocz.getDate() - 1);
+            } else if (type === 'C') {
+                const dzienTyg = dataPocz.getDay(); 
+                dataPocz.setDate(dataPocz.getDate() - dzienTyg + (dzienTyg === 0 ? -6 : 1));
+            }
             const dataKoncowa = new Date(dataPocz); dataKoncowa.setDate(dataPocz.getDate() + 6);
+            
             const pDzien = String(dataPocz.getDate()).padStart(2, '0'); const pMiesiac = String(dataPocz.getMonth() + 1).padStart(2, '0');
             const kDzien = String(dataKoncowa.getDate()).padStart(2, '0'); const kMiesiac = String(dataKoncowa.getMonth() + 1).padStart(2, '0');
             return pMiesiac === kMiesiac ? `(${pDzien} - ${kDzien}.${kMiesiac}.${dataKoncowa.getFullYear()})` : `(${pDzien}.${pMiesiac} - ${kDzien}.${kMiesiac}.${dataKoncowa.getFullYear()})`;
         }
+        
         function getWeekNumber(d) { const date = new Date(d.getTime()); date.setUTCDate(date.getUTCDate() + 4 - (date.getUTCDay() || 7)); return Math.ceil((((date - new Date(Date.UTC(date.getUTCFullYear(), 0, 1))) / 86400000) + 1) / 7); }
 
         async function fetchAndRenderCalendar() {
@@ -670,13 +604,17 @@
         }
         
         odswiezWidok(); 
-        fetchAndRenderCalendar(); // Próba automatycznego pobrania w tle
+        fetchAndRenderCalendar();
         
         setInterval(() => {
-            if(currentView === 'day' || currentView === 'week' || currentView === 'week2') {
+            if(currentView === 'day' || currentView.startsWith('week')) {
                 let viewStart = new Date(aktualnaDataPrzegladania);
-                if(currentView === 'week') { const vd = viewStart.getDay(); viewStart.setDate(viewStart.getDate() - vd + (vd === 0 ? -6 : 1)); }
-                else if (currentView === 'week2') { viewStart.setDate(viewStart.getDate() - 1); }
+                if (currentView === 'weekB') { 
+                    viewStart.setDate(viewStart.getDate() - 1); 
+                } else if (currentView === 'weekC') { 
+                    const vd = viewStart.getDay(); 
+                    viewStart.setDate(viewStart.getDate() - vd + (vd === 0 ? -6 : 1)); 
+                }
                 viewStart.setHours(0,0,0,0);
                 updateCurrentTimeLine(viewStart, currentView === 'day' ? 1 : 7);
             }

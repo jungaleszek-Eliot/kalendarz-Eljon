@@ -1,0 +1,8 @@
+{
+  "name": "Mój Kalendarz 3D",
+  "short_name": "Kalendarz",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#e0e5ec",
+  "theme_color": "#3b82f6"
+}

@@ -1,11 +1,9 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-    <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="icon-192.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kalendarz 3D + Widoki + Zegar Apple + Praca + Sync + RWD</title>
+    <title>Kalendarz 3D + Zarządzanie Kategoriami + Auto-PIN</title>
     <style>
         :root { 
             --bg-color: #e0e5ec; --grid-bg: #e0e5ec; --text-main: #2d3748; --text-muted: #718096; 
@@ -146,13 +144,14 @@
         .year-day-cell.has-event { background: var(--accent); color: white; font-weight: bold; box-shadow: 1px 1px 3px rgba(0,0,0,0.3); }
 
         .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 100; overflow-y: auto; padding: 20px; }
-        .modal-box { background: var(--modal-bg); padding: 25px; border-radius: 20px; width: 100%; max-width: 400px; box-shadow: 0 15px 35px rgba(0,0,0,0.3); display: flex; flex-direction: column; gap: 15px; color: var(--text-main); margin: auto; transition: background 0.3s; }
+        .modal-box { background: var(--modal-bg); padding: 25px; border-radius: 20px; width: 100%; max-width: 450px; box-shadow: 0 15px 35px rgba(0,0,0,0.3); display: flex; flex-direction: column; gap: 15px; color: var(--text-main); margin: auto; transition: background 0.3s; }
         .modal-box.wide { max-width: 550px; }
         .modal-box h3 { margin: 0 0 5px 0; text-align: center; color: var(--text-main); }
         
-        .modal-box input[type="text"], .modal-box select, textarea.praca-input { background: var(--input-bg); border: 1px solid var(--border-color); padding: 12px; border-radius: 10px; color: var(--input-text); font-family: inherit; font-size: 1rem; box-shadow: var(--shadow-inner); outline: none; width: 100%; box-sizing: border-box; transition: background 0.3s, color 0.3s; }
+        .modal-box input[type="text"], .modal-box input[type="color"], .modal-box select, textarea.praca-input { background: var(--input-bg); border: 1px solid var(--border-color); padding: 12px; border-radius: 10px; color: var(--input-text); font-family: inherit; font-size: 1rem; box-shadow: var(--shadow-inner); outline: none; width: 100%; box-sizing: border-box; transition: background 0.3s, color 0.3s; }
+        .modal-box input[type="color"] { padding: 4px 8px; cursor: pointer; height: 45px; }
         .modal-box input::placeholder, textarea.praca-input::placeholder { color: var(--input-text); opacity: 0.6; }
-        textarea.praca-input { height: 200px; font-family: monospace; font-size: 0.85rem; resize: none; white-space: pre; }
+        textarea.praca-input { height: 180px; font-family: monospace; font-size: 0.85rem; resize: none; white-space: pre; }
 
         .modal-legend-title { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: -10px; text-align: center; }
         .legend-container { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; padding: 10px; border-radius: 12px; background: rgba(0,0,0,0.05); box-shadow: var(--shadow-inner); }
@@ -168,69 +167,28 @@
         .modal-btns button { flex: 1; text-align: center; }
         .btn-save { background: var(--accent) !important; color: white !important; }
 
-        /* --- MEDIA QUERIES (RWD) DLA PC, TABLETÓW I TELEFONÓW --- */
-        
-        /* Tablety / Mniejsze Laptopy */
-        @media (max-width: 1024px) {
-            #view-year { grid-template-columns: repeat(2, 1fr); }
-        }
-
-        /* Ekrany pionowe, tablety, telefony poziomo */
+        @media (max-width: 1024px) { #view-year { grid-template-columns: repeat(2, 1fr); } }
         @media (max-width: 900px) {
-            body { 
-                height: auto; 
-                min-height: 100vh; 
-                overflow-y: auto; /* Zezwól na przewijanie głównego okna */
-                padding: 10px;
-            }
-            .header-container { 
-                order: -1; /* Przenieś daty na samą górę */
-                width: 100%; 
-                margin-bottom: 10px; 
-            }
+            body { height: auto; min-height: 100vh; overflow-y: auto; padding: 10px; }
+            .header-container { order: -1; width: 100%; margin-bottom: 10px; }
             .controls-group { justify-content: center; width: 100%; }
-            
             #view-day-week { flex-direction: column; height: auto; }
-            
-            .dashboard-panel { 
-                width: 100%; 
-                flex-direction: row; 
-                flex-wrap: wrap; 
-                height: auto; 
-                padding-right: 0; 
-                margin-bottom: 10px;
-            }
+            .dashboard-panel { width: 100%; flex-direction: row; flex-wrap: wrap; height: auto; padding-right: 0; margin-bottom: 10px; }
             .large-clock-widget, .holidays-widget { flex: 1; min-width: 250px; }
-            
-            .calendar-main-area { 
-                height: 75vh; 
-                min-height: 500px; 
-                flex-shrink: 0; 
-            }
-            
+            .calendar-main-area { height: 75vh; min-height: 500px; flex-shrink: 0; }
             .flip-clock { font-size: 3.5rem; }
             .flip-colon { font-size: 3rem; }
         }
-
-        /* Smartfony */
         @media (max-width: 600px) {
             #view-year { grid-template-columns: 1fr; }
             .dashboard-panel { flex-direction: column; }
-            
-            /* Aby zmieścić 7 dni, ukryty jest przepełniony tekst, a wiersz można scrollować palcem poziomo */
             .days-wrapper { overflow-x: auto; overflow-y: hidden; }
-            .day-column { min-width: 140px; } /* Min. szerokość jednego dnia - wymusza poziomy suwak na telefonie */
-            
+            .day-column { min-width: 140px; }
             .time-labels { width: 50px; }
             .time-label { font-size: 0.7rem; padding-right: 5px; }
-            
             .nav-btn, .theme-select { padding: 8px 12px; font-size: 0.85rem; }
             #week-title { font-size: 1.4rem; }
-            
-            /* Powiększenie przycisków i tekstu do obsługi palcem (Touch) */
             .event-actions button { padding: 6px 12px; font-size: 1rem; }
-            .month-cell-day { font-size: 0.75rem; }
-            .month-event-pill { font-size: 0.65rem; padding: 2px 4px; }
         }
     </style>
 </head>
@@ -260,7 +218,7 @@
                 </select>
 
                 <button id="btn-import-praca" class="nav-btn" style="background: var(--accent); color: white;" onclick="otworzModalPraca()">Praca (Excel)</button>
-                <button id="btn-sync" class="nav-btn" style="background: #10b981; color: white;" onclick="otworzModalSync()">☁️ Sync</button>
+                <button id="btn-sync" class="nav-btn" style="background: #10b981; color: white;" onclick="otworzModalSync()">☁️ Kod PIN</button>
             </div>
 
             <div class="header-container">
@@ -305,12 +263,12 @@
 
     <div id="view-year" class="view-container"></div>
 
-    <!-- Modal Synchronizacji -->
+    <!-- Modal Synchronizacji na PIN -->
     <div class="modal-overlay" id="sync-modal">
         <div class="modal-box">
-            <h3>☁️ Synchronizacja w Chmurze</h3>
+            <h3>☁️ Synchronizacja Auto-PIN</h3>
             <p style="font-size: 0.8rem; color: var(--text-muted); text-align: center; margin-top: -10px;">
-                Połącz ten kalendarz z telefonem lub tabletem za pomocą unikalnego kodu PIN (ID bazy).
+                Połącz ten kalendarz z innym urządzeniem za pomocą unikalnego kodu PIN.
             </p>
 
             <div style="background: var(--input-bg); padding: 15px; border-radius: 10px; margin-bottom: 5px;">
@@ -320,20 +278,20 @@
             </div>
 
             <div style="background: var(--input-bg); padding: 15px; border-radius: 10px;">
-                <strong style="display:block; margin-bottom: 5px; font-size: 0.9rem;">Urządzenie DODATKOWE (np. telefon):</strong>
+                <strong style="display:block; margin-bottom: 5px; font-size: 0.9rem;">Urządzenie DODATKOWE:</strong>
                 <input type="text" id="sync-pin-input" placeholder="Wpisz lub wklej Kod PIN..." style="text-align: center;">
-                <button class="nav-btn" style="width: 100%; margin-top: 10px; background: #10b981; color: white;" onclick="pobierzZChmury(this)">Pobierz grafik i połącz urządzenia</button>
+                <button class="nav-btn" style="width: 100%; margin-top: 10px; background: #10b981; color: white;" onclick="pobierzZChmury(this)">Połącz z tym PINem</button>
             </div>
 
             <div style="margin-top: 10px; text-align: center;">
                 <label style="font-size: 0.85rem; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer;">
                     <input type="checkbox" id="auto-sync-checkbox" style="width: 18px; height: 18px;"> 
-                    <strong>Automatycznie</strong> synchronizuj zmiany w tle
+                    <strong>Włącz automatyczną</strong> synchronizację w tle
                 </label>
             </div>
 
             <div class="modal-btns" style="margin-top: 5px;">
-                <button class="nav-btn" onclick="zamknijModalSync()">Zakończ (ESC)</button>
+                <button class="nav-btn" onclick="zamknijModalSync()">Zakończ</button>
             </div>
         </div>
     </div>
@@ -347,7 +305,13 @@
             <div class="modal-legend-title">Dostępne kategorie</div>
             <div class="legend-container" id="legend-container"></div>
             
-            <label style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: -10px; margin-top: 5px;">Wybierz Kategorię:</label>
+            <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: -10px; margin-top: 5px;">
+                <label style="font-size: 0.85rem; color: var(--text-muted);">Wybierz Kategorię:</label>
+                <div>
+                    <button class="nav-btn" style="padding: 2px 8px; font-size: 0.75rem;" onclick="otworzZarzadzanieKategoriami()">⚙️ Zarządzaj</button>
+                    <button class="nav-btn" style="padding: 2px 8px; font-size: 0.75rem; background: #10b981; color: white;" onclick="otworzModalKategorii()">➕ Nowa</button>
+                </div>
+            </div>
             <select id="ev-category"></select>
 
             <label style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: -10px; margin-top: 5px;">Powtarzanie:</label>
@@ -377,7 +341,45 @@
         </div>
     </div>
 
-    <!-- Modal Importu -->
+    <!-- Modal Nowej Kategorii -->
+    <div class="modal-overlay" id="category-modal" style="z-index: 106;">
+        <div class="modal-box">
+            <h3 id="modal-kat-title">Stwórz własną kategorię</h3>
+            
+            <label style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: -10px;">Nazwa kategorii:</label>
+            <input type="text" id="nowa-kat-nazwa" placeholder="Np. Trening, Zjazd na studia..." autocomplete="off">
+            
+            <div style="display: flex; gap: 15px; margin-top: 5px;">
+                <div style="flex: 1;">
+                    <label style="font-size: 0.85rem; color: var(--text-muted); display: block; margin-bottom: 5px;">Kolor tła:</label>
+                    <input type="color" id="nowa-kat-kolor" value="#a855f7">
+                </div>
+                <div style="flex: 1;">
+                    <label style="font-size: 0.85rem; color: var(--text-muted); display: block; margin-bottom: 5px;">Kolor tekstu:</label>
+                    <input type="color" id="nowa-kat-tekst" value="#ffffff">
+                </div>
+            </div>
+            
+            <div class="modal-btns" style="margin-top: 15px;">
+                <button class="nav-btn" onclick="zamknijModalKategorii()">Anuluj</button>
+                <button class="nav-btn btn-save" onclick="zapiszNowaKategorie()">Zapisz</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Zarządzania Kategoriami -->
+    <div class="modal-overlay" id="manage-cat-modal" style="z-index: 105;">
+        <div class="modal-box">
+            <h3>Zarządzaj kategoriami</h3>
+            <p style="font-size: 0.75rem; color: var(--text-muted); text-align: center; margin-top: -10px;">Możesz edytować i usuwać tylko te kategorie, które zostały dodane przez Ciebie.</p>
+            <div id="custom-cat-list" style="display:flex; flex-direction:column; gap:10px; max-height: 250px; overflow-y:auto; margin-bottom: 5px; padding-right: 5px;"></div>
+            <div class="modal-btns">
+                <button class="nav-btn" onclick="zamknijZarzadzanieKategoriami()">Gotowe</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Importu Pracy -->
     <div class="modal-overlay" id="praca-modal">
         <div class="modal-box wide">
             <h3>Wklej Harmonogram z Excela</h3>
@@ -397,16 +399,19 @@
     </div>
 
     <script>
-        const CATEGORIES = {
+        const DOMYSLNE_KATEGORIE = {
             'praca': { name: 'Praca', gradient: 'linear-gradient(135deg, #3b82f6, #1d4ed8)', textColor: '#ffffff' },
             'zmiana-dzienna': { name: 'Zmiana Dzienna', gradient: 'linear-gradient(135deg, #d8b4e2, #b886cd)', textColor: '#fff44f' },
             'zmiana-nocna': { name: 'Zmiana Nocna', gradient: 'linear-gradient(135deg, #59357a, #3b1b5e)', textColor: '#fff44f' },
-            'dom': { name: 'Dom / Rodzina', gradient: 'linear-gradient(135deg, #10b981, #047857)' },
-            'zdrowie': { name: 'Zdrowie', gradient: 'linear-gradient(135deg, #14b8a6, #0f766e)' },
-            'rozrywka': { name: 'Rozrywka / Sport', gradient: 'linear-gradient(135deg, #a855f7, #7e22ce)' },
-            'wazne': { name: 'Ważne / Pilne', gradient: 'linear-gradient(135deg, #ef4444, #b91c1c)' },
-            'inne': { name: 'Inne', gradient: 'linear-gradient(135deg, #94a3b8, #475569)' }
+            'dom': { name: 'Dom / Rodzina', gradient: 'linear-gradient(135deg, #10b981, #047857)', textColor: '#ffffff' },
+            'zdrowie': { name: 'Zdrowie', gradient: 'linear-gradient(135deg, #14b8a6, #0f766e)', textColor: '#ffffff' },
+            'rozrywka': { name: 'Rozrywka / Sport', gradient: 'linear-gradient(135deg, #a855f7, #7e22ce)', textColor: '#ffffff' },
+            'wazne': { name: 'Ważne / Pilne', gradient: 'linear-gradient(135deg, #ef4444, #b91c1c)', textColor: '#ffffff' },
+            'inne': { name: 'Inne', gradient: 'linear-gradient(135deg, #94a3b8, #475569)', textColor: '#ffffff' }
         };
+
+        let CATEGORIES = JSON.parse(localStorage.getItem('mojeKategorie'));
+        if (!CATEGORIES || Object.keys(CATEGORIES).length === 0) { CATEGORIES = { ...DOMYSLNE_KATEGORIE }; }
 
         const STALE_SWIETA = [
             { d: 1, m: 1, name: 'Nowy Rok' }, { d: 6, m: 1, name: 'Trzech Króli' }, { d: 21, m: 1, name: 'Dzień Babci' }, { d: 22, m: 1, name: 'Dzień Dziadka' },
@@ -425,6 +430,8 @@
 
         function inicjalizujKategorie() {
             const legendContainer = document.getElementById('legend-container'); const selectCategory = document.getElementById('ev-category');
+            legendContainer.innerHTML = ''; selectCategory.innerHTML = '';
+            
             Object.keys(CATEGORIES).forEach(key => {
                 const cat = CATEGORIES[key]; const item = document.createElement('div'); item.className = 'legend-item';
                 item.innerHTML = `<div class="legend-color" style="background: ${cat.gradient};"></div><span>${cat.name}</span>`;
@@ -433,6 +440,8 @@
             });
         }
         inicjalizujKategorie();
+
+        function getCategoryDef(catId) { return CATEGORIES[catId] || CATEGORIES['inne'] || { name: 'Inne', gradient: '#94a3b8', textColor: '#ffffff' }; }
 
         function zgadnijKategorie(title) {
             const t = (title || "").toLowerCase();
@@ -495,8 +504,8 @@
         let aktualnaDataPrzegladania = new Date(); let wydarzeniaGoogle = []; 
         let wydarzeniaLokalne = JSON.parse(localStorage.getItem('mojeWydarzenia')); if (!Array.isArray(wydarzeniaLokalne)) wydarzeniaLokalne = [];
         let domColumns = []; let editingEventId = null;
-        
-        // ------------- LOGIKA SYNCHRONIZACJI (KVDB) -------------
+
+        // ------------- LOGIKA SYNCHRONIZACJI (KVDB AUTO-PIN) -------------
         let aktualnyKodSync = localStorage.getItem('app-sync-id') || '';
         let autoSyncWlaczony = localStorage.getItem('app-auto-sync') === 'true';
 
@@ -504,71 +513,130 @@
         document.getElementById('auto-sync-checkbox').addEventListener('change', (e) => {
             autoSyncWlaczony = e.target.checked;
             localStorage.setItem('app-auto-sync', autoSyncWlaczony);
+            if(autoSyncWlaczony) { syncToCloudBackground(); fetchFromCloudBackground(); }
         });
 
         async function createSyncBucket() {
-            const res = await fetch('https://kvdb.io/', { method: 'POST' });
-            if(!res.ok) throw new Error("Błąd łączenia z serwerem");
-            return await res.text();
+            try {
+                const res = await fetch('https://kvdb.io/', { method: 'POST' });
+                if(!res.ok) throw new Error();
+                return await res.text();
+            } catch (err) {
+                throw new Error("Wyłącz AdBlocka! Twoja przeglądarka zablokowała połączenie z bazą danych.");
+            }
         }
 
         async function updateSyncData(bucket, data) {
-            await fetch(`https://kvdb.io/${bucket}/kalendarz`, {
-                method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)
-            });
+            try {
+                const res = await fetch(`https://kvdb.io/${bucket}/kalendarz`, {
+                    method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)
+                });
+                if(!res.ok) throw new Error();
+            } catch (err) {
+                throw new Error("Wyłącz AdBlocka! Brak autoryzacji do wysłania zmian w tle.");
+            }
         }
 
         async function getSyncData(bucket) {
-            const res = await fetch(`https://kvdb.io/${bucket}/kalendarz`);
-            if (!res.ok) throw new Error('Nieprawidłowy kod lub brak danych');
-            return await res.json();
+            try {
+                const res = await fetch(`https://kvdb.io/${bucket}/kalendarz`);
+                if (!res.ok) return null;
+                return await res.json();
+            } catch (err) {
+                throw new Error("Wyłącz AdBlocka! Przeglądarka zablokowała pobieranie danych.");
+            }
         }
 
         async function generujKodSync(btn) {
-            btn.innerText = "Tworzenie bazy...";
+            btn.innerText = "Trwa tworzenie...";
             try {
                 const kod = await createSyncBucket();
-                await updateSyncData(kod, wydarzeniaLokalne);
+                await updateSyncData(kod, { wydarzenia: wydarzeniaLokalne, kategorie: CATEGORIES });
                 aktualnyKodSync = kod;
                 localStorage.setItem('app-sync-id', kod);
-                document.getElementById('sync-code-display').innerText = "Twój kod PIN: " + kod;
-                alert("Sukces! Zapisz ten Kod PIN i wpisz go w kalendarzu na drugim urządzeniu, aby połączyć grafiki.");
-            } catch (e) { alert(e.message); }
+                document.getElementById('sync-code-display').innerText = "Twój PIN: " + kod;
+                alert("Sukces! Zapisz ten PIN i wpisz go na drugim urządzeniu.");
+            } catch (e) { alert("BŁĄD: " + e.message); }
             btn.innerText = "Utwórz kod z moich wpisów";
         }
 
         async function pobierzZChmury(btn) {
             const kod = document.getElementById('sync-pin-input').value.trim();
-            if(!kod) return alert("Musisz najpierw wkleić kod!");
+            if(!kod) return alert("Musisz najpierw wpisać PIN!");
             btn.innerText = "Pobieranie...";
             try {
                 const dane = await getSyncData(kod);
-                if(Array.isArray(dane)) {
+                if (Array.isArray(dane)) {
                     wydarzeniaLokalne = dane;
                     localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne));
-                    aktualnyKodSync = kod;
-                    localStorage.setItem('app-sync-id', kod);
-                    document.getElementById('sync-code-display').innerText = "Połączono z bazą: " + kod;
-                    odswiezWidok();
-                    alert("Pomyślnie połączono! Grafiki są teraz zsynchronizowane.");
-                } else { alert("Błędny format danych pod tym kodem."); }
+                } 
+                else if (dane && dane.wydarzenia) {
+                    wydarzeniaLokalne = dane.wydarzenia;
+                    localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne));
+                    if (dane.kategorie) {
+                        CATEGORIES = dane.kategorie;
+                        localStorage.setItem('mojeKategorie', JSON.stringify(CATEGORIES));
+                        inicjalizujKategorie();
+                    }
+                } else {
+                    throw new Error("Błędny PIN lub pusta baza.");
+                }
+
+                aktualnyKodSync = kod;
+                localStorage.setItem('app-sync-id', kod);
+                document.getElementById('sync-code-display').innerText = "Połączono! Aktywny PIN: " + kod;
+                odswiezWidok();
+                alert("Pomyślnie połączono! Grafiki i kategorie są zsynchronizowane.");
+                
             } catch(e) { alert(e.message); }
-            btn.innerText = "Pobierz grafik i połącz urządzenia";
+            btn.innerText = "Połącz z tym PINem";
         }
 
         async function syncToCloudBackground() {
             if(autoSyncWlaczony && aktualnyKodSync) {
-                try { await updateSyncData(aktualnyKodSync, wydarzeniaLokalne); console.log("AutoSync OK"); } 
-                catch (e) { console.error("Błąd AutoSync", e); }
+                try { await updateSyncData(aktualnyKodSync, { wydarzenia: wydarzeniaLokalne, kategorie: CATEGORIES }); } 
+                catch (e) { console.warn("Sync w tle: zablokowano połączenie"); }
             }
         }
 
+        async function fetchFromCloudBackground() {
+            if(autoSyncWlaczony && aktualnyKodSync) {
+                try {
+                    const data = await getSyncData(aktualnyKodSync);
+                    let changed = false;
+
+                    if (Array.isArray(data)) {
+                        if (JSON.stringify(wydarzeniaLokalne) !== JSON.stringify(data)) {
+                            wydarzeniaLokalne = data;
+                            localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne));
+                            changed = true;
+                        }
+                    } else if (data && data.wydarzenia) {
+                        if (JSON.stringify(wydarzeniaLokalne) !== JSON.stringify(data.wydarzenia)) {
+                            wydarzeniaLokalne = data.wydarzenia;
+                            localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne));
+                            changed = true;
+                        }
+                        if (data.kategorie && JSON.stringify(CATEGORIES) !== JSON.stringify(data.kategorie)) {
+                            CATEGORIES = data.kategorie;
+                            localStorage.setItem('mojeKategorie', JSON.stringify(CATEGORIES));
+                            inicjalizujKategorie();
+                            changed = true;
+                        }
+                    }
+                    if (changed) { odswiezWidok(); }
+                } catch(e) { console.warn("Fetch w tle: zablokowano połączenie"); }
+            }
+        }
+
+        setInterval(fetchFromCloudBackground, 30000);
+
         function otworzModalSync() {
             document.getElementById('sync-modal').style.display = 'flex';
-            if(aktualnyKodSync) document.getElementById('sync-code-display').innerText = "Aktywny kod PIN: " + aktualnyKodSync;
+            if(aktualnyKodSync) document.getElementById('sync-code-display').innerText = "Aktywny PIN: " + aktualnyKodSync;
         }
         function zamknijModalSync() { document.getElementById('sync-modal').style.display = 'none'; }
-        // --------------------------------------------------------
+        // -------------------------------------------------------------------------
 
         const timeLabels = document.getElementById('time-labels');
         const emptyHeader = document.createElement('div'); emptyHeader.className = 'day-header'; emptyHeader.style.borderBottom = "2px solid transparent"; emptyHeader.innerHTML = "&nbsp;<br>&nbsp;"; timeLabels.appendChild(emptyHeader);
@@ -754,7 +822,7 @@
 
                 for (let c = 0; c < numCols; c++) {
                     for (let item of columns[c]) {
-                        const catId = item.event.category || 'inne'; const catDef = CATEGORIES[catId] || CATEGORIES['inne'];
+                        const catId = item.event.category || 'inne'; const catDef = getCategoryDef(catId);
                         const topPosition = item.startHour * godzinaWysokosc; 
                         const blockHeight = (item.endHour - item.startHour) * godzinaWysokosc;
                         
@@ -805,7 +873,7 @@
             const dniTyg = ['Pon', 'Wto', 'Śro', 'Czw', 'Pią', 'Sob', 'Nie']; dniTyg.forEach(d => { let h = document.createElement('div'); h.className = 'month-header-cell'; h.innerText = d; grid.appendChild(h); });
             let pierwszyDzien = new Date(rok, miesiac, 1); let startDniaTyg = pierwszyDzien.getDay() - 1; if(startDniaTyg === -1) startDniaTyg = 6; let dniWMiesiacu = new Date(rok, miesiac + 1, 0).getDate();
             for(let i = 0; i < startDniaTyg; i++) { let cell = document.createElement('div'); cell.className = 'month-cell empty'; grid.appendChild(cell); }
-            for(let i = 1; i <= dniWMiesiacu; i++) { let cell = document.createElement('div'); cell.className = 'month-cell'; let dataKafelka = new Date(rok, miesiac, i); if(isToday(dataKafelka)) cell.classList.add('current-day-highlight'); cell.innerHTML = `<div class="month-cell-day">${i}</div>`; cell.addEventListener('click', () => { currentView = 'day'; aktualnaDataPrzegladania = dataKafelka; viewSelect.value = 'day'; odswiezWidok(); }); let startDnia = new Date(rok, miesiac, i, 0, 0, 0); let koniecDnia = new Date(rok, miesiac, i, 23, 59, 59); let evDzis = wszystkieWydarzenia.filter(ev => ev.start <= koniecDnia && ev.end >= startDnia); evDzis.forEach(ev => { let el = document.createElement('div'); el.className = 'month-event-pill'; const catDef = CATEGORIES[ev.category] || CATEGORIES['inne']; el.style.background = catDef.gradient; el.style.color = catDef.textColor || '#ffffff'; el.innerText = ev.title; cell.appendChild(el); }); grid.appendChild(cell); }
+            for(let i = 1; i <= dniWMiesiacu; i++) { let cell = document.createElement('div'); cell.className = 'month-cell'; let dataKafelka = new Date(rok, miesiac, i); if(isToday(dataKafelka)) cell.classList.add('current-day-highlight'); cell.innerHTML = `<div class="month-cell-day">${i}</div>`; cell.addEventListener('click', () => { currentView = 'day'; aktualnaDataPrzegladania = dataKafelka; viewSelect.value = 'day'; odswiezWidok(); }); let startDnia = new Date(rok, miesiac, i, 0, 0, 0); let koniecDnia = new Date(rok, miesiac, i, 23, 59, 59); let evDzis = wszystkieWydarzenia.filter(ev => ev.start <= koniecDnia && ev.end >= startDnia); evDzis.forEach(ev => { let el = document.createElement('div'); el.className = 'month-event-pill'; const catDef = getCategoryDef(ev.category); el.style.background = catDef.gradient; el.style.color = catDef.textColor || '#ffffff'; el.innerText = ev.title; cell.appendChild(el); }); grid.appendChild(cell); }
         }
 
         function budujRok(wszystkieWydarzenia) { 
@@ -816,7 +884,7 @@
                 let daysGrid = document.createElement('div'); daysGrid.className = 'year-days-grid'; ['P','W','Ś','C','P','S','N'].forEach(d => { let h = document.createElement('div'); h.className = 'year-day-h'; h.innerText = d; daysGrid.appendChild(h); });
                 let pierwszyDzien = new Date(rok, m, 1); let startDnia = pierwszyDzien.getDay() - 1; if(startDnia === -1) startDnia = 6; let dniWMc = new Date(rok, m + 1, 0).getDate();
                 for(let i=0; i<startDnia; i++) { daysGrid.appendChild(document.createElement('div')); }
-                for(let i=1; i<=dniWMc; i++) { let cell = document.createElement('div'); cell.className = 'year-day-cell'; cell.innerText = i; let dStart = new Date(rok, m, i, 0,0,0); let dEnd = new Date(rok, m, i, 23,59,59); let dataDlaKomorki = new Date(rok, m, i); if(isToday(dataDlaKomorki)) cell.classList.add('current-day-highlight'); cell.addEventListener('click', () => { currentView = 'day'; aktualnaDataPrzegladania = dataDlaKomorki; viewSelect.value = 'day'; odswiezWidok(); }); let evDzis = wszystkieWydarzenia.filter(ev => ev.start <= dEnd && ev.end >= dStart); if(evDzis.length > 0) { const mainCat = CATEGORIES[evDzis[0].category] || CATEGORIES['inne']; cell.style.background = mainCat.gradient; cell.style.color = mainCat.textColor || '#ffffff'; cell.style.fontWeight = "bold"; cell.style.boxShadow = `1px 1px 3px rgba(0,0,0,0.3)`; } daysGrid.appendChild(cell); } block.appendChild(daysGrid); grid.appendChild(block);
+                for(let i=1; i<=dniWMc; i++) { let cell = document.createElement('div'); cell.className = 'year-day-cell'; cell.innerText = i; let dStart = new Date(rok, m, i, 0,0,0); let dEnd = new Date(rok, m, i, 23,59,59); let dataDlaKomorki = new Date(rok, m, i); if(isToday(dataDlaKomorki)) cell.classList.add('current-day-highlight'); cell.addEventListener('click', () => { currentView = 'day'; aktualnaDataPrzegladania = dataDlaKomorki; viewSelect.value = 'day'; odswiezWidok(); }); let evDzis = wszystkieWydarzenia.filter(ev => ev.start <= dEnd && ev.end >= dStart); if(evDzis.length > 0) { const mainCat = getCategoryDef(evDzis[0].category); cell.style.background = mainCat.gradient; cell.style.color = mainCat.textColor || '#ffffff'; cell.style.fontWeight = "bold"; cell.style.boxShadow = `1px 1px 3px rgba(0,0,0,0.3)`; } daysGrid.appendChild(cell); } block.appendChild(daysGrid); grid.appendChild(block);
             }
         }
 
@@ -827,6 +895,92 @@
             for (let i = 0; i < domColumns.length; i++) { let colDate = new Date(domColumns[i].dataset.date); if (isToday(colDate)) { activeIndex = i; break; } }
             if (activeIndex !== -1) { line.style.display = 'block'; const kolumnaEl = domColumns[activeIndex]; const zawartoscWysokosc = kolumnaEl.clientHeight - 40; const godzinaWysokosc = zawartoscWysokosc / 24; const topPos = (now.getHours() + (now.getMinutes() / 60)) * godzinaWysokosc; line.style.top = `${topPos + 40}px`; line.style.width = `calc(100% / ${numDays})`; line.style.left = `calc(${activeIndex} * (100% / ${numDays}))`; } else { line.style.display = 'none'; }
         }
+
+        // ------------- ZARZĄDZANIE KATEGORIAMI -------------
+        let edytowaneIdKategorii = null;
+
+        function otworzZarzadzanieKategoriami() {
+            const list = document.getElementById('custom-cat-list');
+            list.innerHTML = '';
+            let hasCustom = false;
+            Object.keys(CATEGORIES).forEach(key => {
+                if (!DOMYSLNE_KATEGORIE[key]) {
+                    hasCustom = true;
+                    const cat = CATEGORIES[key];
+                    const div = document.createElement('div');
+                    div.style.display = 'flex'; div.style.justifyContent = 'space-between'; div.style.alignItems = 'center';
+                    div.style.background = 'var(--input-bg)'; div.style.padding = '8px'; div.style.borderRadius = '8px';
+                    div.innerHTML = `
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <div style="width:16px; height:16px; border-radius:4px; background:${cat.gradient}; border:1px solid rgba(255,255,255,0.3);"></div>
+                            <span style="font-size:0.85rem; font-weight:bold;">${cat.name}</span>
+                        </div>
+                        <div style="display:flex; gap:5px;">
+                            <button class="nav-btn" style="padding:4px 8px; font-size:0.75rem;" onclick="edytujKategorie('${key}')">✎</button>
+                            <button class="nav-btn" style="padding:4px 8px; font-size:0.75rem; background:var(--highlight); color:white;" onclick="usunKategorie('${key}')">×</button>
+                        </div>
+                    `;
+                    list.appendChild(div);
+                }
+            });
+            if (!hasCustom) { list.innerHTML = '<div style="text-align:center; font-size:0.8rem; opacity:0.7;">Brak własnych kategorii.</div>'; }
+            document.getElementById('manage-cat-modal').style.display = 'flex';
+        }
+        function zamknijZarzadzanieKategoriami() { document.getElementById('manage-cat-modal').style.display = 'none'; }
+
+        function usunKategorie(id) {
+            if(confirm("Czy na pewno chcesz usunąć tę kategorię? Zapisane z nią wpisy staną się 'Inne'.")) {
+                delete CATEGORIES[id];
+                wydarzeniaLokalne.forEach(ev => { if(ev.category === id) ev.category = 'inne'; });
+                localStorage.setItem('mojeKategorie', JSON.stringify(CATEGORIES));
+                localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne));
+                inicjalizujKategorie();
+                otworzZarzadzanieKategoriami(); 
+                odswiezWidok();
+                syncToCloudBackground();
+            }
+        }
+
+        function edytujKategorie(id) {
+            edytowaneIdKategorii = id;
+            const cat = CATEGORIES[id];
+            document.getElementById('nowa-kat-nazwa').value = cat.name;
+            document.getElementById('nowa-kat-kolor').value = cat.gradient.includes('gradient') ? '#a855f7' : cat.gradient; 
+            document.getElementById('nowa-kat-tekst').value = cat.textColor || '#ffffff';
+            document.getElementById('modal-kat-title').innerText = "Edytuj kategorię";
+            zamknijZarzadzanieKategoriami();
+            document.getElementById('category-modal').style.display = 'flex';
+        }
+
+        function otworzModalKategorii() { 
+            edytowaneIdKategorii = null;
+            document.getElementById('modal-kat-title').innerText = "Stwórz własną kategorię";
+            document.getElementById('nowa-kat-nazwa').value = '';
+            document.getElementById('category-modal').style.display = 'flex'; 
+            document.getElementById('nowa-kat-nazwa').focus(); 
+        }
+        function zamknijModalKategorii() { document.getElementById('category-modal').style.display = 'none'; }
+        
+        function zapiszNowaKategorie() {
+            const nazwa = document.getElementById('nowa-kat-nazwa').value.trim();
+            if(!nazwa) return alert("Podaj nazwę dla kategorii!");
+            
+            const bgColor = document.getElementById('nowa-kat-kolor').value;
+            const txtColor = document.getElementById('nowa-kat-tekst').value;
+            const noweId = edytowaneIdKategorii ? edytowaneIdKategorii : 'kat_' + Date.now();
+            
+            CATEGORIES[noweId] = { name: nazwa, gradient: bgColor, textColor: txtColor };
+            localStorage.setItem('mojeKategorie', JSON.stringify(CATEGORIES));
+            
+            inicjalizujKategorie();
+            document.getElementById('ev-category').value = noweId; 
+            zamknijModalKategorii();
+            edytowaneIdKategorii = null;
+            
+            odswiezWidok();
+            syncToCloudBackground(); 
+        }
+        // ----------------------------------------------
 
         function otworzModal(data, godzina, idZdarzenia = null) {
             document.getElementById('event-modal').style.display = 'flex'; editingEventId = idZdarzenia; 
@@ -843,7 +997,7 @@
         function zamknijModalPraca() { document.getElementById('praca-modal').style.display = 'none'; document.getElementById('praca-textarea').value = ''; }
 
         function wyczyscGrafikZKalendarza() {
-            if (confirm('Czy na pewno chcesz usunąć z kalendarza wszystkie wczytane dyżury pracy (Zmiana Dzienna, Zmiana Nocna, Praca)?')) {
+            if (confirm('Czy na pewno chcesz usunąć z kalendarza wszystkie wczytane dyżury pracy?')) {
                 wydarzeniaLokalne = wydarzeniaLokalne.filter(ev => ev.category !== 'zmiana-dzienna' && ev.category !== 'zmiana-nocna' && ev.category !== 'praca');
                 localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne)); 
                 odswiezWidok(); 
@@ -879,7 +1033,7 @@
                 zamknijModalPraca(); 
                 syncToCloudBackground();
                 alert(`Pomyślnie zaimportowano ${dodane} zmian dyżurowych z Excela.`);
-            } else { alert('Nie dodano nowych zmian.\n\nMożliwe przyczyny:\n1. Te dyżury już są w kalendarzu (aplikacja pomija duplikaty).\n2. Skopiowany tekst nie miał cyfr "12" lub "8".'); }
+            } else { alert('Nie dodano nowych zmian.\n\nMożliwe przyczyny:\n1. Te dyżury już są w kalendarzu.\n2. Skopiowany tekst nie miał cyfr "12" lub "8".'); }
         }
 
         function stworzIWstawDoHarmonogramu(y, m, d, h1, m1, h2, m2, title, category, nextDay = false) {
@@ -897,14 +1051,14 @@
             localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne)); 
             zamknijModal(); 
             odswiezWidok();
-            syncToCloudBackground();
+            syncToCloudBackground(); 
         }
         
         function usunLokalne(idStr) { 
             wydarzeniaLokalne = wydarzeniaLokalne.filter(ev => ev.id !== idStr); 
             localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne)); 
             odswiezWidok(); 
-            syncToCloudBackground();
+            syncToCloudBackground(); 
         }
 
         function formatujZakresTygodnia(dataZrodlowa, type) {
@@ -947,27 +1101,20 @@
             const hr = dStr.substring(9, 11), min = dStr.substring(11, 13), sec = dStr.substring(13, 15);
             return dStr.endsWith('Z') ? new Date(Date.UTC(y, m - 1, d, hr, min, sec)) : new Date(y, m - 1, d, hr, min, sec);
         }
-        
-        // Inicjalizacja pobierania z chmury przy starcie, jeśli ustawiono auto-sync
-        if (autoSyncWlaczony && aktualnyKodSync) {
-            getSyncData(aktualnyKodSync).then(dane => {
-                if(Array.isArray(dane)) {
-                    wydarzeniaLokalne = dane;
-                    localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne));
-                    odswiezWidok();
-                }
-            }).catch(e => console.log("Nie pobrano z chmury przy starcie"));
-        }
+
+        if (autoSyncWlaczony && aktualnyKodSync) { fetchFromCloudBackground(); }
 
         odswiezWidok(); fetchAndRenderCalendar();
         
         setInterval(() => { if(currentView === 'day' || currentView.startsWith('week')) { updateCurrentTimeLine(currentView === 'day' ? 1 : 7); } }, 60000); 
 
         document.addEventListener('keydown', function(e) {
-            const modalEvent = document.getElementById('event-modal'); const modalPraca = document.getElementById('praca-modal'); const modalSync = document.getElementById('sync-modal');
-            const isEventOpen = modalEvent.style.display === 'flex'; const isPracaOpen = modalPraca.style.display === 'flex'; const isSyncOpen = modalSync.style.display === 'flex';
+            const modalEvent = document.getElementById('event-modal'); const modalPraca = document.getElementById('praca-modal'); const modalSync = document.getElementById('sync-modal'); const modalCat = document.getElementById('category-modal'); const modalManageCat = document.getElementById('manage-cat-modal');
+            const isEventOpen = modalEvent.style.display === 'flex'; const isPracaOpen = modalPraca.style.display === 'flex'; const isSyncOpen = modalSync.style.display === 'flex'; const isCatOpen = modalCat.style.display === 'flex'; const isManageCatOpen = modalManageCat.style.display === 'flex';
 
-            if (isEventOpen) { if (e.key === 'Escape') { e.preventDefault(); zamknijModal(); } else if (e.key === 'Enter') { e.preventDefault(); zapiszWydarzenieLokalne(); }
+            if (isCatOpen) { if (e.key === 'Escape') { e.preventDefault(); zamknijModalKategorii(); } else if (e.key === 'Enter') { e.preventDefault(); zapiszNowaKategorie(); }
+            } else if (isManageCatOpen) { if (e.key === 'Escape') { e.preventDefault(); zamknijZarzadzanieKategoriami(); }
+            } else if (isEventOpen) { if (e.key === 'Escape') { e.preventDefault(); zamknijModal(); } else if (e.key === 'Enter') { e.preventDefault(); zapiszWydarzenieLokalne(); }
             } else if (isPracaOpen) { if (e.key === 'Escape') { e.preventDefault(); zamknijModalPraca(); }
             } else if (isSyncOpen) { if (e.key === 'Escape') { e.preventDefault(); zamknijModalSync(); }
             } else {

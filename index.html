@@ -3,7 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kalendarz 3D + Zarządzanie Kategoriami + Auto-PIN</title>
+    <title>Kalendarz 3D + Zarządzanie Kategoriami + P2P Sync</title>
+    
+    <!-- Skrypty do obsługi synchronizacji P2P i kodów QR -->
+    <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
     <style>
         :root { 
             --bg-color: #e0e5ec; --grid-bg: #e0e5ec; --text-main: #2d3748; --text-muted: #718096; 
@@ -218,7 +223,7 @@
                 </select>
 
                 <button id="btn-import-praca" class="nav-btn" style="background: var(--accent); color: white;" onclick="otworzModalPraca()">Praca (Excel)</button>
-                <button id="btn-sync" class="nav-btn" style="background: #10b981; color: white;" onclick="otworzModalSync()">☁️ Kod PIN</button>
+                <button id="btn-sync" class="nav-btn" style="background: #10b981; color: white;" onclick="otworzModalSync()">☁️ Kod PIN (P2P)</button>
             </div>
 
             <div class="header-container">
@@ -263,31 +268,46 @@
 
     <div id="view-year" class="view-container"></div>
 
-    <!-- Modal Synchronizacji na PIN -->
+    <!-- Modal Synchronizacji P2P -->
     <div class="modal-overlay" id="sync-modal">
-        <div class="modal-box">
-            <h3>☁️ Synchronizacja Auto-PIN</h3>
+        <div class="modal-box wide">
+            <h3>☁️ Centrum Synchronizacji (P2P)</h3>
             <p style="font-size: 0.8rem; color: var(--text-muted); text-align: center; margin-top: -10px;">
-                Połącz ten kalendarz z innym urządzeniem za pomocą unikalnego kodu PIN.
+                Połącz urządzenia bezpośrednio i prześlij kalendarz z pominięciem chmury.
             </p>
 
             <div style="background: var(--input-bg); padding: 15px; border-radius: 10px; margin-bottom: 5px;">
-                <strong style="display:block; margin-bottom: 5px; font-size: 0.9rem;">Urządzenie GŁÓWNE:</strong>
-                <button class="nav-btn" style="width: 100%; background: var(--accent); color: white;" onclick="generujKodSync(this)">Utwórz kod z moich wpisów</button>
-                <div id="sync-code-display" style="margin-top: 10px; font-weight: bold; text-align: center; color: var(--highlight); font-size: 1.1rem; user-select: all;"></div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <strong style="font-size: 0.9rem;">Krok 1: Połącz z urządzeniem</strong>
+                    <span id="syncPeerStatus" style="font-size: 0.75rem; background: var(--accent); color: white; padding: 2px 6px; border-radius: 6px;">Gotowy</span>
+                </div>
+                <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+                    <div id="qrcodeBox" style="background: white; padding: 5px; border-radius: 10px;">
+                        <div id="qrcode" style="width: 100px; height: 100px;"></div>
+                    </div>
+                    <div style="flex: 1; text-align: center;">
+                        <p style="font-size: 0.8rem; margin-bottom: 5px;">Zeskanuj kod lub podaj ten PIN:</p>
+                        <div id="mySyncPinDisplay" style="font-size: 1.5rem; font-weight: 900; color: var(--highlight); letter-spacing: 2px;">------</div>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 15px;">
+                    <input type="text" id="remotePinInput" placeholder="Wpisz PIN z drugiego ekranu" style="flex: 1; text-align: center; letter-spacing: 2px; font-weight: bold; text-transform: uppercase;">
+                    <button class="nav-btn" style="background: #10b981; color: white;" onclick="connectAndPairPeer()">Połącz</button>
+                </div>
             </div>
 
-            <div style="background: var(--input-bg); padding: 15px; border-radius: 10px;">
-                <strong style="display:block; margin-bottom: 5px; font-size: 0.9rem;">Urządzenie DODATKOWE:</strong>
-                <input type="text" id="sync-pin-input" placeholder="Wpisz lub wklej Kod PIN..." style="text-align: center;">
-                <button class="nav-btn" style="width: 100%; margin-top: 10px; background: #10b981; color: white;" onclick="pobierzZChmury(this)">Połącz z tym PINem</button>
-            </div>
-
-            <div style="margin-top: 10px; text-align: center;">
-                <label style="font-size: 0.85rem; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer;">
-                    <input type="checkbox" id="auto-sync-checkbox" style="width: 18px; height: 18px;"> 
-                    <strong>Włącz automatyczną</strong> synchronizację w tle
-                </label>
+            <div id="syncDirectionBox" style="background: var(--input-bg); padding: 15px; border-radius: 10px;">
+                <strong style="display:block; margin-bottom: 10px; font-size: 0.9rem;">Krok 2: Wybierz kierunek synchronizacji</strong>
+                <div style="display: flex; gap: 10px;">
+                    <button class="nav-btn" style="flex: 1; background: var(--accent); color: white; display: flex; flex-direction: column; align-items: center; padding: 10px;" onclick="sendDataToRemote()">
+                        <span style="font-weight: 900; margin-bottom: 5px;">WYŚLIJ STĄD</span>
+                        <span style="font-size: 0.7rem; font-weight: normal;">Zastąp dane na drugim ekranie</span>
+                    </button>
+                    <button class="nav-btn" style="flex: 1; background: var(--highlight); color: white; display: flex; flex-direction: column; align-items: center; padding: 10px;" onclick="requestDataFromRemote()">
+                        <span style="font-weight: 900; margin-bottom: 5px;">POBIERZ TUTAJ</span>
+                        <span style="font-size: 0.7rem; font-weight: normal;">Pobierz z drugiego urządzenia</span>
+                    </button>
+                </div>
             </div>
 
             <div class="modal-btns" style="margin-top: 5px;">
@@ -384,7 +404,7 @@
         <div class="modal-box wide">
             <h3>Wklej Harmonogram z Excela</h3>
             <p style="font-size: 0.8rem; color: var(--text-muted); text-align: center; margin-top: -10px;">Skopiuj wiersze (od kolumny z datą do kolumny ze zmianami 1 i 2) i wklej poniżej.</p>
-            <textarea id="praca-textarea" class="praca-input" placeholder="01/10/2026	czwartek		12&#10;02/10/2026	piątek	WR&#10;03/10/2026	sobota	W5&#10;04/10/2026	niedziela	12"></textarea>
+            <textarea id="praca-textarea" class="praca-input" placeholder="01/10/2026  czwartek        12&#10;02/10/2026  piątek  WR&#10;03/10/2026  sobota  W5&#10;04/10/2026  niedziela   12"></textarea>
             
             <div style="display: flex; gap: 10px; margin-top: 5px;">
                 <button class="nav-btn" style="flex: 1; font-size: 0.8rem; background: var(--highlight); color: white;" onclick="wyczyscGrafikZKalendarza()">🗑️ Wyczyść zaimportowany grafik</button>
@@ -505,145 +525,172 @@
         let wydarzeniaLokalne = JSON.parse(localStorage.getItem('mojeWydarzenia')); if (!Array.isArray(wydarzeniaLokalne)) wydarzeniaLokalne = [];
         let domColumns = []; let editingEventId = null;
 
-        // ------------- LOGIKA SYNCHRONIZACJI (NOWA CHMURA JSONBLOB) -------------
-        let aktualnyKodSync = localStorage.getItem('app-sync-id') || '';
-        let autoSyncWlaczony = localStorage.getItem('app-auto-sync') === 'true';
-
-        document.getElementById('auto-sync-checkbox').checked = autoSyncWlaczony;
-        document.getElementById('auto-sync-checkbox').addEventListener('change', (e) => {
-            autoSyncWlaczony = e.target.checked;
-            localStorage.setItem('app-auto-sync', autoSyncWlaczony);
-            if(autoSyncWlaczony) { syncToCloudBackground(); fetchFromCloudBackground(); }
-        });
-
-        async function createSyncBucket(data) {
-            try {
-                const res = await fetch('https://jsonblob.com/api/jsonBlob', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-                if(!res.ok) throw new Error("Błąd tworzenia bazy w chmurze (JsonBlob).");
-                const location = res.headers.get('Location');
-                if(!location) throw new Error("Utworzono bazę, ale nie odczytano klucza z nagłówka.");
-                return location.split('/').pop();
-            } catch (err) {
-                console.error(err);
-                throw new Error("Błąd chmury: " + (err.message || "Brak połączenia."));
-            }
-        }
-
-        async function updateSyncData(pin, data) {
-            try {
-                const res = await fetch(`https://jsonblob.com/api/jsonBlob/${pin}`, {
-                    method: 'PUT', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, body: JSON.stringify(data)
-                });
-                if(!res.ok) throw new Error();
-            } catch (err) {
-                throw new Error("Brak dostępu do aktualizacji w tle.");
-            }
-        }
-
-        async function getSyncData(pin) {
-            try {
-                const res = await fetch(`https://jsonblob.com/api/jsonBlob/${pin}`, {
-                    headers: { 'Accept': 'application/json' }
-                });
-                if (!res.ok) return null;
-                return await res.json();
-            } catch (err) {
-                throw new Error("Nie można połączyć się z chmurą.");
-            }
-        }
-
-        async function generujKodSync(btn) {
-            btn.innerText = "Trwa tworzenie...";
-            try {
-                const kod = await createSyncBucket({ wydarzenia: wydarzeniaLokalne, kategorie: CATEGORIES });
-                aktualnyKodSync = kod;
-                localStorage.setItem('app-sync-id', kod);
-                document.getElementById('sync-code-display').innerText = "Twój PIN: " + kod;
-                alert("Sukces! Zapisz ten PIN i wpisz go na drugim urządzeniu.");
-            } catch (e) { alert("BŁĄD: " + e.message); }
-            btn.innerText = "Utwórz kod z moich wpisów";
-        }
-
-        async function pobierzZChmury(btn) {
-            const kod = document.getElementById('sync-pin-input').value.trim();
-            if(!kod) return alert("Musisz najpierw wpisać PIN!");
-            btn.innerText = "Pobieranie...";
-            try {
-                const dane = await getSyncData(kod);
-                if (Array.isArray(dane)) {
-                    wydarzeniaLokalne = dane;
-                    localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne));
-                } 
-                else if (dane && dane.wydarzenia) {
-                    wydarzeniaLokalne = dane.wydarzenia;
-                    localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne));
-                    if (dane.kategorie) {
-                        CATEGORIES = dane.kategorie;
-                        localStorage.setItem('mojeKategorie', JSON.stringify(CATEGORIES));
-                        inicjalizujKategorie();
-                    }
-                } else {
-                    throw new Error("Błędny PIN lub pusta baza.");
-                }
-
-                aktualnyKodSync = kod;
-                localStorage.setItem('app-sync-id', kod);
-                document.getElementById('sync-code-display').innerText = "Połączono! Aktywny PIN: " + kod;
-                odswiezWidok();
-                alert("Pomyślnie połączono! Grafiki i kategorie są zsynchronizowane.");
-                
-            } catch(e) { alert(e.message); }
-            btn.innerText = "Połącz z tym PINem";
-        }
-
-        async function syncToCloudBackground() {
-            if(autoSyncWlaczony && aktualnyKodSync) {
-                try { await updateSyncData(aktualnyKodSync, { wydarzenia: wydarzeniaLokalne, kategorie: CATEGORIES }); } 
-                catch (e) { console.warn("Sync w tle: " + e.message); }
-            }
-        }
-
-        async function fetchFromCloudBackground() {
-            if(autoSyncWlaczony && aktualnyKodSync) {
-                try {
-                    const data = await getSyncData(aktualnyKodSync);
-                    let changed = false;
-
-                    if (Array.isArray(data)) {
-                        if (JSON.stringify(wydarzeniaLokalne) !== JSON.stringify(data)) {
-                            wydarzeniaLokalne = data;
-                            localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne));
-                            changed = true;
-                        }
-                    } else if (data && data.wydarzenia) {
-                        if (JSON.stringify(wydarzeniaLokalne) !== JSON.stringify(data.wydarzenia)) {
-                            wydarzeniaLokalne = data.wydarzenia;
-                            localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne));
-                            changed = true;
-                        }
-                        if (data.kategorie && JSON.stringify(CATEGORIES) !== JSON.stringify(data.kategorie)) {
-                            CATEGORIES = data.kategorie;
-                            localStorage.setItem('mojeKategorie', JSON.stringify(CATEGORIES));
-                            inicjalizujKategorie();
-                            changed = true;
-                        }
-                    }
-                    if (changed) { odswiezWidok(); }
-                } catch(e) { console.warn("Pobieranie w tle: błąd."); }
-            }
-        }
-
-        setInterval(fetchFromCloudBackground, 30000);
+        // ------------- BEZPIECZNA SYNCHRONIZACJA P2P (PeerJS) -------------
+        let localPeer = null;
+        let activeConn = null;
+        let mySyncPin = '';
 
         function otworzModalSync() {
             document.getElementById('sync-modal').style.display = 'flex';
-            if(aktualnyKodSync) document.getElementById('sync-code-display').innerText = "Aktywny PIN: " + aktualnyKodSync;
+            initP2PSync();
+            const lastRemotePin = localStorage.getItem('LAST_REMOTE_PIN');
+            if (lastRemotePin) {
+                const pinInput = document.getElementById('remotePinInput');
+                if (pinInput) pinInput.value = lastRemotePin;
+            }
         }
-        function zamknijModalSync() { document.getElementById('sync-modal').style.display = 'none'; }
+
+        function zamknijModalSync() { 
+            document.getElementById('sync-modal').style.display = 'none'; 
+        }
+
+        function initP2PSync() {
+            if (localPeer && !localPeer.destroyed) return;
+
+            let savedPin = localStorage.getItem('MY_SYNC_PIN');
+            if (!savedPin) {
+                savedPin = Math.floor(100000 + Math.random() * 900000).toString();
+                localStorage.setItem('MY_SYNC_PIN', savedPin);
+            }
+            mySyncPin = savedPin;
+
+            const pinEl = document.getElementById('mySyncPinDisplay');
+            if (pinEl) pinEl.textContent = mySyncPin;
+            const statusEl = document.getElementById('syncPeerStatus');
+            if (statusEl) statusEl.textContent = "Inicjalizacja..."; 
+
+            const qrTarget = document.getElementById('qrcode');
+            if (qrTarget) {
+                qrTarget.innerHTML = '';
+                const syncUrl = window.location.href.split('#')[0] + '#sync=' + mySyncPin;
+                new QRCode(qrTarget, {
+                    text: syncUrl, width: 100, height: 100,
+                    colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M
+                });
+            }
+
+            try {
+                // SERWERY STUN GOOGLE
+                localPeer = new Peer('kalendarz-' + mySyncPin, {
+                    config: {
+                        'iceServers': [
+                            { urls: 'stun:stun.l.google.com:19302' },
+                            { urls: 'stun:stun1.l.google.com:19302' }
+                        ]
+                    }
+                });
+                
+                localPeer.on('open', () => {
+                    if (statusEl) statusEl.textContent = "Gotowy"; 
+                });
+
+                localPeer.on('connection', (conn) => {
+                    setupConnection(conn);
+                    alert('Drugie urządzenie się podłączyło!');
+                });
+
+                localPeer.on('error', (err) => {
+                    console.error('Błąd PeerJS:', err);
+                    if (statusEl) statusEl.textContent = "Błąd";
+                    alert('Błąd sieci P2P. Spróbuj ponownie.');
+                });
+            } catch (e) { console.error(e); }
+        }
+
+        function connectAndPairPeer() {
+            const pinInput = document.getElementById('remotePinInput');
+            const pin = pinInput ? pinInput.value.trim() : '';
+            if (!pin) return alert('Wpisz kod PIN!');
+
+            const statusEl = document.getElementById('syncPeerStatus');
+            if (statusEl && statusEl.textContent === "Inicjalizacja...") {
+                return alert('Poczekaj ułamek sekundy...');
+            }
+
+            localStorage.setItem('LAST_REMOTE_PIN', pin);
+
+            if (!localPeer) return alert('Błąd usługi synchronizacji. Zresetuj stronę.');
+
+            if (statusEl) statusEl.textContent = "Łączenie...";
+            
+            const conn = localPeer.connect('kalendarz-' + pin, { reliable: true });
+
+            let connectionTimeout = setTimeout(() => {
+                if (statusEl && statusEl.textContent === "Łączenie...") {
+                    statusEl.textContent = "Gotowy";
+                    alert('Brak odpowiedzi. Sieć blokuje sygnał P2P!');
+                    conn.close();
+                }
+            }, 8000);
+
+            conn.on('open', () => {
+                clearTimeout(connectionTimeout);
+                setupConnection(conn);
+                alert('Urządzenia sparowane pomyślnie!');
+                if (statusEl) statusEl.textContent = "Połączono";
+            });
+        }
+
+        function setupConnection(conn) {
+            activeConn = conn;
+            activeConn.on('data', (payload) => {
+                if (payload.type === 'PUSH_DATA') {
+                    if (confirm('Drugie urządzenie przesyła nową bazę danych. Zastąpić obecne dane?')) {
+                        if (payload.data.wydarzenia) {
+                            wydarzeniaLokalne = payload.data.wydarzenia;
+                            localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne));
+                        }
+                        if (payload.data.kategorie) {
+                            CATEGORIES = payload.data.kategorie;
+                            localStorage.setItem('mojeKategorie', JSON.stringify(CATEGORIES));
+                            inicjalizujKategorie();
+                        }
+                        zamknijModalSync();
+                        odswiezWidok();
+                        alert('Baza zaktualizowana!');
+                    }
+                } else if (payload.type === 'PULL_REQUEST') {
+                    if (confirm('Drugie urządzenie prosi o pobranie Twojej bazy kalendarza. Udostępnić?')) {
+                        activeConn.send({ type: 'PUSH_DATA', data: { wydarzenia: wydarzeniaLokalne, kategorie: CATEGORIES } });
+                        alert('Wysłano dane do drugiego urządzenia!');
+                    }
+                }
+            });
+            activeConn.on('close', () => {
+                alert('Połączenie rozłączone.');
+            });
+        }
+
+        function sendDataToRemote() {
+            if (!activeConn || !activeConn.open) {
+                return alert('Brak aktywnego połączenia z drugim urządzeniem!');
+            }
+            if (confirm('UWAGA! Zastąpisz WSZYSTKIE dane na drugim urządzeniu. Kontynuować?')) {
+                activeConn.send({ type: 'PUSH_DATA', data: { wydarzenia: wydarzeniaLokalne, kategorie: CATEGORIES } });
+                alert('Wysłano dane do drugiego urządzenia!');
+            }
+        }
+
+        function requestDataFromRemote() {
+            if (!activeConn || !activeConn.open) {
+                return alert('Brak aktywnego połączenia z drugim urządzeniem!');
+            }
+            activeConn.send({ type: 'PULL_REQUEST' });
+            alert('Wysłano prośbę o pobranie danych z drugiego urządzenia...');
+        }
+
+        function checkUrlForSync() {
+            const hash = window.location.hash;
+            if (hash.startsWith('#sync=')) {
+                const pin = hash.replace('#sync=', '');
+                setTimeout(() => {
+                    otworzModalSync();
+                    const pinInput = document.getElementById('remotePinInput');
+                    if (pinInput) pinInput.value = pin;
+                    connectAndPairPeer();
+                }, 600);
+            }
+        }
         // -------------------------------------------------------------------------
 
         const timeLabels = document.getElementById('time-labels');
@@ -765,7 +812,6 @@
                         else { wydarzeniaLokalne[eventIndex].start = docelowaDataKolumny.toISOString(); wydarzeniaLokalne[eventIndex].end = nowyKoniec.toISOString(); }
                         localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne)); 
                         odswiezWidok();
-                        syncToCloudBackground();
                     }
                 });
             }
@@ -904,7 +950,6 @@
             if (activeIndex !== -1) { line.style.display = 'block'; const kolumnaEl = domColumns[activeIndex]; const zawartoscWysokosc = kolumnaEl.clientHeight - 40; const godzinaWysokosc = zawartoscWysokosc / 24; const topPos = (now.getHours() + (now.getMinutes() / 60)) * godzinaWysokosc; line.style.top = `${topPos + 40}px`; line.style.width = `calc(100% / ${numDays})`; line.style.left = `calc(${activeIndex} * (100% / ${numDays}))`; } else { line.style.display = 'none'; }
         }
 
-        // ------------- ZARZĄDZANIE KATEGORIAMI -------------
         let edytowaneIdKategorii = null;
 
         function otworzZarzadzanieKategoriami() {
@@ -945,7 +990,6 @@
                 inicjalizujKategorie();
                 otworzZarzadzanieKategoriami(); 
                 odswiezWidok();
-                syncToCloudBackground();
             }
         }
 
@@ -986,9 +1030,7 @@
             edytowaneIdKategorii = null;
             
             odswiezWidok();
-            syncToCloudBackground(); 
         }
-        // ----------------------------------------------
 
         function otworzModal(data, godzina, idZdarzenia = null) {
             document.getElementById('event-modal').style.display = 'flex'; editingEventId = idZdarzenia; 
@@ -1010,7 +1052,6 @@
                 localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne)); 
                 odswiezWidok(); 
                 zamknijModalPraca(); 
-                syncToCloudBackground();
                 alert('Grafik pracy został wyczyszczony z Twojego kalendarza.');
             }
         }
@@ -1039,7 +1080,6 @@
                 localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne)); 
                 odswiezWidok(); 
                 zamknijModalPraca(); 
-                syncToCloudBackground();
                 alert(`Pomyślnie zaimportowano ${dodane} zmian dyżurowych z Excela.`);
             } else { alert('Nie dodano nowych zmian.\n\nMożliwe przyczyny:\n1. Te dyżury już są w kalendarzu.\n2. Skopiowany tekst nie miał cyfr "12" lub "8".'); }
         }
@@ -1059,14 +1099,12 @@
             localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne)); 
             zamknijModal(); 
             odswiezWidok();
-            syncToCloudBackground(); 
         }
         
         function usunLokalne(idStr) { 
             wydarzeniaLokalne = wydarzeniaLokalne.filter(ev => ev.id !== idStr); 
             localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne)); 
             odswiezWidok(); 
-            syncToCloudBackground(); 
         }
 
         function formatujZakresTygodnia(dataZrodlowa, type) {
@@ -1082,7 +1120,7 @@
         function getWeekNumber(d) { const date = new Date(d.getTime()); date.setUTCDate(date.getUTCDate() + 4 - (date.getUTCDay() || 7)); return Math.ceil((((date - new Date(Date.UTC(date.getUTCFullYear(), 0, 1))) / 86400000) + 1) / 7); }
 
         async function fetchAndRenderCalendar() {
-            const googleCalendarUrl = 'https://calendar.google.com/calendar/ical/jungaleszek@gmail.com/private-b88aede3fb01578fed3295fde84787e9/basic.ics';
+            const googleCalendarUrl = 'https://calendar.google.com/calendar/ical/jungaleszek%40gmail.com/private-b88aede3fb01578fed3295fde84787e9/basic.ics';
             try { const res1 = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(googleCalendarUrl)); if (res1.ok) { const data = await res1.json(); if (data.contents && data.contents.includes("BEGIN:VCALENDAR")) { wydarzeniaGoogle = parseICal(data.contents); odswiezWidok(); return; } } } catch (e) { }
             try { const res2 = await fetch('https://corsproxy.io/?' + googleCalendarUrl); if (res2.ok) { const text2 = await res2.text(); if (text2 && text2.includes("BEGIN:VCALENDAR")) { wydarzeniaGoogle = parseICal(text2); odswiezWidok(); return; } } } catch (e) { }
             try { const res3 = await fetch('https://api.codetabs.com/v1/proxy?quest=' + googleCalendarUrl); if (res3.ok) { const text3 = await res3.text(); if (text3 && text3.includes("BEGIN:VCALENDAR")) { wydarzeniaGoogle = parseICal(text3); odswiezWidok(); return; } } } catch (e) { }
@@ -1110,9 +1148,11 @@
             return dStr.endsWith('Z') ? new Date(Date.UTC(y, m - 1, d, hr, min, sec)) : new Date(y, m - 1, d, hr, min, sec);
         }
 
-        if (autoSyncWlaczony && aktualnyKodSync) { fetchFromCloudBackground(); }
-
-        odswiezWidok(); fetchAndRenderCalendar();
+        window.addEventListener('DOMContentLoaded', () => {
+            checkUrlForSync();
+            odswiezWidok(); 
+            fetchAndRenderCalendar();
+        });
         
         setInterval(() => { if(currentView === 'day' || currentView.startsWith('week')) { updateCurrentTimeLine(currentView === 'day' ? 1 : 7); } }, 60000); 
 

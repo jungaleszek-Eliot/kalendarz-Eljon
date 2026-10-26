@@ -505,7 +505,7 @@
         let wydarzeniaLokalne = JSON.parse(localStorage.getItem('mojeWydarzenia')); if (!Array.isArray(wydarzeniaLokalne)) wydarzeniaLokalne = [];
         let domColumns = []; let editingEventId = null;
 
-        // ------------- LOGIKA SYNCHRONIZACJI (KVDB AUTO-PIN) -------------
+        // ------------- LOGIKA SYNCHRONIZACJI (NOWA CHMURA JSONBLOB) -------------
         let aktualnyKodSync = localStorage.getItem('app-sync-id') || '';
         let autoSyncWlaczony = localStorage.getItem('app-auto-sync') === 'true';
 
@@ -516,42 +516,50 @@
             if(autoSyncWlaczony) { syncToCloudBackground(); fetchFromCloudBackground(); }
         });
 
-        async function createSyncBucket() {
+        async function createSyncBucket(data) {
             try {
-                const res = await fetch('https://kvdb.io/', { method: 'POST' });
-                if(!res.ok) throw new Error();
-                return await res.text();
+                const res = await fetch('https://jsonblob.com/api/jsonBlob', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                if(!res.ok) throw new Error("Błąd tworzenia bazy w chmurze (JsonBlob).");
+                const location = res.headers.get('Location');
+                if(!location) throw new Error("Utworzono bazę, ale nie odczytano klucza z nagłówka.");
+                return location.split('/').pop();
             } catch (err) {
-                throw new Error("Wyłącz AdBlocka! Twoja przeglądarka zablokowała połączenie z bazą danych.");
+                console.error(err);
+                throw new Error("Błąd chmury: " + (err.message || "Brak połączenia."));
             }
         }
 
-        async function updateSyncData(bucket, data) {
+        async function updateSyncData(pin, data) {
             try {
-                const res = await fetch(`https://kvdb.io/${bucket}/kalendarz`, {
-                    method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)
+                const res = await fetch(`https://jsonblob.com/api/jsonBlob/${pin}`, {
+                    method: 'PUT', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, body: JSON.stringify(data)
                 });
                 if(!res.ok) throw new Error();
             } catch (err) {
-                throw new Error("Wyłącz AdBlocka! Brak autoryzacji do wysłania zmian w tle.");
+                throw new Error("Brak dostępu do aktualizacji w tle.");
             }
         }
 
-        async function getSyncData(bucket) {
+        async function getSyncData(pin) {
             try {
-                const res = await fetch(`https://kvdb.io/${bucket}/kalendarz`);
+                const res = await fetch(`https://jsonblob.com/api/jsonBlob/${pin}`, {
+                    headers: { 'Accept': 'application/json' }
+                });
                 if (!res.ok) return null;
                 return await res.json();
             } catch (err) {
-                throw new Error("Wyłącz AdBlocka! Przeglądarka zablokowała pobieranie danych.");
+                throw new Error("Nie można połączyć się z chmurą.");
             }
         }
 
         async function generujKodSync(btn) {
             btn.innerText = "Trwa tworzenie...";
             try {
-                const kod = await createSyncBucket();
-                await updateSyncData(kod, { wydarzenia: wydarzeniaLokalne, kategorie: CATEGORIES });
+                const kod = await createSyncBucket({ wydarzenia: wydarzeniaLokalne, kategorie: CATEGORIES });
                 aktualnyKodSync = kod;
                 localStorage.setItem('app-sync-id', kod);
                 document.getElementById('sync-code-display').innerText = "Twój PIN: " + kod;
@@ -595,7 +603,7 @@
         async function syncToCloudBackground() {
             if(autoSyncWlaczony && aktualnyKodSync) {
                 try { await updateSyncData(aktualnyKodSync, { wydarzenia: wydarzeniaLokalne, kategorie: CATEGORIES }); } 
-                catch (e) { console.warn("Sync w tle: zablokowano połączenie"); }
+                catch (e) { console.warn("Sync w tle: " + e.message); }
             }
         }
 
@@ -625,7 +633,7 @@
                         }
                     }
                     if (changed) { odswiezWidok(); }
-                } catch(e) { console.warn("Fetch w tle: zablokowano połączenie"); }
+                } catch(e) { console.warn("Pobieranie w tle: błąd."); }
             }
         }
 

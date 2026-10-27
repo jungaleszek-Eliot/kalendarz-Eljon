@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kalendarz 3D + Zarządzanie Kategoriami + P2P Sync</title>
+    <title>Kalendarz 3D + Zadania + P2P Sync</title>
     
     <!-- Skrypty do obsługi synchronizacji P2P i kodów QR -->
     <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
@@ -36,12 +36,11 @@
         .top-controls { display: flex; flex-direction: column; max-width: 1400px; width: 100%; margin: 0 auto 15px auto; gap: 15px; flex-shrink: 0; }
         .nav-row { display: flex; justify-content: space-between; align-items: center; gap: 15px; flex-wrap: wrap; width: 100%; }
         .controls-group { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; } 
-        .header-container { display: flex; justify-content: space-between; align-items: center; flex-grow: 1; flex-wrap: wrap; gap: 10px; margin: 0 10px; }
         
-        .header-title { display: flex; flex-direction: column; align-items: center; justify-content: center; flex-grow: 1; text-align: center; }
-        #week-title { font-size: 1.8rem; font-weight: 700; text-align: center; text-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 25px var(--accent); transition: text-shadow 0.3s; letter-spacing: -0.5px; }
-        
-        .clock-wrapper { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+        /* Zmieniony układ nagłówka: przyciski nawigacyjne po obu stronach daty */
+        .header-container { display: flex; justify-content: center; align-items: center; flex-grow: 1; margin: 0 10px; }
+        .header-title { display: flex; align-items: center; justify-content: center; gap: 15px; text-align: center; }
+        #week-title { font-size: 1.6rem; font-weight: 700; text-align: center; text-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 25px var(--accent); transition: text-shadow 0.3s; letter-spacing: -0.5px; }
         
         .nav-btn, .theme-select { background-color: var(--bg-color); border: none; border-radius: 12px; padding: 10px 16px; font-size: 0.95rem; font-weight: 600; color: var(--text-main); cursor: pointer; box-shadow: var(--shadow-outer); transition: all 0.2s ease; outline: none; font-family: inherit; white-space: nowrap; }
         .theme-select { appearance: none; padding-right: 35px; background-image: url('data:image/svg+xml;utf8,<svg fill="currentColor" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>'); background-repeat: no-repeat; background-position-x: 95%; background-position-y: 50%; }
@@ -60,10 +59,25 @@
         .dashboard-panel { width: 260px; flex-shrink: 0; display: flex; flex-direction: column; gap: 15px; overflow-y: auto; padding-right: 5px; }
         .large-clock-widget { padding: 10px 0; text-align: center; }
         
+        /* Zegar dostosowujący się automatycznie do tła aplikacji */
         .flip-clock { display: flex; gap: 8px; justify-content: center; align-items: center; font-size: 5rem; font-weight: 800; letter-spacing: -2px; cursor: pointer; }
-        .flip-digit { background-color: #111; color: #fff; padding: 18px 12px; border-radius: 16px; min-width: 85px; position: relative; box-shadow: 0 0 15px rgba(255, 255, 255, 0.4), 0 0 30px var(--accent), 0 10px 20px rgba(0,0,0,0.5); perspective: 800px; line-height: 1; display: flex; justify-content: center; align-items: center; }
-        .flip-digit::after { content: ''; position: absolute; top: 50%; left: 0; right: 0; height: 3px; background-color: rgba(0,0,0,0.7); margin-top: -1.5px; z-index: 10; }
-        .flip-colon { font-size: 4rem; color: var(--text-main); font-weight: 900; margin-top: -10px; text-shadow: 0 0 15px rgba(255, 255, 255, 0.6), 0 0 25px var(--accent); }
+        .flip-digit { 
+            background-color: var(--bg-color); 
+            color: var(--text-main); 
+            padding: 18px 12px; 
+            border-radius: 16px; 
+            min-width: 85px; 
+            position: relative; 
+            box-shadow: var(--shadow-outer); 
+            border: 1px solid var(--border-color);
+            perspective: 800px; 
+            line-height: 1; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+        }
+        .flip-digit::after { content: ''; position: absolute; top: 50%; left: 0; right: 0; height: 2px; background-color: var(--line-color); margin-top: -1px; z-index: 10; }
+        .flip-colon { font-size: 4rem; color: var(--text-main); font-weight: 900; margin-top: -10px; text-shadow: var(--shadow-outer); }
         
         .flip-anim { animation: flipDrop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); transform-origin: top center; }
         @keyframes flipDrop { 0% { transform: rotateX(-90deg); filter: brightness(0.3); opacity: 0; } 100% { transform: rotateX(0deg); filter: brightness(1); opacity: 1; } }
@@ -114,7 +128,19 @@
             border: 1px solid rgba(255,255,255,0.25); box-shadow: 0 4px 10px rgba(0,0,0,0.15), inset 0 0 10px rgba(255,255,255,0.15); 
             padding: 24px 2px 6px 2px; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; gap: 4px; 
             color: white; font-size: 0.75rem; font-weight: 600; backdrop-filter: blur(8px); text-align: center;
+            transition: all 0.2s ease;
         }
+        
+        /* Stylacja dla wykonanych zadań */
+        .event-block.task-done .event-content,
+        .event-block.task-done .event-lid {
+            opacity: 0.65;
+            filter: grayscale(40%);
+        }
+        .event-block.task-done .task-title-text {
+            text-decoration: line-through;
+        }
+        
         .event-lid { 
             position: absolute; top: 0; left: 0; right: 0; height: 30px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.35); 
             box-shadow: 0 3px 6px rgba(0,0,0,0.2); z-index: 20; transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1); 
@@ -125,6 +151,13 @@
         .event-block:hover .event-lid { transform: translateY(-8px); }
         .event-content span, .event-content .event-actions { position: relative; z-index: 2; text-shadow: 0 1px 2px rgba(0,0,0,0.2); }
         
+        .task-checkbox-btn {
+            background: rgba(255,255,255,0.25); border: 1px solid rgba(255,255,255,0.4);
+            color: white; border-radius: 4px; cursor: pointer; padding: 1px 5px; font-size: 0.75rem;
+            margin-right: 4px; display: inline-flex; align-items: center; justify-content: center;
+        }
+        .task-checkbox-btn:hover { background: rgba(255,255,255,0.8); color: black; }
+
         .event-actions { display: flex; gap: 4px; margin-top: auto; padding-bottom: 2px; flex-wrap: wrap; justify-content: center; }
         .event-actions button { background: rgba(255,255,255,0.25); border: none; color: inherit; border-radius: 6px; cursor: pointer; padding: 4px 6px; font-weight: 800; font-size: 0.85rem; transition: background 0.2s, transform 0.1s; backdrop-filter: blur(2px); }
         .event-actions button:hover { background: rgba(255,255,255,0.8); transform: scale(1.1); color: #1e293b; text-shadow: none; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
@@ -192,7 +225,7 @@
             .time-labels { width: 50px; }
             .time-label { font-size: 0.7rem; padding-right: 5px; }
             .nav-btn, .theme-select { padding: 8px 12px; font-size: 0.85rem; }
-            #week-title { font-size: 1.4rem; }
+            #week-title { font-size: 1.3rem; }
             .event-actions button { padding: 6px 12px; font-size: 1rem; }
         }
     </style>
@@ -222,18 +255,18 @@
                     <option value="year">Rok</option>
                 </select>
 
-               <button id="btn-import-praca" class="nav-btn" style="background: var(--accent); color: white;" onclick="otworzModalPraca()">Praca (Excel)</button>
-<button id="btn-sync" class="nav-btn" style="background: #10b981; color: white;" onclick="otworzModalSync()">☁️ Kod PIN (P2P)</button>
-<button id="btn-fullscreen" class="nav-btn" style="background: #475569; color: white;" onclick="toggleFullScreen()">⛶ Pełny ekran</button>
+                <!-- Zmniejszone przyciski akcji -->
+                <button id="btn-import-praca" class="nav-btn" style="background: var(--accent); color: white;" onclick="otworzModalPraca()" title="Import z Excela">Ex</button>
+                <button id="btn-sync" class="nav-btn" style="background: #10b981; color: white;" onclick="otworzModalSync()" title="Synchronizacja P2P">☁️ PIN</button>
+                <button id="btn-fullscreen" class="nav-btn" style="background: #475569; color: white;" onclick="toggleFullScreen()" title="Włącz / wyłącz pełny ekran">⛶</button>
             </div>
 
+            <!-- Przeniesione przyciski nawigacyjne bezpośrednio obok nagłówka -->
             <div class="header-container">
-                <button id="btn-prev" class="nav-btn">&#10094; Wstecz</button>
                 <div class="header-title">
+                    <button id="btn-prev" class="nav-btn" title="Poprzedni zakres">&#10094;</button>
                     <span id="week-title">Ładowanie...</span>
-                </div>
-                <div class="clock-wrapper">
-                    <button id="btn-next" class="nav-btn">Dalej &#10095;</button>
+                    <button id="btn-next" class="nav-btn" title="Następny zakres">&#10095;</button>
                 </div>
             </div>
         </div>
@@ -317,11 +350,18 @@
         </div>
     </div>
 
-    <!-- Modal Zdarzeń -->
+    <!-- Modal Zdarzeń / Zadań -->
     <div class="modal-overlay" id="event-modal">
         <div class="modal-box">
             <h3 id="modal-title">Zarządzaj wpisem</h3>
-            <input type="text" id="ev-title" placeholder="Nazwa wydarzenia..." autocomplete="off">
+            
+            <label style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: -10px;">Typ wpisu:</label>
+            <select id="ev-type">
+                <option value="event">📅 Wydarzenie</option>
+                <option value="task">☑️ Zadanie do zrobienia</option>
+            </select>
+
+            <input type="text" id="ev-title" placeholder="Nazwa wydarzenia lub zadania..." autocomplete="off">
             
             <div class="modal-legend-title">Dostępne kategorie</div>
             <div class="legend-container" id="legend-container"></div>
@@ -526,7 +566,7 @@
         let wydarzeniaLokalne = JSON.parse(localStorage.getItem('mojeWydarzenia')); if (!Array.isArray(wydarzeniaLokalne)) wydarzeniaLokalne = [];
         let domColumns = []; let editingEventId = null;
 
-        // ------------- BEZPIECZNA SYNCHRONIZACJA P2P (PeerJS) -------------
+        // ------------- SYNCHRONIZACJA P2P (PeerJS) -------------
         let localPeer = null;
         let activeConn = null;
         let mySyncPin = '';
@@ -571,7 +611,6 @@
             }
 
             try {
-                // SERWERY STUN GOOGLE
                 localPeer = new Peer('kalendarz-' + mySyncPin, {
                     config: {
                         'iceServers': [
@@ -809,7 +848,7 @@
                         const stareEv = wydarzeniaLokalne[eventIndex]; const czasTrwania = new Date(stareEv.end).getTime() - new Date(stareEv.start).getTime();
                         const docelowaDataKolumny = new Date(col.dataset.date); docelowaDataKolumny.setHours(nowaGodzina, noweMinuty, 0, 0); const nowyKoniec = new Date(docelowaDataKolumny.getTime() + czasTrwania);
 
-                        if (e.ctrlKey) { wydarzeniaLokalne.push({ id: Date.now().toString() + Math.random().toString(36).substr(2, 5), title: stareEv.title, category: stareEv.category, repeat: stareEv.repeat, start: docelowaDataKolumny.toISOString(), end: nowyKoniec.toISOString() }); } 
+                        if (e.ctrlKey) { wydarzeniaLokalne.push({ id: Date.now().toString() + Math.random().toString(36).substr(2, 5), title: stareEv.title, category: stareEv.category, repeat: stareEv.repeat, isTask: stareEv.isTask, isDone: false, start: docelowaDataKolumny.toISOString(), end: nowyKoniec.toISOString() }); } 
                         else { wydarzeniaLokalne[eventIndex].start = docelowaDataKolumny.toISOString(); wydarzeniaLokalne[eventIndex].end = nowyKoniec.toISOString(); }
                         localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne)); 
                         odswiezWidok();
@@ -884,6 +923,10 @@
                         const block = document.createElement('div'); block.className = 'event-block';
                         const realId = item.event.originalId || item.event.id;
 
+                        if(item.event.isTask && item.event.isDone) {
+                            block.classList.add('task-done');
+                        }
+
                         if(item.isLocal && realId) {
                             block.classList.add('local-event'); block.setAttribute('draggable', 'true'); block.title = "Złap by przenieść, przytrzymaj CTRL by skopiować";
                             block.addEventListener('dragstart', (e) => { e.dataTransfer.setData('text/plain', realId); e.dataTransfer.effectAllowed = 'copyMove'; setTimeout(() => block.style.opacity = '0.5', 0); });
@@ -899,7 +942,15 @@
                         let tytul = item.event.title || "Wydarzenie"; if (item.isContinuation) tytul = `(cd.) ${tytul}`;
                         
                         const lid = document.createElement('div'); lid.className = 'event-lid'; 
-                        lid.style.background = catDef.gradient; lid.style.color = catDef.textColor || '#ffffff'; lid.innerText = tytul;
+                        lid.style.background = catDef.gradient; lid.style.color = catDef.textColor || '#ffffff'; 
+                        
+                        // ZADANIA: Pole wyboru dla zadań
+                        if (item.event.isTask) {
+                            const chkIcon = item.event.isDone ? '☑️ ' : '☐ ';
+                            lid.innerHTML = `<span class="task-title-text">${chkIcon}${tytul}</span>`;
+                        } else {
+                            lid.innerText = tytul;
+                        }
                         
                         const content = document.createElement('div'); content.className = 'event-content'; 
                         content.style.background = catDef.gradient; content.style.color = catDef.textColor || '#ffffff';
@@ -911,6 +962,15 @@
 
                         if (item.isLocal && realId) {
                             const actions = document.createElement('div'); actions.className = 'event-actions';
+                            
+                            if (item.event.isTask) {
+                                const chkBtn = document.createElement('button');
+                                chkBtn.className = 'task-checkbox-btn';
+                                chkBtn.innerHTML = item.event.isDone ? '✓ Done' : '☐ Oznacz';
+                                chkBtn.onclick = (e) => { e.stopPropagation(); przełączStanZadania(realId); };
+                                actions.appendChild(chkBtn);
+                            }
+
                             const editBtn = document.createElement('button'); editBtn.innerHTML = '✎'; editBtn.onclick = (e) => { e.stopPropagation(); otworzModal(null, null, realId); };
                             const delBtn = document.createElement('button'); delBtn.innerHTML = '×'; delBtn.onclick = (e) => { e.stopPropagation(); usunLokalne(realId); };
                             actions.appendChild(editBtn); actions.appendChild(delBtn); content.appendChild(actions);
@@ -922,13 +982,25 @@
             }
         }
 
+        function przełączStanZadania(idStr) {
+            const index = wydarzeniaLokalne.findIndex(ev => ev.id === idStr);
+            if (index !== -1) {
+                wydarzeniaLokalne[index].isDone = !wydarzeniaLokalne[index].isDone;
+                localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne));
+                odswiezWidok();
+                if (activeConn && activeConn.open) {
+                    activeConn.send({ type: 'PUSH_DATA', data: { wydarzenia: wydarzeniaLokalne, kategorie: CATEGORIES } });
+                }
+            }
+        }
+
         function budujMiesiac(wszystkieWydarzenia) { 
             const grid = document.getElementById('month-grid'); grid.innerHTML = '';
             const rok = aktualnaDataPrzegladania.getFullYear(); const miesiac = aktualnaDataPrzegladania.getMonth();
             const dniTyg = ['Pon', 'Wto', 'Śro', 'Czw', 'Pią', 'Sob', 'Nie']; dniTyg.forEach(d => { let h = document.createElement('div'); h.className = 'month-header-cell'; h.innerText = d; grid.appendChild(h); });
             let pierwszyDzien = new Date(rok, miesiac, 1); let startDniaTyg = pierwszyDzien.getDay() - 1; if(startDniaTyg === -1) startDniaTyg = 6; let dniWMiesiacu = new Date(rok, miesiac + 1, 0).getDate();
             for(let i = 0; i < startDniaTyg; i++) { let cell = document.createElement('div'); cell.className = 'month-cell empty'; grid.appendChild(cell); }
-            for(let i = 1; i <= dniWMiesiacu; i++) { let cell = document.createElement('div'); cell.className = 'month-cell'; let dataKafelka = new Date(rok, miesiac, i); if(isToday(dataKafelka)) cell.classList.add('current-day-highlight'); cell.innerHTML = `<div class="month-cell-day">${i}</div>`; cell.addEventListener('click', () => { currentView = 'day'; aktualnaDataPrzegladania = dataKafelka; viewSelect.value = 'day'; odswiezWidok(); }); let startDnia = new Date(rok, miesiac, i, 0, 0, 0); let koniecDnia = new Date(rok, miesiac, i, 23, 59, 59); let evDzis = wszystkieWydarzenia.filter(ev => ev.start <= koniecDnia && ev.end >= startDnia); evDzis.forEach(ev => { let el = document.createElement('div'); el.className = 'month-event-pill'; const catDef = getCategoryDef(ev.category); el.style.background = catDef.gradient; el.style.color = catDef.textColor || '#ffffff'; el.innerText = ev.title; cell.appendChild(el); }); grid.appendChild(cell); }
+            for(let i = 1; i <= dniWMiesiacu; i++) { let cell = document.createElement('div'); cell.className = 'month-cell'; let dataKafelka = new Date(rok, miesiac, i); if(isToday(dataKafelka)) cell.classList.add('current-day-highlight'); cell.innerHTML = `<div class="month-cell-day">${i}</div>`; cell.addEventListener('click', () => { currentView = 'day'; aktualnaDataPrzegladania = dataKafelka; viewSelect.value = 'day'; odswiezWidok(); }); let startDnia = new Date(rok, miesiac, i, 0, 0, 0); let koniecDnia = new Date(rok, miesiac, i, 23, 59, 59); let evDzis = wszystkieWydarzenia.filter(ev => ev.start <= koniecDnia && ev.end >= startDnia); evDzis.forEach(ev => { let el = document.createElement('div'); el.className = 'month-event-pill'; const catDef = getCategoryDef(ev.category); el.style.background = catDef.gradient; el.style.color = catDef.textColor || '#ffffff'; const prefix = ev.isTask ? (ev.isDone ? '☑️ ' : '☐ ') : ''; el.innerText = prefix + ev.title; if(ev.isTask && ev.isDone) el.style.textDecoration = 'line-through'; cell.appendChild(el); }); grid.appendChild(cell); }
         }
 
         function budujRok(wszystkieWydarzenia) { 
@@ -1037,9 +1109,10 @@
             document.getElementById('event-modal').style.display = 'flex'; editingEventId = idZdarzenia; 
             if (editingEventId) {
                 document.getElementById('modal-title').innerText = "Edytuj wpis"; const ev = wydarzeniaLokalne.find(e => e.id === editingEventId); const st = new Date(ev.start); const en = new Date(ev.end);
+                document.getElementById('ev-type').value = ev.isTask ? 'task' : 'event';
                 document.getElementById('ev-title').value = ev.title; document.getElementById('ev-category').value = ev.category || 'inne'; document.getElementById('ev-repeat').value = ev.repeat || 'none'; document.getElementById('ev-date').value = st.toISOString(); document.getElementById('ev-start-h').value = String(st.getHours()).padStart(2, '0'); document.getElementById('ev-start-m').value = String(st.getMinutes()).padStart(2, '0'); document.getElementById('ev-end-h').value = String(en.getHours()).padStart(2, '0'); document.getElementById('ev-end-m').value = String(en.getMinutes()).padStart(2, '0');
             } else {
-                document.getElementById('modal-title').innerText = "Dodaj wpis"; document.getElementById('ev-title').value = ''; document.getElementById('ev-category').value = 'inne'; document.getElementById('ev-repeat').value = 'none'; document.getElementById('ev-date').value = data.toISOString(); let gPocz = String(godzina).padStart(2, '0'); let gKon = String(godzina + 1 > 23 ? 23 : godzina + 1).padStart(2, '0'); document.getElementById('ev-start-h').value = gPocz; document.getElementById('ev-start-m').value = '00'; document.getElementById('ev-end-h').value = gKon; document.getElementById('ev-end-m').value = '00';
+                document.getElementById('modal-title').innerText = "Dodaj wpis"; document.getElementById('ev-type').value = 'event'; document.getElementById('ev-title').value = ''; document.getElementById('ev-category').value = 'inne'; document.getElementById('ev-repeat').value = 'none'; document.getElementById('ev-date').value = data.toISOString(); let gPocz = String(godzina).padStart(2, '0'); let gKon = String(godzina + 1 > 23 ? 23 : godzina + 1).padStart(2, '0'); document.getElementById('ev-start-h').value = gPocz; document.getElementById('ev-start-m').value = '00'; document.getElementById('ev-end-h').value = gKon; document.getElementById('ev-end-m').value = '00';
             }
             document.getElementById('ev-title').focus();
         }
@@ -1088,15 +1161,35 @@
         function stworzIWstawDoHarmonogramu(y, m, d, h1, m1, h2, m2, title, category, nextDay = false) {
             const start = new Date(y, m, d, h1, m1, 0); const end = new Date(y, m, d, h2, m2, 0); if (nextDay) end.setDate(end.getDate() + 1);
             const istniejace = wydarzeniaLokalne.some(ev => ev.title === title && new Date(ev.start).getTime() === start.getTime());
-            if (!istniejace) { wydarzeniaLokalne.push({ id: Date.now().toString() + Math.random().toString(36).substr(2, 5), title: title, category: category, repeat: 'none', start: start.toISOString(), end: end.toISOString() }); return true; }
+            if (!istniejace) { wydarzeniaLokalne.push({ id: Date.now().toString() + Math.random().toString(36).substr(2, 5), title: title, category: category, repeat: 'none', isTask: false, isDone: false, start: start.toISOString(), end: end.toISOString() }); return true; }
             return false;
         }
 
         function zapiszWydarzenieLokalne() {
-            const title = document.getElementById('ev-title').value || "Zadanie"; const category = document.getElementById('ev-category').value; const repeat = document.getElementById('ev-repeat').value; const stH = document.getElementById('ev-start-h').value; const stM = document.getElementById('ev-start-m').value; const enH = document.getElementById('ev-end-h').value; const enM = document.getElementById('ev-end-m').value;
-            const bazowaData = new Date(document.getElementById('ev-date').value); const startDate = new Date(bazowaData); startDate.setHours(parseInt(stH, 10), parseInt(stM, 10), 0); const endDate = new Date(bazowaData); endDate.setHours(parseInt(enH, 10), parseInt(enM, 10), 0);
-            if (editingEventId) { const index = wydarzeniaLokalne.findIndex(ev => ev.id === editingEventId); if (index !== -1) { wydarzeniaLokalne[index].title = title; wydarzeniaLokalne[index].category = category; wydarzeniaLokalne[index].repeat = repeat; wydarzeniaLokalne[index].start = startDate.toISOString(); wydarzeniaLokalne[index].end = endDate.toISOString(); } } 
-            else { wydarzeniaLokalne.push({ id: Date.now().toString(), title: title, category: category, repeat: repeat, start: startDate.toISOString(), end: endDate.toISOString() }); }
+            const title = document.getElementById('ev-title').value || "Wpis"; 
+            const category = document.getElementById('ev-category').value; 
+            const repeat = document.getElementById('ev-repeat').value; 
+            const isTask = document.getElementById('ev-type').value === 'task';
+            const stH = document.getElementById('ev-start-h').value; const stM = document.getElementById('ev-start-m').value; 
+            const enH = document.getElementById('ev-end-h').value; const enM = document.getElementById('ev-end-m').value;
+            
+            const bazowaData = new Date(document.getElementById('ev-date').value); 
+            const startDate = new Date(bazowaData); startDate.setHours(parseInt(stH, 10), parseInt(stM, 10), 0); 
+            const endDate = new Date(bazowaData); endDate.setHours(parseInt(enH, 10), parseInt(enM, 10), 0);
+            
+            if (editingEventId) { 
+                const index = wydarzeniaLokalne.findIndex(ev => ev.id === editingEventId); 
+                if (index !== -1) { 
+                    wydarzeniaLokalne[index].title = title; 
+                    wydarzeniaLokalne[index].category = category; 
+                    wydarzeniaLokalne[index].repeat = repeat; 
+                    wydarzeniaLokalne[index].isTask = isTask;
+                    wydarzeniaLokalne[index].start = startDate.toISOString(); 
+                    wydarzeniaLokalne[index].end = endDate.toISOString(); 
+                } 
+            } else { 
+                wydarzeniaLokalne.push({ id: Date.now().toString(), title: title, category: category, repeat: repeat, isTask: isTask, isDone: false, start: startDate.toISOString(), end: endDate.toISOString() }); 
+            }
             localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne)); 
             zamknijModal(); 
             odswiezWidok();
@@ -1149,6 +1242,17 @@
             return dStr.endsWith('Z') ? new Date(Date.UTC(y, m - 1, d, hr, min, sec)) : new Date(y, m - 1, d, hr, min, sec);
         }
 
+        function toggleFullScreen() {
+            const btn = document.getElementById('btn-fullscreen');
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => console.log(err));
+                btn.innerText = "🗗";
+            } else {
+                document.exitFullscreen();
+                btn.innerText = "⛶";
+            }
+        }
+
         window.addEventListener('DOMContentLoaded', () => {
             checkUrlForSync();
             odswiezWidok(); 
@@ -1172,17 +1276,6 @@
                 }
             }
         });
-
-        function toggleFullScreen() {
-        const btn = document.getElementById('btn-fullscreen');
-        if (!document.fullscreenElement) {
-            document.documentElement.requestFullscreen().catch(err => console.log(err));
-            btn.innerText = "🗗 Zamknij pełny ekran";
-        } else {
-            document.exitFullscreen();
-            btn.innerText = "⛶ Pełny ekran";
-        }
-    }
     </script>
 </body>
 </html>

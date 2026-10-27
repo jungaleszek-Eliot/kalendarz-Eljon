@@ -33,11 +33,52 @@
             display: flex; flex-direction: column; overflow: hidden; 
         }
         
+        /* Ekran startowy dla telefonów */
+        #mobile-launcher {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 35px;
+            width: 100vw;
+            height: 100vh;
+            position: fixed;
+            top: 0; left: 0;
+            background: var(--bg-color);
+            z-index: 90;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .mobile-launcher-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            width: 100%;
+            max-width: 290px;
+        }
+        .mobile-launch-btn {
+            width: 100%;
+            padding: 18px 20px;
+            font-size: 1.15rem;
+            font-weight: 700;
+            text-align: center;
+            border-radius: 16px;
+            box-shadow: var(--shadow-outer);
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .mobile-launch-btn:active {
+            box-shadow: var(--shadow-inner);
+            transform: scale(0.97);
+        }
+
         .top-controls { display: flex; flex-direction: column; max-width: 1400px; width: 100%; margin: 0 auto 15px auto; gap: 15px; flex-shrink: 0; }
         .nav-row { display: flex; justify-content: space-between; align-items: center; gap: 15px; flex-wrap: wrap; width: 100%; }
         .controls-group { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; } 
         
-        /* Zmieniony układ nagłówka: przyciski nawigacyjne po obu stronach daty */
         .header-container { display: flex; justify-content: center; align-items: center; flex-grow: 1; margin: 0 10px; }
         .header-title { display: flex; align-items: center; justify-content: center; gap: 15px; text-align: center; }
         #week-title { font-size: 1.6rem; font-weight: 700; text-align: center; text-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 25px var(--accent); transition: text-shadow 0.3s; letter-spacing: -0.5px; }
@@ -59,7 +100,6 @@
         .dashboard-panel { width: 260px; flex-shrink: 0; display: flex; flex-direction: column; gap: 15px; overflow-y: auto; padding-right: 5px; }
         .large-clock-widget { padding: 10px 0; text-align: center; }
         
-        /* Zegar dostosowujący się automatycznie do tła aplikacji */
         .flip-clock { display: flex; gap: 8px; justify-content: center; align-items: center; font-size: 5rem; font-weight: 800; letter-spacing: -2px; cursor: pointer; }
         .flip-digit { 
             background-color: var(--bg-color); 
@@ -131,7 +171,6 @@
             transition: all 0.2s ease;
         }
         
-        /* Stylacja dla wykonanych zadań */
         .event-block.task-done .event-content,
         .event-block.task-done .event-lid {
             opacity: 0.65;
@@ -232,9 +271,20 @@
 </head>
 <body>
 
+    <!-- Ekran Startowy Telefoniczny -->
+    <div id="mobile-launcher">
+        <div id="mobile-clock-holder"></div>
+        <div class="mobile-launcher-menu">
+            <button class="mobile-launch-btn" onclick="otworzZMobile('calendar')">📅 Kalendarz</button>
+            <button class="mobile-launch-btn" onclick="otworzZMobile('event')">➕ Wydarzenie</button>
+            <button class="mobile-launch-btn" onclick="otworzZMobile('task')">☑️ Zadanie</button>
+        </div>
+    </div>
+
     <div class="top-controls">
         <div class="nav-row">
             <div class="controls-group">
+                <button id="btn-mobile-home" class="nav-btn" style="display:none;" onclick="pokazMobileLauncher()" title="Ekran startowy">🏠</button>
                 <select id="app-theme" class="theme-select">
                     <option value="light">⚪ Klasyczny Jasny</option>
                     <option value="dark">⚫ Klasyczny Ciemny</option>
@@ -255,13 +305,11 @@
                     <option value="year">Rok</option>
                 </select>
 
-                <!-- Zmniejszone przyciski akcji -->
                 <button id="btn-import-praca" class="nav-btn" style="background: var(--accent); color: white;" onclick="otworzModalPraca()" title="Import z Excela">Ex</button>
                 <button id="btn-sync" class="nav-btn" style="background: #10b981; color: white;" onclick="otworzModalSync()" title="Synchronizacja P2P">☁️ PIN</button>
                 <button id="btn-fullscreen" class="nav-btn" style="background: #475569; color: white;" onclick="toggleFullScreen()" title="Włącz / wyłącz pełny ekran">⛶</button>
             </div>
 
-            <!-- Przeniesione przyciski nawigacyjne bezpośrednio obok nagłówka -->
             <div class="header-container">
                 <div class="header-title">
                     <button id="btn-prev" class="nav-btn" title="Poprzedni zakres">&#10094;</button>
@@ -274,7 +322,7 @@
 
     <div id="view-day-week">
         <div class="dashboard-panel">
-            <div class="large-clock-widget">
+            <div class="large-clock-widget" id="main-clock-widget">
                 <div class="flip-clock" id="flip-clock-element" title="Kliknij 2 razy by włączyć pełny ekran">
                     <div class="flip-digit" id="flip-hour">--</div>
                     <div class="flip-colon">:</div>
@@ -566,109 +614,48 @@
         let wydarzeniaLokalne = JSON.parse(localStorage.getItem('mojeWydarzenia')); if (!Array.isArray(wydarzeniaLokalne)) wydarzeniaLokalne = [];
         let domColumns = []; let editingEventId = null;
 
-        // ------------- SYNCHRONIZACJA P2P (PeerJS) -------------
-        let localPeer = null;
-        let activeConn = null;
-        let mySyncPin = '';
+        // ------------- P2P SYNCHRONIZACJA -------------
+        let localPeer = null; let activeConn = null; let mySyncPin = '';
 
         function otworzModalSync() {
             document.getElementById('sync-modal').style.display = 'flex';
             initP2PSync();
             const lastRemotePin = localStorage.getItem('LAST_REMOTE_PIN');
-            if (lastRemotePin) {
-                const pinInput = document.getElementById('remotePinInput');
-                if (pinInput) pinInput.value = lastRemotePin;
-            }
+            if (lastRemotePin) { const pinInput = document.getElementById('remotePinInput'); if (pinInput) pinInput.value = lastRemotePin; }
         }
-
-        function zamknijModalSync() { 
-            document.getElementById('sync-modal').style.display = 'none'; 
-        }
+        function zamknijModalSync() { document.getElementById('sync-modal').style.display = 'none'; }
 
         function initP2PSync() {
             if (localPeer && !localPeer.destroyed) return;
-
             let savedPin = localStorage.getItem('MY_SYNC_PIN');
-            if (!savedPin) {
-                savedPin = Math.floor(100000 + Math.random() * 900000).toString();
-                localStorage.setItem('MY_SYNC_PIN', savedPin);
-            }
+            if (!savedPin) { savedPin = Math.floor(100000 + Math.random() * 900000).toString(); localStorage.setItem('MY_SYNC_PIN', savedPin); }
             mySyncPin = savedPin;
-
-            const pinEl = document.getElementById('mySyncPinDisplay');
-            if (pinEl) pinEl.textContent = mySyncPin;
-            const statusEl = document.getElementById('syncPeerStatus');
-            if (statusEl) statusEl.textContent = "Inicjalizacja..."; 
-
+            const pinEl = document.getElementById('mySyncPinDisplay'); if (pinEl) pinEl.textContent = mySyncPin;
+            const statusEl = document.getElementById('syncPeerStatus'); if (statusEl) statusEl.textContent = "Inicjalizacja..."; 
             const qrTarget = document.getElementById('qrcode');
             if (qrTarget) {
                 qrTarget.innerHTML = '';
                 const syncUrl = window.location.href.split('#')[0] + '#sync=' + mySyncPin;
-                new QRCode(qrTarget, {
-                    text: syncUrl, width: 100, height: 100,
-                    colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M
-                });
+                new QRCode(qrTarget, { text: syncUrl, width: 100, height: 100, colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M });
             }
-
             try {
-                localPeer = new Peer('kalendarz-' + mySyncPin, {
-                    config: {
-                        'iceServers': [
-                            { urls: 'stun:stun.l.google.com:19302' },
-                            { urls: 'stun:stun1.l.google.com:19302' }
-                        ]
-                    }
-                });
-                
-                localPeer.on('open', () => {
-                    if (statusEl) statusEl.textContent = "Gotowy"; 
-                });
-
-                localPeer.on('connection', (conn) => {
-                    setupConnection(conn);
-                    alert('Drugie urządzenie się podłączyło!');
-                });
-
-                localPeer.on('error', (err) => {
-                    console.error('Błąd PeerJS:', err);
-                    if (statusEl) statusEl.textContent = "Błąd";
-                    alert('Błąd sieci P2P. Spróbuj ponownie.');
-                });
+                localPeer = new Peer('kalendarz-' + mySyncPin, { config: { 'iceServers': [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:stun1.l.google.com:19302' }] } });
+                localPeer.on('open', () => { if (statusEl) statusEl.textContent = "Gotowy"; });
+                localPeer.on('connection', (conn) => { setupConnection(conn); alert('Drugie urządzenie się podłączyło!'); });
+                localPeer.on('error', (err) => { console.error('Błąd PeerJS:', err); if (statusEl) statusEl.textContent = "Błąd"; alert('Błąd sieci P2P. Spróbuj ponownie.'); });
             } catch (e) { console.error(e); }
         }
 
         function connectAndPairPeer() {
-            const pinInput = document.getElementById('remotePinInput');
-            const pin = pinInput ? pinInput.value.trim() : '';
+            const pinInput = document.getElementById('remotePinInput'); const pin = pinInput ? pinInput.value.trim() : '';
             if (!pin) return alert('Wpisz kod PIN!');
-
-            const statusEl = document.getElementById('syncPeerStatus');
-            if (statusEl && statusEl.textContent === "Inicjalizacja...") {
-                return alert('Poczekaj ułamek sekundy...');
-            }
-
+            const statusEl = document.getElementById('syncPeerStatus'); if (statusEl && statusEl.textContent === "Inicjalizacja...") return alert('Poczekaj ułamek sekundy...');
             localStorage.setItem('LAST_REMOTE_PIN', pin);
-
             if (!localPeer) return alert('Błąd usługi synchronizacji. Zresetuj stronę.');
-
             if (statusEl) statusEl.textContent = "Łączenie...";
-            
             const conn = localPeer.connect('kalendarz-' + pin, { reliable: true });
-
-            let connectionTimeout = setTimeout(() => {
-                if (statusEl && statusEl.textContent === "Łączenie...") {
-                    statusEl.textContent = "Gotowy";
-                    alert('Brak odpowiedzi. Sieć blokuje sygnał P2P!');
-                    conn.close();
-                }
-            }, 8000);
-
-            conn.on('open', () => {
-                clearTimeout(connectionTimeout);
-                setupConnection(conn);
-                alert('Urządzenia sparowane pomyślnie!');
-                if (statusEl) statusEl.textContent = "Połączono";
-            });
+            let connectionTimeout = setTimeout(() => { if (statusEl && statusEl.textContent === "Łączenie...") { statusEl.textContent = "Gotowy"; alert('Brak odpowiedzi. Sieć blokuje sygnał P2P!'); conn.close(); } }, 8000);
+            conn.on('open', () => { clearTimeout(connectionTimeout); setupConnection(conn); alert('Urządzenia sparowane pomyślnie!'); if (statusEl) statusEl.textContent = "Połączono"; });
         }
 
         function setupConnection(conn) {
@@ -676,18 +663,9 @@
             activeConn.on('data', (payload) => {
                 if (payload.type === 'PUSH_DATA') {
                     if (confirm('Drugie urządzenie przesyła nową bazę danych. Zastąpić obecne dane?')) {
-                        if (payload.data.wydarzenia) {
-                            wydarzeniaLokalne = payload.data.wydarzenia;
-                            localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne));
-                        }
-                        if (payload.data.kategorie) {
-                            CATEGORIES = payload.data.kategorie;
-                            localStorage.setItem('mojeKategorie', JSON.stringify(CATEGORIES));
-                            inicjalizujKategorie();
-                        }
-                        zamknijModalSync();
-                        odswiezWidok();
-                        alert('Baza zaktualizowana!');
+                        if (payload.data.wydarzenia) { wydarzeniaLokalne = payload.data.wydarzenia; localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne)); }
+                        if (payload.data.kategorie) { CATEGORIES = payload.data.kategorie; localStorage.setItem('mojeKategorie', JSON.stringify(CATEGORIES)); inicjalizujKategorie(); }
+                        zamknijModalSync(); odswiezWidok(); alert('Baza zaktualizowana!');
                     }
                 } else if (payload.type === 'PULL_REQUEST') {
                     if (confirm('Drugie urządzenie prosi o pobranie Twojej bazy kalendarza. Udostępnić?')) {
@@ -696,42 +674,79 @@
                     }
                 }
             });
-            activeConn.on('close', () => {
-                alert('Połączenie rozłączone.');
-            });
+            activeConn.on('close', () => { alert('Połączenie rozłączone.'); });
         }
 
         function sendDataToRemote() {
-            if (!activeConn || !activeConn.open) {
-                return alert('Brak aktywnego połączenia z drugim urządzeniem!');
-            }
+            if (!activeConn || !activeConn.open) return alert('Brak aktywnego połączenia z drugim urządzeniem!');
             if (confirm('UWAGA! Zastąpisz WSZYSTKIE dane na drugim urządzeniu. Kontynuować?')) {
-                activeConn.send({ type: 'PUSH_DATA', data: { wydarzenia: wydarzeniaLokalne, kategorie: CATEGORIES } });
-                alert('Wysłano dane do drugiego urządzenia!');
+                activeConn.send({ type: 'PUSH_DATA', data: { wydarzenia: wydarzeniaLokalne, kategorie: CATEGORIES } }); alert('Wysłano dane do drugiego urządzenia!');
             }
         }
 
         function requestDataFromRemote() {
-            if (!activeConn || !activeConn.open) {
-                return alert('Brak aktywnego połączenia z drugim urządzeniem!');
-            }
-            activeConn.send({ type: 'PULL_REQUEST' });
-            alert('Wysłano prośbę o pobranie danych z drugiego urządzenia...');
+            if (!activeConn || !activeConn.open) return alert('Brak aktywnego połączenia z drugim urządzeniem!');
+            activeConn.send({ type: 'PULL_REQUEST' }); alert('Wysłano prośbę o pobranie danych z drugiego urządzenia...');
         }
 
         function checkUrlForSync() {
             const hash = window.location.hash;
             if (hash.startsWith('#sync=')) {
                 const pin = hash.replace('#sync=', '');
-                setTimeout(() => {
-                    otworzModalSync();
-                    const pinInput = document.getElementById('remotePinInput');
-                    if (pinInput) pinInput.value = pin;
-                    connectAndPairPeer();
-                }, 600);
+                setTimeout(() => { otworzModalSync(); const pinInput = document.getElementById('remotePinInput'); if (pinInput) pinInput.value = pin; connectAndPairPeer(); }, 600);
             }
         }
-        // -------------------------------------------------------------------------
+
+        // ------------- OBSŁUGA EKRANU STARTOWEGO DLA TELEFONÓW -------------
+        function isMobilePhone() { return window.innerWidth <= 600; }
+
+        function spraweMobileLauncher() {
+            const launcher = document.getElementById('mobile-launcher');
+            const clockHolder = document.getElementById('mobile-clock-holder');
+            const mainClockHolder = document.getElementById('main-clock-widget');
+            const clockEl = document.getElementById('flip-clock-element');
+            const homeBtn = document.getElementById('btn-mobile-home');
+
+            if (isMobilePhone()) {
+                homeBtn.style.display = 'inline-block';
+                if (!launcher.dataset.visited) {
+                    pokazMobileLauncher();
+                }
+            } else {
+                launcher.style.display = 'none';
+                homeBtn.style.display = 'none';
+                if (clockEl.parentNode !== mainClockHolder) {
+                    mainClockHolder.appendChild(clockEl);
+                }
+            }
+        }
+
+        function pokazMobileLauncher() {
+            const launcher = document.getElementById('mobile-launcher');
+            const clockHolder = document.getElementById('mobile-clock-holder');
+            const clockEl = document.getElementById('flip-clock-element');
+            
+            clockHolder.appendChild(clockEl);
+            launcher.style.display = 'flex';
+        }
+
+        function otworzZMobile(mode) {
+            const launcher = document.getElementById('mobile-launcher');
+            const mainClockHolder = document.getElementById('main-clock-widget');
+            const clockEl = document.getElementById('flip-clock-element');
+            
+            launcher.dataset.visited = "true";
+            launcher.style.display = 'none';
+            mainClockHolder.appendChild(clockEl);
+
+            if (mode === 'event') {
+                otworzModal(new Date(), new Date().getHours());
+                document.getElementById('ev-type').value = 'event';
+            } else if (mode === 'task') {
+                otworzModal(new Date(), new Date().getHours());
+                document.getElementById('ev-type').value = 'task';
+            }
+        }
 
         const timeLabels = document.getElementById('time-labels');
         const emptyHeader = document.createElement('div'); emptyHeader.className = 'day-header'; emptyHeader.style.borderBottom = "2px solid transparent"; emptyHeader.innerHTML = "&nbsp;<br>&nbsp;"; timeLabels.appendChild(emptyHeader);
@@ -944,7 +959,6 @@
                         const lid = document.createElement('div'); lid.className = 'event-lid'; 
                         lid.style.background = catDef.gradient; lid.style.color = catDef.textColor || '#ffffff'; 
                         
-                        // ZADANIA: Pole wyboru dla zadań
                         if (item.event.isTask) {
                             const chkIcon = item.event.isDone ? '☑️ ' : '☐ ';
                             lid.innerHTML = `<span class="task-title-text">${chkIcon}${tytul}</span>`;
@@ -1026,16 +1040,11 @@
         let edytowaneIdKategorii = null;
 
         function otworzZarzadzanieKategoriami() {
-            const list = document.getElementById('custom-cat-list');
-            list.innerHTML = '';
-            let hasCustom = false;
+            const list = document.getElementById('custom-cat-list'); list.innerHTML = ''; let hasCustom = false;
             Object.keys(CATEGORIES).forEach(key => {
                 if (!DOMYSLNE_KATEGORIE[key]) {
-                    hasCustom = true;
-                    const cat = CATEGORIES[key];
-                    const div = document.createElement('div');
-                    div.style.display = 'flex'; div.style.justifyContent = 'space-between'; div.style.alignItems = 'center';
-                    div.style.background = 'var(--input-bg)'; div.style.padding = '8px'; div.style.borderRadius = '8px';
+                    hasCustom = true; const cat = CATEGORIES[key]; const div = document.createElement('div');
+                    div.style.display = 'flex'; div.style.justifyContent = 'space-between'; div.style.alignItems = 'center'; div.style.background = 'var(--input-bg)'; div.style.padding = '8px'; div.style.borderRadius = '8px';
                     div.innerHTML = `
                         <div style="display:flex; align-items:center; gap:8px;">
                             <div style="width:16px; height:16px; border-radius:4px; background:${cat.gradient}; border:1px solid rgba(255,255,255,0.3);"></div>
@@ -1056,53 +1065,26 @@
 
         function usunKategorie(id) {
             if(confirm("Czy na pewno chcesz usunąć tę kategorię? Zapisane z nią wpisy staną się 'Inne'.")) {
-                delete CATEGORIES[id];
-                wydarzeniaLokalne.forEach(ev => { if(ev.category === id) ev.category = 'inne'; });
-                localStorage.setItem('mojeKategorie', JSON.stringify(CATEGORIES));
-                localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne));
-                inicjalizujKategorie();
-                otworzZarzadzanieKategoriami(); 
-                odswiezWidok();
+                delete CATEGORIES[id]; wydarzeniaLokalne.forEach(ev => { if(ev.category === id) ev.category = 'inne'; });
+                localStorage.setItem('mojeKategorie', JSON.stringify(CATEGORIES)); localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne));
+                inicjalizujKategorie(); otworzZarzadzanieKategoriami(); odswiezWidok();
             }
         }
 
         function edytujKategorie(id) {
-            edytowaneIdKategorii = id;
-            const cat = CATEGORIES[id];
-            document.getElementById('nowa-kat-nazwa').value = cat.name;
-            document.getElementById('nowa-kat-kolor').value = cat.gradient.includes('gradient') ? '#a855f7' : cat.gradient; 
-            document.getElementById('nowa-kat-tekst').value = cat.textColor || '#ffffff';
-            document.getElementById('modal-kat-title').innerText = "Edytuj kategorię";
-            zamknijZarzadzanieKategoriami();
-            document.getElementById('category-modal').style.display = 'flex';
+            edytowaneIdKategorii = id; const cat = CATEGORIES[id];
+            document.getElementById('nowa-kat-nazwa').value = cat.name; document.getElementById('nowa-kat-kolor').value = cat.gradient.includes('gradient') ? '#a855f7' : cat.gradient; document.getElementById('nowa-kat-tekst').value = cat.textColor || '#ffffff';
+            document.getElementById('modal-kat-title').innerText = "Edytuj kategorię"; zamknijZarzadzanieKategoriami(); document.getElementById('category-modal').style.display = 'flex';
         }
 
-        function otworzModalKategorii() { 
-            edytowaneIdKategorii = null;
-            document.getElementById('modal-kat-title').innerText = "Stwórz własną kategorię";
-            document.getElementById('nowa-kat-nazwa').value = '';
-            document.getElementById('category-modal').style.display = 'flex'; 
-            document.getElementById('nowa-kat-nazwa').focus(); 
-        }
+        function otworzModalKategorii() { edytowaneIdKategorii = null; document.getElementById('modal-kat-title').innerText = "Stwórz własną kategorię"; document.getElementById('nowa-kat-nazwa').value = ''; document.getElementById('category-modal').style.display = 'flex'; document.getElementById('nowa-kat-nazwa').focus(); }
         function zamknijModalKategorii() { document.getElementById('category-modal').style.display = 'none'; }
         
         function zapiszNowaKategorie() {
-            const nazwa = document.getElementById('nowa-kat-nazwa').value.trim();
-            if(!nazwa) return alert("Podaj nazwę dla kategorii!");
-            
-            const bgColor = document.getElementById('nowa-kat-kolor').value;
-            const txtColor = document.getElementById('nowa-kat-tekst').value;
-            const noweId = edytowaneIdKategorii ? edytowaneIdKategorii : 'kat_' + Date.now();
-            
-            CATEGORIES[noweId] = { name: nazwa, gradient: bgColor, textColor: txtColor };
-            localStorage.setItem('mojeKategorie', JSON.stringify(CATEGORIES));
-            
-            inicjalizujKategorie();
-            document.getElementById('ev-category').value = noweId; 
-            zamknijModalKategorii();
-            edytowaneIdKategorii = null;
-            
-            odswiezWidok();
+            const nazwa = document.getElementById('nowa-kat-nazwa').value.trim(); if(!nazwa) return alert("Podaj nazwę dla kategorii!");
+            const bgColor = document.getElementById('nowa-kat-kolor').value; const txtColor = document.getElementById('nowa-kat-tekst').value; const noweId = edytowaneIdKategorii ? edytowaneIdKategorii : 'kat_' + Date.now();
+            CATEGORIES[noweId] = { name: nazwa, gradient: bgColor, textColor: txtColor }; localStorage.setItem('mojeKategorie', JSON.stringify(CATEGORIES));
+            inicjalizujKategorie(); document.getElementById('ev-category').value = noweId; zamknijModalKategorii(); edytowaneIdKategorii = null; odswiezWidok();
         }
 
         function otworzModal(data, godzina, idZdarzenia = null) {
@@ -1123,10 +1105,7 @@
         function wyczyscGrafikZKalendarza() {
             if (confirm('Czy na pewno chcesz usunąć z kalendarza wszystkie wczytane dyżury pracy?')) {
                 wydarzeniaLokalne = wydarzeniaLokalne.filter(ev => ev.category !== 'zmiana-dzienna' && ev.category !== 'zmiana-nocna' && ev.category !== 'praca');
-                localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne)); 
-                odswiezWidok(); 
-                zamknijModalPraca(); 
-                alert('Grafik pracy został wyczyszczony z Twojego kalendarza.');
+                localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne)); odswiezWidok(); zamknijModalPraca(); alert('Grafik pracy został wyczyszczony z Twojego kalendarza.');
             }
         }
 
@@ -1150,11 +1129,7 @@
                 }
             });
 
-            if (dodane > 0) { 
-                localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne)); 
-                odswiezWidok(); 
-                zamknijModalPraca(); 
-                alert(`Pomyślnie zaimportowano ${dodane} zmian dyżurowych z Excela.`);
+            if (dodane > 0) { localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne)); odswiezWidok(); zamknijModalPraca(); alert(`Pomyślnie zaimportowano ${dodane} zmian dyżurowych z Excela.`);
             } else { alert('Nie dodano nowych zmian.\n\nMożliwe przyczyny:\n1. Te dyżury już są w kalendarzu.\n2. Skopiowany tekst nie miał cyfr "12" lub "8".'); }
         }
 
@@ -1255,10 +1230,13 @@
 
         window.addEventListener('DOMContentLoaded', () => {
             checkUrlForSync();
+            spraweMobileLauncher();
             odswiezWidok(); 
             fetchAndRenderCalendar();
         });
         
+        window.addEventListener('resize', spraweMobileLauncher);
+
         setInterval(() => { if(currentView === 'day' || currentView.startsWith('week')) { updateCurrentTimeLine(currentView === 'day' ? 1 : 7); } }, 60000); 
 
         document.addEventListener('keydown', function(e) {

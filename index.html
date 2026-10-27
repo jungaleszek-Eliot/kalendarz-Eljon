@@ -1174,6 +1174,17 @@
                 }
             }
         });
+
+        function toggleFullScreen() {
+        const btn = document.getElementById('btn-fullscreen');
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(err => console.log(err));
+            btn.innerText = "🗗 Zamknij pełny ekran";
+        } else {
+            document.exitFullscreen();
+            btn.innerText = "⛶ Pełny ekran";
+        }
+    }
     </script>
 </body>
 </html>

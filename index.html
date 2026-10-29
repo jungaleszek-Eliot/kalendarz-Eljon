@@ -576,12 +576,65 @@
         flipClockEl.addEventListener('dblclick', () => { if (!document.fullscreenElement) { flipClockEl.classList.add('fullscreen-clock-mode'); flipClockEl.requestFullscreen().catch(err => console.log(err)); } else { document.exitFullscreen(); } });
         document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement) flipClockEl.classList.remove('fullscreen-clock-mode'); });
 
-        function aktualizujSwieta(dataBaza) {
-            const widget = document.getElementById('holidays-list'); if(!widget) return; widget.innerHTML = '';
-            const m = dataBaza.getMonth() + 1; const y = dataBaza.getFullYear();
-            const swieta = [...STALE_SWIETA].filter(s => s.m === m); if (y === 2026) swieta.push(...RUCHOME_2026.filter(s => s.m === m)); swieta.sort((a,b) => a.d - b.d);
-            if (swieta.length === 0) { widget.innerHTML = '<div class="holiday-item" style="justify-content:center;">Brak świąt w tym miesiącu</div>';
-            } else { swieta.forEach(s => { const div = document.createElement('div'); div.className = 'holiday-item'; div.innerHTML = `<span class="holiday-date">${String(s.d).padStart(2,'0')}.${String(s.m).padStart(2,'0')}</span><span class="holiday-name">${s.name}</span>`; widget.appendChild(div); }); }
+        function aktualizujSwieta() {
+            const widget = document.getElementById('holidays-list'); 
+            const widgetTitle = document.querySelector('.holidays-title');
+            if(!widget) return;
+
+            let swieta = [];
+
+            if (currentView === 'year') {
+                swieta = [...STALE_SWIETA, ...RUCHOME_2026];
+                if (widgetTitle) widgetTitle.innerText = "Święta w tym roku";
+            } else {
+                let dataPocz = new Date(aktualnaDataPrzegladania);
+                let dataKon = new Date(aktualnaDataPrzegladania);
+
+                if (currentView.startsWith('week')) {
+                    if (currentView === 'weekB') dataPocz.setDate(dataPocz.getDate() - 1);
+                    else if (currentView === 'weekC') dataPocz.setDate(dataPocz.getDate() - 3);
+                    else if (currentView === 'weekD') {
+                        let dayNum = dataPocz.getDay();
+                        let diff = dataPocz.getDate() - dayNum + (dayNum === 0 ? -6 : 1);
+                        dataPocz.setDate(diff);
+                    }
+                    dataKon = new Date(dataPocz);
+                    dataKon.setDate(dataKon.getDate() + 6);
+                } else if (currentView === 'month') {
+                    dataPocz.setDate(1);
+                    dataKon = new Date(dataPocz.getFullYear(), dataPocz.getMonth() + 1, 0);
+                }
+
+                let m1 = dataPocz.getMonth() + 1;
+                let y1 = dataPocz.getFullYear();
+                let m2 = dataKon.getMonth() + 1;
+                let y2 = dataKon.getFullYear();
+
+                swieta.push(...STALE_SWIETA.filter(s => s.m === m1));
+                if (y1 === 2026) swieta.push(...RUCHOME_2026.filter(s => s.m === m1));
+
+                // Jeśli widok nachodzi na drugi miesiąc, dobierz też jego święta
+                if (m1 !== m2 || y1 !== y2) {
+                    swieta.push(...STALE_SWIETA.filter(s => s.m === m2));
+                    if (y2 === 2026) swieta.push(...RUCHOME_2026.filter(s => s.m === m2));
+                    if (widgetTitle) widgetTitle.innerText = "Święta w tym okresie";
+                } else {
+                    if (widgetTitle) widgetTitle.innerText = "Święta w tym miesiącu";
+                }
+            }
+
+            swieta.sort((a, b) => a.m - b.m || a.d - b.d);
+
+            widget.innerHTML = '';
+            if (swieta.length === 0) {
+                widget.innerHTML = '<div class="holiday-item" style="justify-content:center;">Brak świąt w tym okresie</div>';
+            } else {
+                swieta.forEach(s => {
+                    const div = document.createElement('div'); div.className = 'holiday-item';
+                    div.innerHTML = `<span class="holiday-date">${String(s.d).padStart(2,'0')}.${String(s.m).padStart(2,'0')}</span><span class="holiday-name">${s.name}</span>`;
+                    widget.appendChild(div);
+                });
+            }
         }
 
         function applySmartContrast(hex) {

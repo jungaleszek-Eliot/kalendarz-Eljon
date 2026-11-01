@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kalendarz 3D + Zadania + P2P Sync</title>
+    <title>Kalendarz 3D + Zadania + 30 Dni + P2P</title>
     
     <!-- Skrypty do obsługi synchronizacji P2P i kodów QR -->
     <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
@@ -278,6 +278,7 @@
             <button class="mobile-launch-btn" onclick="otworzZMobile('calendar')">📅 Kalendarz</button>
             <button class="mobile-launch-btn" onclick="otworzZMobile('event')">➕ Wydarzenie</button>
             <button class="mobile-launch-btn" onclick="otworzZMobile('task')">☑️ Zadanie</button>
+            <button class="mobile-launch-btn" style="background: linear-gradient(135deg, #fef08a, #eab308); color: #713f12;" onclick="otworzZMobile('idea30')">⏳ Pomysł 30 dni</button>
         </div>
     </div>
 
@@ -407,6 +408,7 @@
             <select id="ev-type">
                 <option value="event">📅 Wydarzenie</option>
                 <option value="task">☑️ Zadanie do zrobienia</option>
+                <option value="idea30">⏳ Zasada 30 dni (Odroczenie zakupu)</option>
             </select>
 
             <input type="text" id="ev-title" placeholder="Nazwa wydarzenia lub zadania..." autocomplete="off">
@@ -516,11 +518,44 @@
             'zdrowie': { name: 'Zdrowie', gradient: 'linear-gradient(135deg, #14b8a6, #0f766e)', textColor: '#ffffff' },
             'rozrywka': { name: 'Rozrywka / Sport', gradient: 'linear-gradient(135deg, #a855f7, #7e22ce)', textColor: '#ffffff' },
             'wazne': { name: 'Ważne / Pilne', gradient: 'linear-gradient(135deg, #ef4444, #b91c1c)', textColor: '#ffffff' },
+            'zakupy-30dni': { name: 'Zasada 30 Dni', gradient: 'linear-gradient(135deg, #eab308, #a16207)', textColor: '#ffffff' },
             'inne': { name: 'Inne', gradient: 'linear-gradient(135deg, #94a3b8, #475569)', textColor: '#ffffff' }
         };
 
-        let CATEGORIES = JSON.parse(localStorage.getItem('mojeKategorie'));
-        if (!CATEGORIES || Object.keys(CATEGORIES).length === 0) { CATEGORIES = { ...DOMYSLNE_KATEGORIE }; }
+        // Zabezpieczony odczyt z localStorage z wstrzyknięciem nowej kategorii 30 Dni
+        let CATEGORIES = {};
+        try {
+            CATEGORIES = JSON.parse(localStorage.getItem('mojeKategorie')) || { ...DOMYSLNE_KATEGORIE };
+            if (!CATEGORIES['zakupy-30dni']) { 
+                CATEGORIES['zakupy-30dni'] = DOMYSLNE_KATEGORIE['zakupy-30dni']; 
+                localStorage.setItem('mojeKategorie', JSON.stringify(CATEGORIES)); 
+            }
+        } catch (e) {
+            CATEGORIES = { ...DOMYSLNE_KATEGORIE };
+        }
+
+        let wydarzeniaLokalne = [];
+        try {
+            const rawEv = localStorage.getItem('mojeWydarzenia');
+            wydarzeniaLokalne = rawEv ? JSON.parse(rawEv) : [];
+            if (!Array.isArray(wydarzeniaLokalne)) wydarzeniaLokalne = [];
+        } catch (e) {
+            console.error("Błąd odczytu wydarzeń:", e);
+            wydarzeniaLokalne = [];
+        }
+
+        // Obsługa formularza dla Zasady 30 Dni
+        document.getElementById('ev-type').addEventListener('change', function(e) {
+            const catSelect = document.getElementById('ev-category');
+            if (e.target.value === 'idea30') {
+                catSelect.value = 'zakupy-30dni';
+                catSelect.disabled = true;
+                document.getElementById('ev-title').placeholder = "Co chcesz kupić? (np. Konsola)";
+            } else {
+                catSelect.disabled = false;
+                document.getElementById('ev-title').placeholder = "Nazwa wydarzenia lub zadania...";
+            }
+        });
 
         const STALE_SWIETA = [
             { d: 1, m: 1, name: 'Nowy Rok' }, { d: 6, m: 1, name: 'Trzech Króli' }, { d: 21, m: 1, name: 'Dzień Babci' }, { d: 22, m: 1, name: 'Dzień Dziadka' },
@@ -613,7 +648,6 @@
                 swieta.push(...STALE_SWIETA.filter(s => s.m === m1));
                 if (y1 === 2026) swieta.push(...RUCHOME_2026.filter(s => s.m === m1));
 
-                // Jeśli widok nachodzi na drugi miesiąc, dobierz też jego święta
                 if (m1 !== m2 || y1 !== y2) {
                     swieta.push(...STALE_SWIETA.filter(s => s.m === m2));
                     if (y2 === 2026) swieta.push(...RUCHOME_2026.filter(s => s.m === m2));
@@ -664,10 +698,9 @@
         viewSelect.value = currentView; viewSelect.addEventListener('change', (e) => { currentView = e.target.value; localStorage.setItem('app-view', currentView); odswiezWidok(); });
 
         let aktualnaDataPrzegladania = new Date(); let wydarzeniaGoogle = []; 
-        let wydarzeniaLokalne = JSON.parse(localStorage.getItem('mojeWydarzenia')); if (!Array.isArray(wydarzeniaLokalne)) wydarzeniaLokalne = [];
         let domColumns = []; let editingEventId = null;
 
-        // ------------- P2P SYNCHRONIZACJA -------------
+        // ------------- Zabezpieczona P2P SYNCHRONIZACJA -------------
         let localPeer = null; let activeConn = null; let mySyncPin = '';
 
         function otworzModalSync() {
@@ -679,6 +712,12 @@
         function zamknijModalSync() { document.getElementById('sync-modal').style.display = 'none'; }
 
         function initP2PSync() {
+            if (typeof Peer === 'undefined' || typeof QRCode === 'undefined') {
+                const statusEl = document.getElementById('syncPeerStatus');
+                if (statusEl) statusEl.textContent = "Brak sieci P2P";
+                alert("Nie można załadować modułu P2P. Sprawdź połączenie z internetem.");
+                return;
+            }
             if (localPeer && !localPeer.destroyed) return;
             let savedPin = localStorage.getItem('MY_SYNC_PIN');
             if (!savedPin) { savedPin = Math.floor(100000 + Math.random() * 900000).toString(); localStorage.setItem('MY_SYNC_PIN', savedPin); }
@@ -689,13 +728,15 @@
             if (qrTarget) {
                 qrTarget.innerHTML = '';
                 const syncUrl = window.location.href.split('#')[0] + '#sync=' + mySyncPin;
-                new QRCode(qrTarget, { text: syncUrl, width: 100, height: 100, colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M });
+                try {
+                    new QRCode(qrTarget, { text: syncUrl, width: 100, height: 100, colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M });
+                } catch(e) { console.error(e); }
             }
             try {
                 localPeer = new Peer('kalendarz-' + mySyncPin, { config: { 'iceServers': [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:stun1.l.google.com:19302' }] } });
                 localPeer.on('open', () => { if (statusEl) statusEl.textContent = "Gotowy"; });
                 localPeer.on('connection', (conn) => { setupConnection(conn); alert('Drugie urządzenie się podłączyło!'); });
-                localPeer.on('error', (err) => { console.error('Błąd PeerJS:', err); if (statusEl) statusEl.textContent = "Błąd"; alert('Błąd sieci P2P. Spróbuj ponownie.'); });
+                localPeer.on('error', (err) => { console.error('Błąd PeerJS:', err); if (statusEl) statusEl.textContent = "Błąd"; });
             } catch (e) { console.error(e); }
         }
 
@@ -792,12 +833,10 @@
             launcher.style.display = 'none';
             mainClockHolder.appendChild(clockEl);
 
-            if (mode === 'event') {
+            if (mode !== 'calendar') {
                 otworzModal(new Date(), new Date().getHours());
-                document.getElementById('ev-type').value = 'event';
-            } else if (mode === 'task') {
-                otworzModal(new Date(), new Date().getHours());
-                document.getElementById('ev-type').value = 'task';
+                document.getElementById('ev-type').value = mode;
+                document.getElementById('ev-type').dispatchEvent(new Event('change'));
             }
         }
 
@@ -873,7 +912,7 @@
             } else if (currentView === 'month') { document.getElementById('view-month').style.display = 'flex'; budujMiesiac(wszystkieWydarzenia);
             } else if (currentView === 'year') { document.getElementById('view-year').style.display = 'grid'; budujRok(wszystkieWydarzenia); }
             
-            aktualizujSwieta(aktualnaDataPrzegladania);
+            aktualizujSwieta();
         }
 
         function budujDzienTydzien(wszystkieWydarzenia) {
@@ -1144,11 +1183,20 @@
             document.getElementById('event-modal').style.display = 'flex'; editingEventId = idZdarzenia; 
             if (editingEventId) {
                 document.getElementById('modal-title').innerText = "Edytuj wpis"; const ev = wydarzeniaLokalne.find(e => e.id === editingEventId); const st = new Date(ev.start); const en = new Date(ev.end);
-                document.getElementById('ev-type').value = ev.isTask ? 'task' : 'event';
-                document.getElementById('ev-title').value = ev.title; document.getElementById('ev-category').value = ev.category || 'inne'; document.getElementById('ev-repeat').value = ev.repeat || 'none'; document.getElementById('ev-date').value = st.toISOString(); document.getElementById('ev-start-h').value = String(st.getHours()).padStart(2, '0'); document.getElementById('ev-start-m').value = String(st.getMinutes()).padStart(2, '0'); document.getElementById('ev-end-h').value = String(en.getHours()).padStart(2, '0'); document.getElementById('ev-end-m').value = String(en.getMinutes()).padStart(2, '0');
+                
+                // Odczytaj czy to zasada 30 dni z logiki tytulu i kategorii, by ustawić formularz (lub pozostaw w trybie event/task)
+                if (ev.category === 'zakupy-30dni' && (ev.title.includes('💡') || ev.title.includes('🛒'))) {
+                    document.getElementById('ev-type').value = 'idea30';
+                } else {
+                    document.getElementById('ev-type').value = ev.isTask ? 'task' : 'event';
+                }
+                
+                document.getElementById('ev-title').value = ev.title.replace('💡 ', '').replace('🛒 Weryfikacja: ', ''); 
+                document.getElementById('ev-category').value = ev.category || 'inne'; document.getElementById('ev-repeat').value = ev.repeat || 'none'; document.getElementById('ev-date').value = st.toISOString(); document.getElementById('ev-start-h').value = String(st.getHours()).padStart(2, '0'); document.getElementById('ev-start-m').value = String(st.getMinutes()).padStart(2, '0'); document.getElementById('ev-end-h').value = String(en.getHours()).padStart(2, '0'); document.getElementById('ev-end-m').value = String(en.getMinutes()).padStart(2, '0');
             } else {
                 document.getElementById('modal-title').innerText = "Dodaj wpis"; document.getElementById('ev-type').value = 'event'; document.getElementById('ev-title').value = ''; document.getElementById('ev-category').value = 'inne'; document.getElementById('ev-repeat').value = 'none'; document.getElementById('ev-date').value = data.toISOString(); let gPocz = String(godzina).padStart(2, '0'); let gKon = String(godzina + 1 > 23 ? 23 : godzina + 1).padStart(2, '0'); document.getElementById('ev-start-h').value = gPocz; document.getElementById('ev-start-m').value = '00'; document.getElementById('ev-end-h').value = gKon; document.getElementById('ev-end-m').value = '00';
             }
+            document.getElementById('ev-type').dispatchEvent(new Event('change'));
             document.getElementById('ev-title').focus();
         }
         function zamknijModal() { document.getElementById('event-modal').style.display = 'none'; editingEventId = null; }
@@ -1197,9 +1245,13 @@
             const title = document.getElementById('ev-title').value || "Wpis"; 
             const category = document.getElementById('ev-category').value; 
             const repeat = document.getElementById('ev-repeat').value; 
-            const isTask = document.getElementById('ev-type').value === 'task';
-            const stH = document.getElementById('ev-start-h').value; const stM = document.getElementById('ev-start-m').value; 
-            const enH = document.getElementById('ev-end-h').value; const enM = document.getElementById('ev-end-m').value;
+            const evType = document.getElementById('ev-type').value;
+            const isTask = evType === 'task';
+            
+            const stH = document.getElementById('ev-start-h').value; 
+            const stM = document.getElementById('ev-start-m').value; 
+            const enH = document.getElementById('ev-end-h').value; 
+            const enM = document.getElementById('ev-end-m').value;
             
             const bazowaData = new Date(document.getElementById('ev-date').value); 
             const startDate = new Date(bazowaData); startDate.setHours(parseInt(stH, 10), parseInt(stM, 10), 0); 
@@ -1208,7 +1260,14 @@
             if (editingEventId) { 
                 const index = wydarzeniaLokalne.findIndex(ev => ev.id === editingEventId); 
                 if (index !== -1) { 
-                    wydarzeniaLokalne[index].title = title; 
+                    // Edycja zachowuje odpowiedni prefix w tytule jeśli to była zasada 30 dni
+                    let finalTitle = title;
+                    if (evType === 'idea30') {
+                        if (wydarzeniaLokalne[index].title.includes('💡')) finalTitle = "💡 " + title;
+                        if (wydarzeniaLokalne[index].title.includes('🛒')) finalTitle = "🛒 Weryfikacja: " + title;
+                    }
+                    
+                    wydarzeniaLokalne[index].title = finalTitle; 
                     wydarzeniaLokalne[index].category = category; 
                     wydarzeniaLokalne[index].repeat = repeat; 
                     wydarzeniaLokalne[index].isTask = isTask;
@@ -1216,7 +1275,45 @@
                     wydarzeniaLokalne[index].end = endDate.toISOString(); 
                 } 
             } else { 
-                wydarzeniaLokalne.push({ id: Date.now().toString(), title: title, category: category, repeat: repeat, isTask: isTask, isDone: false, start: startDate.toISOString(), end: endDate.toISOString() }); 
+                if (evType === 'idea30') {
+                    // Wpis nr 1: Dzisiaj "Chęć zakupu"
+                    wydarzeniaLokalne.push({ 
+                        id: Date.now().toString() + 'A', 
+                        title: "💡 " + title, 
+                        category: 'zakupy-30dni', 
+                        repeat: 'none', 
+                        isTask: false, 
+                        isDone: false, 
+                        start: startDate.toISOString(), 
+                        end: endDate.toISOString() 
+                    });
+                    
+                    // Wpis nr 2: Przesunięcie o 30 dni w przód ("Weryfikacja")
+                    const startDate30 = new Date(startDate); startDate30.setDate(startDate30.getDate() + 30);
+                    const endDate30 = new Date(endDate); endDate30.setDate(endDate30.getDate() + 30);
+                    
+                    wydarzeniaLokalne.push({ 
+                        id: Date.now().toString() + 'B', 
+                        title: "🛒 Weryfikacja: " + title, 
+                        category: 'zakupy-30dni', 
+                        repeat: 'none', 
+                        isTask: false, 
+                        isDone: false, 
+                        start: startDate30.toISOString(), 
+                        end: endDate30.toISOString() 
+                    });
+                } else {
+                    wydarzeniaLokalne.push({ 
+                        id: Date.now().toString(), 
+                        title: title, 
+                        category: category, 
+                        repeat: repeat, 
+                        isTask: isTask, 
+                        isDone: false, 
+                        start: startDate.toISOString(), 
+                        end: endDate.toISOString() 
+                    });
+                }
             }
             localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne)); 
             zamknijModal(); 
@@ -1282,10 +1379,14 @@
         }
 
         window.addEventListener('DOMContentLoaded', () => {
-            checkUrlForSync();
-            spraweMobileLauncher();
-            odswiezWidok(); 
-            fetchAndRenderCalendar();
+            try {
+                checkUrlForSync();
+                spraweMobileLauncher();
+                odswiezWidok(); 
+                fetchAndRenderCalendar();
+            } catch (err) {
+                console.error("Błąd startu:", err);
+            }
         });
         
         window.addEventListener('resize', spraweMobileLauncher);

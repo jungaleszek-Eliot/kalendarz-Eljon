@@ -504,23 +504,22 @@
             
             if(startDate > endDate) return alert("Data początkowa nie może być późniejsza niż końcowa.");
             
-            if(!confirm(`Czy na pewno chcesz usunąć zaznaczone elementy z okresu od ${startStr} do ${endStr}?`)) return;
+            if(!confirm(`Czy na pewno chcesz usunąć zaznaczone elementy przecinające się z okresem od ${startStr} do ${endStr}?`)) return;
 
             const poczatkowaLiczba = wydarzeniaLokalne.length;
             
             wydarzeniaLokalne = wydarzeniaLokalne.filter(ev => {
                 const evStart = new Date(ev.start);
-                // Sprawdzamy czy wpis mieści się w wybranym przedziale czasowym [startDate, endDate]
-                const wZakresie = evStart >= startDate && evStart <= endDate;
+                const evEnd = new Date(ev.end || ev.start);
+                
+                // Sprawdzamy czy wpis przecina się z wybranym zakresem [startDate, endDate]
+                const wZakresie = evStart <= endDate && evEnd >= startDate;
                 
                 if (wZakresie) {
-                    const isTask = ev.isTask === true;
-                    // Jeśli to zadanie, a użytkownik zaznaczył usuwanie zadań -> usuwamy (odrzucamy)
+                    const isTask = !!ev.isTask;
                     if (isTask && clearTasks) return false;
-                    // Jeśli to wydarzenie, a użytkownik zaznaczył usuwanie wydarzeń -> usuwamy (odrzucamy)
                     if (!isTask && clearEvents) return false;
                 }
-                // W przeciwnym razie zachowujemy wpis
                 return true;
             });
             

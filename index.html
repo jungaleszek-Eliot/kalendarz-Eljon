@@ -25,18 +25,9 @@
             --modal-bg: rgba(30, 35, 45, 0.95); --input-bg: rgba(0, 0, 0, 0.3); --input-text: #f7fafc;
         }
         
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; 
-            -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
-            margin: 0; padding: 15px 20px; background-color: var(--bg-color); color: var(--text-main); 
-            transition: background-color 0.4s, color 0.4s; height: 100vh; box-sizing: border-box; 
-            display: flex; flex-direction: column; overflow: hidden; 
-        }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; margin: 0; padding: 15px 20px; background-color: var(--bg-color); color: var(--text-main); transition: background-color 0.4s, color 0.4s; height: 100vh; box-sizing: border-box; display: flex; flex-direction: column; overflow: hidden; }
         
-        /* Ekran startowy dla telefonów */
-        #mobile-launcher {
-            display: none; flex-direction: column; align-items: center; justify-content: center; gap: 35px; width: 100vw; height: 100vh; position: fixed; top: 0; left: 0; background: var(--bg-color); z-index: 90; padding: 20px; box-sizing: border-box;
-        }
+        #mobile-launcher { display: none; flex-direction: column; align-items: center; justify-content: center; gap: 35px; width: 100vw; height: 100vh; position: fixed; top: 0; left: 0; background: var(--bg-color); z-index: 90; padding: 20px; box-sizing: border-box; }
         .mobile-launcher-menu { display: flex; flex-direction: column; gap: 18px; width: 100%; max-width: 290px; }
         .mobile-launch-btn { width: 100%; padding: 18px 20px; font-size: 1.15rem; font-weight: 700; text-align: center; border-radius: 16px; box-shadow: var(--shadow-outer); background-color: var(--bg-color); color: var(--text-main); border: none; cursor: pointer; transition: all 0.2s ease; }
         .mobile-launch-btn:active { box-shadow: var(--shadow-inner); transform: scale(0.97); }
@@ -172,28 +163,8 @@
         .btn-save { background: var(--accent) !important; color: white !important; }
 
         @media (max-width: 1024px) { #view-year { grid-template-columns: repeat(2, 1fr); } }
-        @media (max-width: 900px) {
-            body { height: auto; min-height: 100vh; overflow-y: auto; padding: 10px; }
-            .header-container { order: -1; width: 100%; margin-bottom: 10px; }
-            .controls-group { justify-content: center; width: 100%; }
-            #view-day-week { flex-direction: column; height: auto; }
-            .dashboard-panel { width: 100%; flex-direction: row; flex-wrap: wrap; height: auto; padding-right: 0; margin-bottom: 10px; }
-            .large-clock-widget, .holidays-widget { flex: 1; min-width: 250px; }
-            .calendar-main-area { height: 75vh; min-height: 500px; flex-shrink: 0; }
-            .flip-clock { font-size: 3.5rem; }
-            .flip-colon { font-size: 3rem; }
-        }
-        @media (max-width: 600px) {
-            #view-year { grid-template-columns: 1fr; }
-            .dashboard-panel { flex-direction: column; }
-            .days-wrapper { overflow-x: auto; overflow-y: hidden; }
-            .day-column { min-width: 140px; }
-            .time-labels { width: 50px; }
-            .time-label { font-size: 0.7rem; padding-right: 5px; }
-            .nav-btn, .theme-select { padding: 8px 12px; font-size: 0.85rem; }
-            #week-title { font-size: 1.3rem; }
-            .event-actions button { padding: 6px 12px; font-size: 1rem; }
-        }
+        @media (max-width: 900px) { body { height: auto; min-height: 100vh; overflow-y: auto; padding: 10px; } .header-container { order: -1; width: 100%; margin-bottom: 10px; } .controls-group { justify-content: center; width: 100%; } #view-day-week { flex-direction: column; height: auto; } .dashboard-panel { width: 100%; flex-direction: row; flex-wrap: wrap; height: auto; padding-right: 0; margin-bottom: 10px; } .large-clock-widget, .holidays-widget { flex: 1; min-width: 250px; } .calendar-main-area { height: 75vh; min-height: 500px; flex-shrink: 0; } .flip-clock { font-size: 3.5rem; } .flip-colon { font-size: 3rem; } }
+        @media (max-width: 600px) { #view-year { grid-template-columns: 1fr; } .dashboard-panel { flex-direction: column; } .days-wrapper { overflow-x: auto; overflow-y: hidden; } .day-column { min-width: 140px; } .time-labels { width: 50px; } .time-label { font-size: 0.7rem; padding-right: 5px; } .nav-btn, .theme-select { padding: 8px 12px; font-size: 0.85rem; } #week-title { font-size: 1.3rem; } .event-actions button { padding: 6px 12px; font-size: 1rem; } }
     </style>
 </head>
 <body>
@@ -212,6 +183,9 @@
         <div class="nav-row">
             <div class="controls-group">
                 <button id="btn-mobile-home" class="nav-btn" style="display:none;" onclick="pokazMobileLauncher()" title="Ekran startowy">🏠</button>
+                <!-- NOWY PRZYCISK DZISIEJSZEJ DATY -->
+                <button id="btn-today" class="nav-btn" style="color: var(--accent); font-weight: 800;" onclick="wrocDoDzisiaj()" title="Wróć do dzisiejszego dnia">Dzisiejsza data</button>
+                
                 <select id="app-theme" class="theme-select">
                     <option value="light">⚪ Klasyczny Jasny</option>
                     <option value="dark">⚫ Klasyczny Ciemny</option>
@@ -302,19 +276,15 @@
     <div class="modal-overlay" id="event-modal">
         <div class="modal-box">
             <h3 id="modal-title">Zarządzaj wpisem</h3>
-            
             <label style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: -10px;">Typ wpisu:</label>
             <select id="ev-type">
                 <option value="event">📅 Wydarzenie</option>
                 <option value="task">☑️ Zadanie do zrobienia</option>
                 <option value="idea30">⏳ Zasada 30 dni (Odroczenie zakupu)</option>
             </select>
-
             <input type="text" id="ev-title" placeholder="Nazwa wydarzenia lub zadania..." autocomplete="off">
-            
             <div class="modal-legend-title">Dostępne kategorie</div>
             <div class="legend-container" id="legend-container"></div>
-            
             <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: -10px; margin-top: 5px;">
                 <label style="font-size: 0.85rem; color: var(--text-muted);">Wybierz Kategorię:</label>
                 <div>
@@ -323,7 +293,6 @@
                 </div>
             </div>
             <select id="ev-category"></select>
-
             <label style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: -10px; margin-top: 5px;">Powtarzanie:</label>
             <select id="ev-repeat">
                 <option value="none">Brak (tylko raz)</option>
@@ -332,13 +301,10 @@
                 <option value="monthly">Co miesiąc</option>
                 <option value="yearly">Co rok</option>
             </select>
-
             <label style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: -10px;">Godzina rozpoczęcia:</label>
             <div class="time-row"><select id="ev-start-h"></select><span>:</span><select id="ev-start-m"></select></div>
-            
             <label style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: -10px;">Godzina zakończenia:</label>
             <div class="time-row"><select id="ev-end-h"></select><span>:</span><select id="ev-end-m"></select></div>
-
             <input type="hidden" id="ev-date"> 
             <div class="modal-btns">
                 <button class="nav-btn" onclick="zamknijModal()">Anuluj</button>
@@ -381,17 +347,7 @@
     </div>
 
     <script>
-        const DOMYSLNE_KATEGORIE = {
-            'praca': { name: 'Praca', gradient: 'linear-gradient(135deg, #3b82f6, #1d4ed8)', textColor: '#ffffff' },
-            'zmiana-dzienna': { name: 'Zmiana Dzienna', gradient: 'linear-gradient(135deg, #d8b4e2, #b886cd)', textColor: '#fff44f' },
-            'zmiana-nocna': { name: 'Zmiana Nocna', gradient: 'linear-gradient(135deg, #59357a, #3b1b5e)', textColor: '#fff44f' },
-            'dom': { name: 'Dom / Rodzina', gradient: 'linear-gradient(135deg, #10b981, #047857)', textColor: '#ffffff' },
-            'zdrowie': { name: 'Zdrowie', gradient: 'linear-gradient(135deg, #14b8a6, #0f766e)', textColor: '#ffffff' },
-            'rozrywka': { name: 'Rozrywka / Sport', gradient: 'linear-gradient(135deg, #a855f7, #7e22ce)', textColor: '#ffffff' },
-            'wazne': { name: 'Ważne / Pilne', gradient: 'linear-gradient(135deg, #ef4444, #b91c1c)', textColor: '#ffffff' },
-            'zakupy-30dni': { name: 'Zasada 30 Dni', gradient: 'linear-gradient(135deg, #eab308, #a16207)', textColor: '#ffffff' },
-            'inne': { name: 'Inne', gradient: 'linear-gradient(135deg, #94a3b8, #475569)', textColor: '#ffffff' }
-        };
+        const DOMYSLNE_KATEGORIE = { 'praca': { name: 'Praca', gradient: 'linear-gradient(135deg, #3b82f6, #1d4ed8)', textColor: '#ffffff' }, 'zmiana-dzienna': { name: 'Zmiana Dzienna', gradient: 'linear-gradient(135deg, #d8b4e2, #b886cd)', textColor: '#fff44f' }, 'zmiana-nocna': { name: 'Zmiana Nocna', gradient: 'linear-gradient(135deg, #59357a, #3b1b5e)', textColor: '#fff44f' }, 'dom': { name: 'Dom / Rodzina', gradient: 'linear-gradient(135deg, #10b981, #047857)', textColor: '#ffffff' }, 'zdrowie': { name: 'Zdrowie', gradient: 'linear-gradient(135deg, #14b8a6, #0f766e)', textColor: '#ffffff' }, 'rozrywka': { name: 'Rozrywka / Sport', gradient: 'linear-gradient(135deg, #a855f7, #7e22ce)', textColor: '#ffffff' }, 'wazne': { name: 'Ważne / Pilne', gradient: 'linear-gradient(135deg, #ef4444, #b91c1c)', textColor: '#ffffff' }, 'zakupy-30dni': { name: 'Zasada 30 Dni', gradient: 'linear-gradient(135deg, #eab308, #a16207)', textColor: '#ffffff' }, 'inne': { name: 'Inne', gradient: 'linear-gradient(135deg, #94a3b8, #475569)', textColor: '#ffffff' } };
 
         let CATEGORIES = {};
         try { CATEGORIES = JSON.parse(localStorage.getItem('mojeKategorie')) || { ...DOMYSLNE_KATEGORIE }; if (!CATEGORIES['zakupy-30dni']) { CATEGORIES['zakupy-30dni'] = DOMYSLNE_KATEGORIE['zakupy-30dni']; localStorage.setItem('mojeKategorie', JSON.stringify(CATEGORIES)); } } catch (e) { CATEGORIES = { ...DOMYSLNE_KATEGORIE }; }
@@ -420,9 +376,40 @@
         function getCategoryDef(catId) { return CATEGORIES[catId] || CATEGORIES['inne'] || { name: 'Inne', gradient: '#94a3b8', textColor: '#ffffff' }; }
         function zgadnijKategorie(title) { const t = (title || "").toLowerCase(); if (t.includes('dzienna')) return 'zmiana-dzienna'; if (t.includes('nocna')) return 'zmiana-nocna'; if (t.includes('lekarz') || t.includes('dentysta') || t.includes('badanie') || t.includes('wizyta')) return 'zdrowie'; if (t.includes('spotkanie') || t.includes('praca') || t.includes('dyżur') || t.includes('szkolenie')) return 'praca'; if (t.includes('kino') || t.includes('impreza') || t.includes('basen') || t.includes('trening') || t.includes('mecz')) return 'rozrywka'; if (t.includes('urodziny') || t.includes('szkoła') || t.includes('wywiadówka') || t.includes('zakupy')) return 'dom'; if (t.includes('ważne') || t.includes('zapłacić') || t.includes('rat') || t.includes('rachunek') || t.includes('!')) return 'wazne'; return 'inne'; }
 
-        let ostGodzina = -1; let ostMinuta = -1;
-        function updateClock() { const now = new Date(); const h = String(now.getHours()).padStart(2, '0'); const m = String(now.getMinutes()).padStart(2, '0'); const hEl = document.getElementById('flip-hour'); const mEl = document.getElementById('flip-minute'); if (h !== ostGodzina && hEl) { hEl.innerText = h; hEl.classList.remove('flip-anim'); void hEl.offsetWidth; hEl.classList.add('flip-anim'); ostGodzina = h; } if (m !== ostMinuta && mEl) { mEl.innerText = m; mEl.classList.remove('flip-anim'); void mEl.offsetWidth; mEl.classList.add('flip-anim'); ostMinuta = m; } }
+        // --- Zegar i Data dzisiejsza ---
+        let ostGodzina = -1; let ostMinuta = -1; let ostDzien = -1;
+        
+        function updateClock() { 
+            const now = new Date(); 
+            const h = String(now.getHours()).padStart(2, '0'); const m = String(now.getMinutes()).padStart(2, '0'); const dzienMiesiaca = now.getDate();
+            const hEl = document.getElementById('flip-hour'); const mEl = document.getElementById('flip-minute'); 
+            
+            if (h !== ostGodzina && hEl) { hEl.innerText = h; hEl.classList.remove('flip-anim'); void hEl.offsetWidth; hEl.classList.add('flip-anim'); ostGodzina = h; } 
+            if (m !== ostMinuta && mEl) { mEl.innerText = m; mEl.classList.remove('flip-anim'); void mEl.offsetWidth; mEl.classList.add('flip-anim'); ostMinuta = m; } 
+
+            // Aktualizacja napisu na nowym przycisku o północy lub po uruchomieniu
+            if (dzienMiesiaca !== ostDzien) {
+                aktualizujPrzyciskDzisiaj(now);
+                ostDzien = dzienMiesiaca;
+            }
+        }
         setInterval(updateClock, 1000); updateClock();
+
+        function aktualizujPrzyciskDzisiaj(dataOdniesienia) {
+            const btn = document.getElementById('btn-today');
+            if (btn) {
+                const dz = String(dataOdniesienia.getDate()).padStart(2, '0');
+                const ms = String(dataOdniesienia.getMonth() + 1).padStart(2, '0');
+                const rk = dataOdniesienia.getFullYear();
+                btn.innerText = `Dzisiejsza data: ${dz}.${ms}.${rk}`;
+            }
+        }
+
+        // --- Logika przycisku Powrót do dzisiaj ---
+        function wrocDoDzisiaj() {
+            aktualnaDataPrzegladania = new Date();
+            odswiezWidok();
+        }
 
         const flipClockEl = document.getElementById('flip-clock-element');
         flipClockEl.addEventListener('dblclick', () => { if (!document.fullscreenElement) { flipClockEl.classList.add('fullscreen-clock-mode'); flipClockEl.requestFullscreen().catch(err => console.log(err)); } else { document.exitFullscreen(); } }); document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement) flipClockEl.classList.remove('fullscreen-clock-mode'); });
@@ -463,19 +450,9 @@
         let aktualnaDataPrzegladania = new Date(); let wydarzeniaGoogle = []; let domColumns = []; let editingEventId = null; let editingInstanceTime = null;
 
         let localPeer = null; let activeConn = null; let mySyncPin = '';
-
         function otworzModalSync() { document.getElementById('sync-modal').style.display = 'flex'; initP2PSync(); const lastRemotePin = localStorage.getItem('LAST_REMOTE_PIN'); if (lastRemotePin) { const pinInput = document.getElementById('remotePinInput'); if (pinInput) pinInput.value = lastRemotePin; } }
         function zamknijModalSync() { document.getElementById('sync-modal').style.display = 'none'; }
-
-        function initP2PSync() {
-            if (typeof Peer === 'undefined' || typeof QRCode === 'undefined') return;
-            if (localPeer && !localPeer.destroyed) return;
-            let savedPin = localStorage.getItem('MY_SYNC_PIN'); if (!savedPin) { savedPin = Math.floor(100000 + Math.random() * 900000).toString(); localStorage.setItem('MY_SYNC_PIN', savedPin); }
-            mySyncPin = savedPin; const pinEl = document.getElementById('mySyncPinDisplay'); if (pinEl) pinEl.textContent = mySyncPin;
-            const statusEl = document.getElementById('syncPeerStatus'); if (statusEl) statusEl.textContent = "Inicjalizacja..."; 
-            const qrTarget = document.getElementById('qrcode'); if (qrTarget) { qrTarget.innerHTML = ''; const syncUrl = window.location.href.split('#')[0] + '#sync=' + mySyncPin; try { new QRCode(qrTarget, { text: syncUrl, width: 100, height: 100, colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M }); } catch(e) { } }
-            try { localPeer = new Peer('kalendarz-' + mySyncPin, { config: { 'iceServers': [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:stun1.l.google.com:19302' }] } }); localPeer.on('open', () => { if (statusEl) statusEl.textContent = "Gotowy"; }); localPeer.on('connection', (conn) => { setupConnection(conn); alert('Drugie urządzenie się podłączyło!'); }); localPeer.on('error', (err) => { if (statusEl) statusEl.textContent = "Błąd"; }); } catch (e) { }
-        }
+        function initP2PSync() { if (typeof Peer === 'undefined' || typeof QRCode === 'undefined') return; if (localPeer && !localPeer.destroyed) return; let savedPin = localStorage.getItem('MY_SYNC_PIN'); if (!savedPin) { savedPin = Math.floor(100000 + Math.random() * 900000).toString(); localStorage.setItem('MY_SYNC_PIN', savedPin); } mySyncPin = savedPin; const pinEl = document.getElementById('mySyncPinDisplay'); if (pinEl) pinEl.textContent = mySyncPin; const statusEl = document.getElementById('syncPeerStatus'); if (statusEl) statusEl.textContent = "Inicjalizacja..."; const qrTarget = document.getElementById('qrcode'); if (qrTarget) { qrTarget.innerHTML = ''; const syncUrl = window.location.href.split('#')[0] + '#sync=' + mySyncPin; try { new QRCode(qrTarget, { text: syncUrl, width: 100, height: 100, colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M }); } catch(e) { } } try { localPeer = new Peer('kalendarz-' + mySyncPin, { config: { 'iceServers': [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:stun1.l.google.com:19302' }] } }); localPeer.on('open', () => { if (statusEl) statusEl.textContent = "Gotowy"; }); localPeer.on('connection', (conn) => { setupConnection(conn); alert('Drugie urządzenie się podłączyło!'); }); localPeer.on('error', (err) => { if (statusEl) statusEl.textContent = "Błąd"; }); } catch (e) { } }
         function connectAndPairPeer() { const pinInput = document.getElementById('remotePinInput'); const pin = pinInput ? pinInput.value.trim() : ''; if (!pin) return alert('Wpisz kod PIN!'); const statusEl = document.getElementById('syncPeerStatus'); if (statusEl && statusEl.textContent === "Inicjalizacja...") return alert('Poczekaj...'); localStorage.setItem('LAST_REMOTE_PIN', pin); if (!localPeer) return; if (statusEl) statusEl.textContent = "Łączenie..."; const conn = localPeer.connect('kalendarz-' + pin, { reliable: true }); let connectionTimeout = setTimeout(() => { if (statusEl && statusEl.textContent === "Łączenie...") { statusEl.textContent = "Gotowy"; alert('Brak odpowiedzi. Sieć blokuje sygnał P2P!'); conn.close(); } }, 8000); conn.on('open', () => { clearTimeout(connectionTimeout); setupConnection(conn); alert('Urządzenia sparowane pomyślnie!'); if (statusEl) statusEl.textContent = "Połączono"; }); }
         function setupConnection(conn) { activeConn = conn; activeConn.on('data', (payload) => { if (payload.type === 'PUSH_DATA') { if (confirm('Drugie urządzenie przesyła nową bazę danych. Zastąpić obecne dane?')) { if (payload.data.wydarzenia) { wydarzeniaLokalne = payload.data.wydarzenia; localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne)); } if (payload.data.kategorie) { CATEGORIES = payload.data.kategorie; localStorage.setItem('mojeKategorie', JSON.stringify(CATEGORIES)); inicjalizujKategorie(); } zamknijModalSync(); odswiezWidok(); alert('Baza zaktualizowana!'); } } else if (payload.type === 'PULL_REQUEST') { if (confirm('Drugie urządzenie prosi o pobranie Twojej bazy kalendarza. Udostępnić?')) { activeConn.send({ type: 'PUSH_DATA', data: { wydarzenia: wydarzeniaLokalne, kategorie: CATEGORIES } }); alert('Wysłano dane do drugiego urządzenia!'); } } }); activeConn.on('close', () => { alert('Połączenie rozłączone.'); }); }
         function sendDataToRemote() { if (!activeConn || !activeConn.open) return alert('Brak aktywnego połączenia!'); if (confirm('UWAGA! Zastąpisz WSZYSTKIE dane na drugim urządzeniu. Kontynuować?')) { activeConn.send({ type: 'PUSH_DATA', data: { wydarzenia: wydarzeniaLokalne, kategorie: CATEGORIES } }); alert('Wysłano dane do drugiego urządzenia!'); } }
@@ -496,258 +473,73 @@
 
         function isToday(d) { const now = new Date(); return d.getDate() === now.getDate() && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear(); }
 
-        // --- Nowa funkcja do odrywania wydarzeń z serii (Indywidualna Pamięć) ---
         function detachInstance(id, instanceTime) {
-            let parentIndex = wydarzeniaLokalne.findIndex(e => e.id === id);
-            if (parentIndex === -1) return null;
-            let parent = wydarzeniaLokalne[parentIndex];
-            
-            if (!parent.exceptions) parent.exceptions = [];
-            if (!parent.exceptions.includes(instanceTime)) parent.exceptions.push(instanceTime);
-            
-            let detached = JSON.parse(JSON.stringify(parent));
-            detached.id = Date.now().toString() + Math.random().toString(36).substr(2, 5);
-            detached.repeat = 'none';
-            detached.exceptions = [];
-            
-            let st = new Date(instanceTime);
-            let duration = new Date(parent.end).getTime() - new Date(parent.start).getTime();
-            let en = new Date(instanceTime + duration);
-            detached.start = st.toISOString();
-            detached.end = en.toISOString();
-            
-            wydarzeniaLokalne.push(detached);
-            return detached;
+            let parentIndex = wydarzeniaLokalne.findIndex(e => e.id === id); if (parentIndex === -1) return null; let parent = wydarzeniaLokalne[parentIndex];
+            if (!parent.exceptions) parent.exceptions = []; if (!parent.exceptions.includes(instanceTime)) parent.exceptions.push(instanceTime);
+            let detached = JSON.parse(JSON.stringify(parent)); detached.id = Date.now().toString() + Math.random().toString(36).substr(2, 5); detached.repeat = 'none'; detached.exceptions = [];
+            let st = new Date(instanceTime); let duration = new Date(parent.end).getTime() - new Date(parent.start).getTime(); let en = new Date(instanceTime + duration);
+            detached.start = st.toISOString(); detached.end = en.toISOString(); wydarzeniaLokalne.push(detached); return detached;
         }
 
         function expandEvents(events) {
-            let expanded = [];
-            let viewLimitStart = new Date(aktualnaDataPrzegladania); viewLimitStart.setFullYear(viewLimitStart.getFullYear() - 2);
-            let viewLimitEnd = new Date(aktualnaDataPrzegladania); viewLimitEnd.setFullYear(viewLimitEnd.getFullYear() + 2);
-
+            let expanded = []; let viewLimitStart = new Date(aktualnaDataPrzegladania); viewLimitStart.setFullYear(viewLimitStart.getFullYear() - 2); let viewLimitEnd = new Date(aktualnaDataPrzegladania); viewLimitEnd.setFullYear(viewLimitEnd.getFullYear() + 2);
             events.forEach(ev => {
-                if (!ev.repeat || ev.repeat === 'none') {
-                    expanded.push({ ...ev, instanceTime: new Date(ev.start).getTime() });
-                } else {
+                if (!ev.repeat || ev.repeat === 'none') { expanded.push({ ...ev, instanceTime: new Date(ev.start).getTime() }); } else {
                     let currStart = new Date(ev.start); let duration = new Date(ev.end).getTime() - currStart.getTime(); let safety = 0;
-                    if (currStart < viewLimitStart) {
-                         if (ev.repeat === 'daily') { let days = Math.floor((viewLimitStart - currStart) / 86400000); currStart.setDate(currStart.getDate() + days); } 
-                         else if (ev.repeat === 'weekly') { let weeks = Math.floor((viewLimitStart - currStart) / (86400000*7)); currStart.setDate(currStart.getDate() + weeks * 7); } 
-                         else if (ev.repeat === 'monthly') { let months = (viewLimitStart.getFullYear() - currStart.getFullYear()) * 12 + (viewLimitStart.getMonth() - currStart.getMonth()); currStart.setMonth(currStart.getMonth() + months); } 
-                         else if (ev.repeat === 'yearly') { let years = viewLimitStart.getFullYear() - currStart.getFullYear(); currStart.setFullYear(currStart.getFullYear() + years); }
-                    }
-                    while (currStart <= viewLimitEnd && safety < 1000) {
-                        if (currStart.getTime() + duration >= viewLimitStart.getTime()) {
-                            let iTime = currStart.getTime();
-                            if (!ev.exceptions || !ev.exceptions.includes(iTime)) {
-                                expanded.push({ ...ev, start: new Date(currStart), end: new Date(currStart.getTime() + duration), originalId: ev.id, instanceTime: iTime });
-                            }
-                        }
-                        if (ev.repeat === 'daily') currStart.setDate(currStart.getDate() + 1); else if (ev.repeat === 'weekly') currStart.setDate(currStart.getDate() + 7); else if (ev.repeat === 'monthly') currStart.setMonth(currStart.getMonth() + 1); else if (ev.repeat === 'yearly') currStart.setFullYear(currStart.getFullYear() + 1);
-                        safety++;
-                    }
+                    if (currStart < viewLimitStart) { if (ev.repeat === 'daily') { let days = Math.floor((viewLimitStart - currStart) / 86400000); currStart.setDate(currStart.getDate() + days); } else if (ev.repeat === 'weekly') { let weeks = Math.floor((viewLimitStart - currStart) / (86400000*7)); currStart.setDate(currStart.getDate() + weeks * 7); } else if (ev.repeat === 'monthly') { let months = (viewLimitStart.getFullYear() - currStart.getFullYear()) * 12 + (viewLimitStart.getMonth() - currStart.getMonth()); currStart.setMonth(currStart.getMonth() + months); } else if (ev.repeat === 'yearly') { let years = viewLimitStart.getFullYear() - currStart.getFullYear(); currStart.setFullYear(currStart.getFullYear() + years); } }
+                    while (currStart <= viewLimitEnd && safety < 1000) { if (currStart.getTime() + duration >= viewLimitStart.getTime()) { let iTime = currStart.getTime(); if (!ev.exceptions || !ev.exceptions.includes(iTime)) { expanded.push({ ...ev, start: new Date(currStart), end: new Date(currStart.getTime() + duration), originalId: ev.id, instanceTime: iTime }); } }
+                        if (ev.repeat === 'daily') currStart.setDate(currStart.getDate() + 1); else if (ev.repeat === 'weekly') currStart.setDate(currStart.getDate() + 7); else if (ev.repeat === 'monthly') currStart.setMonth(currStart.getMonth() + 1); else if (ev.repeat === 'yearly') currStart.setFullYear(currStart.getFullYear() + 1); safety++; }
                 }
-            });
-            return expanded;
+            }); return expanded;
         }
 
         function odswiezWidok() {
             document.getElementById('view-day-week').style.display = 'none'; document.getElementById('view-month').style.display = 'none'; document.getElementById('view-year').style.display = 'none';
             const tytulEl = document.getElementById('week-title');
-            
-            if (currentView === 'day' || currentView.startsWith('week')) {
-                let nrTygodnia = getWeekNumber(aktualnaDataPrzegladania);
-                if (currentView === 'day') { let dz = String(aktualnaDataPrzegladania.getDate()).padStart(2, '0'); let ms = String(aktualnaDataPrzegladania.getMonth() + 1).padStart(2, '0'); tytulEl.innerText = `${dz}.${ms}.${aktualnaDataPrzegladania.getFullYear()}`;
-                } else if (currentView === 'weekA') { tytulEl.innerText = `Tydzień ${nrTygodnia} ${formatujZakresTygodnia(aktualnaDataPrzegladania, 'A')}`;
-                } else if (currentView === 'weekB') { tytulEl.innerText = `Tydzień ${nrTygodnia} ${formatujZakresTygodnia(aktualnaDataPrzegladania, 'B')}`;
-                } else if (currentView === 'weekC') { tytulEl.innerText = `Tydzień ${nrTygodnia} ${formatujZakresTygodnia(aktualnaDataPrzegladania, 'C')}`;
-                } else if (currentView === 'weekD') { tytulEl.innerText = `Tydzień ${nrTygodnia} ${formatujZakresTygodnia(aktualnaDataPrzegladania, 'D')}`; }
-            } else if (currentView === 'month') { const miesiace = ['Styczeń','Luty','Marzec','Kwiecień','Maj','Czerwiec','Lipiec','Sierpień','Wrzesień','Październik','Listopad','Grudzień']; tytulEl.innerText = `${miesiace[aktualnaDataPrzegladania.getMonth()]} ${aktualnaDataPrzegladania.getFullYear()}`;
-            } else if (currentView === 'year') { tytulEl.innerText = `${aktualnaDataPrzegladania.getFullYear()}`; }
-
+            if (currentView === 'day' || currentView.startsWith('week')) { let nrTygodnia = getWeekNumber(aktualnaDataPrzegladania); if (currentView === 'day') { let dz = String(aktualnaDataPrzegladania.getDate()).padStart(2, '0'); let ms = String(aktualnaDataPrzegladania.getMonth() + 1).padStart(2, '0'); tytulEl.innerText = `${dz}.${ms}.${aktualnaDataPrzegladania.getFullYear()}`; } else if (currentView === 'weekA') { tytulEl.innerText = `Tydzień ${nrTygodnia} ${formatujZakresTygodnia(aktualnaDataPrzegladania, 'A')}`; } else if (currentView === 'weekB') { tytulEl.innerText = `Tydzień ${nrTygodnia} ${formatujZakresTygodnia(aktualnaDataPrzegladania, 'B')}`; } else if (currentView === 'weekC') { tytulEl.innerText = `Tydzień ${nrTygodnia} ${formatujZakresTygodnia(aktualnaDataPrzegladania, 'C')}`; } else if (currentView === 'weekD') { tytulEl.innerText = `Tydzień ${nrTygodnia} ${formatujZakresTygodnia(aktualnaDataPrzegladania, 'D')}`; } } else if (currentView === 'month') { const miesiace = ['Styczeń','Luty','Marzec','Kwiecień','Maj','Czerwiec','Lipiec','Sierpień','Wrzesień','Październik','Listopad','Grudzień']; tytulEl.innerText = `${miesiace[aktualnaDataPrzegladania.getMonth()]} ${aktualnaDataPrzegladania.getFullYear()}`; } else if (currentView === 'year') { tytulEl.innerText = `${aktualnaDataPrzegladania.getFullYear()}`; }
             let sformatowaneLokalne = wydarzeniaLokalne.map(ev => ({ ...ev, start: new Date(ev.start), end: new Date(ev.end) }));
             sformatowaneLokalne.forEach(ev => { const autoCategory = zgadnijKategorie(ev.title); if (autoCategory === 'zmiana-dzienna' || autoCategory === 'zmiana-nocna') { ev.category = autoCategory; } });
-            
             let poszerzoneLokalne = expandEvents(sformatowaneLokalne);
             let wszystkieWydarzenia = [...wydarzeniaGoogle.map(e => ({...e, isGoogle: true})), ...poszerzoneLokalne.map(e => ({...e, isGoogle: false}))];
-
-            if (currentView === 'day' || currentView.startsWith('week')) { document.getElementById('view-day-week').style.display = 'flex'; budujDzienTydzien(wszystkieWydarzenia); } 
-            else if (currentView === 'month') { document.getElementById('view-month').style.display = 'flex'; budujMiesiac(wszystkieWydarzenia); } 
-            else if (currentView === 'year') { document.getElementById('view-year').style.display = 'grid'; budujRok(wszystkieWydarzenia); }
+            if (currentView === 'day' || currentView.startsWith('week')) { document.getElementById('view-day-week').style.display = 'flex'; budujDzienTydzien(wszystkieWydarzenia); } else if (currentView === 'month') { document.getElementById('view-month').style.display = 'flex'; budujMiesiac(wszystkieWydarzenia); } else if (currentView === 'year') { document.getElementById('view-year').style.display = 'grid'; budujRok(wszystkieWydarzenia); }
             aktualizujSwieta();
         }
 
         function budujDzienTydzien(wszystkieWydarzenia) {
-            const wrapper = document.getElementById('days-wrapper'); wrapper.innerHTML = '<div id="current-time-line"></div>'; domColumns = [];
-            let numDays = currentView === 'day' ? 1 : 7; const daysNames = ['Niedziela', 'Poniedziałek', 'Wtorek', 'Środa', 'Czwartek', 'Piątek', 'Sobota'];
-            let viewStart = new Date(aktualnaDataPrzegladania);
-            
-            if (currentView === 'weekB') { viewStart.setDate(viewStart.getDate() - 1); } else if (currentView === 'weekC') { viewStart.setDate(viewStart.getDate() - 3); } else if (currentView === 'weekD') { let dNum = viewStart.getDay(); let diff = viewStart.getDate() - dNum + (dNum === 0 ? -6 : 1); viewStart.setDate(diff); }
-            viewStart.setHours(0,0,0,0);
+            const wrapper = document.getElementById('days-wrapper'); wrapper.innerHTML = '<div id="current-time-line"></div>'; domColumns = []; let numDays = currentView === 'day' ? 1 : 7; const daysNames = ['Niedziela', 'Poniedziałek', 'Wtorek', 'Środa', 'Czwartek', 'Piątek', 'Sobota']; let viewStart = new Date(aktualnaDataPrzegladania);
+            if (currentView === 'weekB') { viewStart.setDate(viewStart.getDate() - 1); } else if (currentView === 'weekC') { viewStart.setDate(viewStart.getDate() - 3); } else if (currentView === 'weekD') { let dNum = viewStart.getDay(); let diff = viewStart.getDate() - dNum + (dNum === 0 ? -6 : 1); viewStart.setDate(diff); } viewStart.setHours(0,0,0,0);
 
             for (let i = 0; i < numDays; i++) {
-                let d = new Date(viewStart); d.setDate(d.getDate() + i);
-                const col = document.createElement('div'); col.className = 'day-column';
-                if(isToday(d)) col.classList.add('current-day-highlight'); col.dataset.date = d.toISOString(); 
-                const gridBg = document.createElement('div'); gridBg.className = 'day-grid-bg'; col.appendChild(gridBg);
-                const header = document.createElement('div'); header.className = 'day-header';
-                if(isToday(d)) header.classList.add('current-day-text');
-                let dz = String(d.getDate()).padStart(2, '0'); let ms = String(d.getMonth() + 1).padStart(2, '0');
-                header.innerHTML = `${daysNames[d.getDay()]}<span class="day-date-sub">${dz}.${ms}</span>`;
-                col.appendChild(header); wrapper.appendChild(col); domColumns.push(col);
+                let d = new Date(viewStart); d.setDate(d.getDate() + i); const col = document.createElement('div'); col.className = 'day-column'; if(isToday(d)) col.classList.add('current-day-highlight'); col.dataset.date = d.toISOString(); const gridBg = document.createElement('div'); gridBg.className = 'day-grid-bg'; col.appendChild(gridBg); const header = document.createElement('div'); header.className = 'day-header'; if(isToday(d)) header.classList.add('current-day-text'); let dz = String(d.getDate()).padStart(2, '0'); let ms = String(d.getMonth() + 1).padStart(2, '0'); header.innerHTML = `${daysNames[d.getDay()]}<span class="day-date-sub">${dz}.${ms}</span>`; col.appendChild(header); wrapper.appendChild(col); domColumns.push(col);
 
-                col.addEventListener('click', (e) => {
-                    if(e.target !== col && e.target !== gridBg) return; 
-                    const rect = col.getBoundingClientRect(); const kontenerWysokosc = col.clientHeight - 40; const godzinaWysokosc = kontenerWysokosc / 24;
-                    let kliknietaGodzina = Math.floor((e.clientY - rect.top - 40) / godzinaWysokosc); 
-                    if (kliknietaGodzina < 0) kliknietaGodzina = 0; if (kliknietaGodzina > 23) kliknietaGodzina = 23; otworzModal(d, kliknietaGodzina);
-                });
-
-                // Wskaźnik upuszczania - Logika Drag & Drop
-                col.addEventListener('dragover', (e) => { 
-                    e.preventDefault(); col.classList.add('drag-over'); 
-                    
-                    let indicator = document.getElementById('drag-drop-indicator');
-                    if (!indicator) {
-                        indicator = document.createElement('div'); indicator.id = 'drag-drop-indicator'; indicator.style.position = 'absolute'; indicator.style.left = '0'; indicator.style.right = '0'; indicator.style.height = '2px'; indicator.style.backgroundColor = 'var(--highlight)'; indicator.style.boxShadow = '0 0 8px var(--highlight)'; indicator.style.zIndex = '100'; indicator.style.pointerEvents = 'none';
-                        indicator.innerHTML = '<span id="drag-drop-time" style="position:absolute; right:2px; top:-16px; font-size:10px; background:var(--highlight); color:white; padding:1px 4px; border-radius:4px; font-weight:bold;"></span>';
-                    }
-                    if (indicator.parentElement !== col) { col.appendChild(indicator); }
-                    indicator.style.display = 'block';
-                    
-                    const rect = col.getBoundingClientRect(); const kontenerWysokosc = col.clientHeight - 40; const godzinaWysokosc = kontenerWysokosc / 24; const upuszczenieY = e.clientY - rect.top - 40;
-                    let nowaGodzinaFloat = upuszczenieY / godzinaWysokosc; if (nowaGodzinaFloat < 0) nowaGodzinaFloat = 0; if (nowaGodzinaFloat > 23.75) nowaGodzinaFloat = 23.75; 
-                    const kwadranse = Math.round(nowaGodzinaFloat * 4) / 4; const nowaGodzina = Math.floor(kwadranse); const noweMinuty = Math.round((kwadranse - nowaGodzina) * 60);
-                    
-                    indicator.style.top = `${40 + (kwadranse * godzinaWysokosc)}px`;
-                    document.getElementById('drag-drop-time').innerText = String(nowaGodzina).padStart(2,'0') + ':' + String(noweMinuty).padStart(2,'0');
-                });
-                
-                col.addEventListener('dragleave', (e) => { 
-                    col.classList.remove('drag-over'); 
-                    let ind = document.getElementById('drag-drop-indicator');
-                    if (ind && e.relatedTarget && !col.contains(e.relatedTarget)) { ind.style.display = 'none'; }
-                });
-                
-                col.addEventListener('drop', (e) => {
-                    e.preventDefault(); col.classList.remove('drag-over');
-                    let ind = document.getElementById('drag-drop-indicator'); if (ind) ind.style.display = 'none';
-
-                    const rawData = e.dataTransfer.getData('text/plain'); if (!rawData) return;
-                    let data; try { data = JSON.parse(rawData); } catch(err) { data = { id: rawData, instanceTime: null }; }
-                    
-                    const eventIndex = wydarzeniaLokalne.findIndex(ev => ev.id === data.id);
-                    if (eventIndex > -1) {
-                        const rect = col.getBoundingClientRect(); const kontenerWysokosc = col.clientHeight - 40; const godzinaWysokosc = kontenerWysokosc / 24; const upuszczenieY = e.clientY - rect.top - 40;
-                        let nowaGodzinaFloat = upuszczenieY / godzinaWysokosc; if (nowaGodzinaFloat < 0) nowaGodzinaFloat = 0; if (nowaGodzinaFloat > 23.75) nowaGodzinaFloat = 23.75; 
-                        const kwadranse = Math.round(nowaGodzinaFloat * 4) / 4; const nowaGodzina = Math.floor(kwadranse); const noweMinuty = Math.round((kwadranse - nowaGodzina) * 60);
-                        
-                        const stareEv = wydarzeniaLokalne[eventIndex]; const czasTrwania = new Date(stareEv.end).getTime() - new Date(stareEv.start).getTime();
-                        const docelowaDataKolumny = new Date(col.dataset.date); docelowaDataKolumny.setHours(nowaGodzina, noweMinuty, 0, 0); const nowyKoniec = new Date(docelowaDataKolumny.getTime() + czasTrwania);
-                        const isRepeating = stareEv.repeat && stareEv.repeat !== 'none' && data.instanceTime;
-
-                        if (e.ctrlKey) { 
-                            let nowaKopia = JSON.parse(JSON.stringify(stareEv)); nowaKopia.id = Date.now().toString() + Math.random().toString(36).substr(2, 5); nowaKopia.repeat = 'none'; nowaKopia.exceptions = []; nowaKopia.start = docelowaDataKolumny.toISOString(); nowaKopia.end = nowyKoniec.toISOString(); wydarzeniaLokalne.push(nowaKopia);
-                        } 
-                        else { 
-                            if (isRepeating) {
-                                let detached = detachInstance(data.id, data.instanceTime); detached.start = docelowaDataKolumny.toISOString(); detached.end = nowyKoniec.toISOString();
-                            } else {
-                                wydarzeniaLokalne[eventIndex].start = docelowaDataKolumny.toISOString(); wydarzeniaLokalne[eventIndex].end = nowyKoniec.toISOString(); 
-                            }
-                        }
-                        localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne)); odswiezWidok();
-                    }
-                });
-            }
-            renderEvents(wszystkieWydarzenia, viewStart, numDays); updateCurrentTimeLine(numDays);
+                col.addEventListener('click', (e) => { if(e.target !== col && e.target !== gridBg) return; const rect = col.getBoundingClientRect(); const godzinaWysokosc = (col.clientHeight - 40) / 24; let kliknietaGodzina = Math.floor((e.clientY - rect.top - 40) / godzinaWysokosc); if (kliknietaGodzina < 0) kliknietaGodzina = 0; if (kliknietaGodzina > 23) kliknietaGodzina = 23; otworzModal(d, kliknietaGodzina); });
+                col.addEventListener('dragover', (e) => { e.preventDefault(); col.classList.add('drag-over'); let indicator = document.getElementById('drag-drop-indicator'); if (!indicator) { indicator = document.createElement('div'); indicator.id = 'drag-drop-indicator'; indicator.style.position = 'absolute'; indicator.style.left = '0'; indicator.style.right = '0'; indicator.style.height = '2px'; indicator.style.backgroundColor = 'var(--highlight)'; indicator.style.boxShadow = '0 0 8px var(--highlight)'; indicator.style.zIndex = '100'; indicator.style.pointerEvents = 'none'; indicator.innerHTML = '<span id="drag-drop-time" style="position:absolute; right:2px; top:-16px; font-size:10px; background:var(--highlight); color:white; padding:1px 4px; border-radius:4px; font-weight:bold;"></span>'; } if (indicator.parentElement !== col) { col.appendChild(indicator); } indicator.style.display = 'block'; const rect = col.getBoundingClientRect(); const godzinaWysokosc = (col.clientHeight - 40) / 24; const upuszczenieY = e.clientY - rect.top - 40; let nowaGodzinaFloat = upuszczenieY / godzinaWysokosc; if (nowaGodzinaFloat < 0) nowaGodzinaFloat = 0; if (nowaGodzinaFloat > 23.75) nowaGodzinaFloat = 23.75; const kwadranse = Math.round(nowaGodzinaFloat * 4) / 4; const nowaGodzina = Math.floor(kwadranse); const noweMinuty = Math.round((kwadranse - nowaGodzina) * 60); indicator.style.top = `${40 + (kwadranse * godzinaWysokosc)}px`; document.getElementById('drag-drop-time').innerText = String(nowaGodzina).padStart(2,'0') + ':' + String(noweMinuty).padStart(2,'0'); });
+                col.addEventListener('dragleave', (e) => { col.classList.remove('drag-over'); let ind = document.getElementById('drag-drop-indicator'); if (ind && e.relatedTarget && !col.contains(e.relatedTarget)) { ind.style.display = 'none'; } });
+                col.addEventListener('drop', (e) => { e.preventDefault(); col.classList.remove('drag-over'); let ind = document.getElementById('drag-drop-indicator'); if (ind) ind.style.display = 'none'; const rawData = e.dataTransfer.getData('text/plain'); if (!rawData) return; let data; try { data = JSON.parse(rawData); } catch(err) { data = { id: rawData, instanceTime: null }; } const eventIndex = wydarzeniaLokalne.findIndex(ev => ev.id === data.id); if (eventIndex > -1) { const rect = col.getBoundingClientRect(); const godzinaWysokosc = (col.clientHeight - 40) / 24; const upuszczenieY = e.clientY - rect.top - 40; let nowaGodzinaFloat = upuszczenieY / godzinaWysokosc; if (nowaGodzinaFloat < 0) nowaGodzinaFloat = 0; if (nowaGodzinaFloat > 23.75) nowaGodzinaFloat = 23.75; const kwadranse = Math.round(nowaGodzinaFloat * 4) / 4; const nowaGodzina = Math.floor(kwadranse); const noweMinuty = Math.round((kwadranse - nowaGodzina) * 60); const stareEv = wydarzeniaLokalne[eventIndex]; const czasTrwania = new Date(stareEv.end).getTime() - new Date(stareEv.start).getTime(); const docelowaDataKolumny = new Date(col.dataset.date); docelowaDataKolumny.setHours(nowaGodzina, noweMinuty, 0, 0); const nowyKoniec = new Date(docelowaDataKolumny.getTime() + czasTrwania); const isRepeating = stareEv.repeat && stareEv.repeat !== 'none' && data.instanceTime; if (e.ctrlKey) { let nowaKopia = JSON.parse(JSON.stringify(stareEv)); nowaKopia.id = Date.now().toString() + Math.random().toString(36).substr(2, 5); nowaKopia.repeat = 'none'; nowaKopia.exceptions = []; nowaKopia.start = docelowaDataKolumny.toISOString(); nowaKopia.end = nowyKoniec.toISOString(); wydarzeniaLokalne.push(nowaKopia); } else { if (isRepeating) { let detached = detachInstance(data.id, data.instanceTime); detached.start = docelowaDataKolumny.toISOString(); detached.end = nowyKoniec.toISOString(); } else { wydarzeniaLokalne[eventIndex].start = docelowaDataKolumny.toISOString(); wydarzeniaLokalne[eventIndex].end = nowyKoniec.toISOString(); } } localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne)); odswiezWidok(); } });
+            } renderEvents(wszystkieWydarzenia, viewStart, numDays); updateCurrentTimeLine(numDays);
         }
 
         function renderEvents(events, viewStart, numDays) {
-            const endOfWeek = new Date(viewStart); endOfWeek.setDate(endOfWeek.getDate() + numDays - 1); endOfWeek.setHours(23,59,59,999);
-            let dayLayouts = Array.from({length: numDays}, () => []);
-
-            events.forEach(event => {
-                if (!event.start || !event.end || isNaN(event.start.getTime()) || isNaN(event.end.getTime()) || event.end <= viewStart || event.start >= endOfWeek) return;
-                let obecnyPoczatekCzesc = new Date(event.start); const ostatecznyKoniec = new Date(event.end);
-                while (obecnyPoczatekCzesc < ostatecznyKoniec) {
-                    let koniecBiezacegoDnia = new Date(obecnyPoczatekCzesc); koniecBiezacegoDnia.setHours(23, 59, 59, 999);
-                    let obecnyKoniecCzesc = new Date(Math.min(koniecBiezacegoDnia, ostatecznyKoniec));
-                    if (obecnyPoczatekCzesc >= viewStart && obecnyPoczatekCzesc <= endOfWeek) {
-                        let vStart0 = new Date(viewStart); vStart0.setHours(0,0,0,0); let eStart0 = new Date(obecnyPoczatekCzesc); eStart0.setHours(0,0,0,0); let dayIndexFixed = Math.round((eStart0 - vStart0) / 86400000);
-                        if (dayIndexFixed >= 0 && dayIndexFixed < numDays) {
-                            const startHour = obecnyPoczatekCzesc.getHours() + (obecnyPoczatekCzesc.getMinutes() / 60); const endHour = obecnyKoniecCzesc.getHours() + (obecnyKoniecCzesc.getMinutes() / 60) + (obecnyKoniecCzesc.getSeconds() > 0 ? 0.01 : 0);
-                            dayLayouts[dayIndexFixed].push({ event, startHour, endHour, isLocal: !event.isGoogle, isContinuation: obecnyPoczatekCzesc.getTime() > event.start.getTime() });
-                        }
-                    }
-                    obecnyPoczatekCzesc = new Date(koniecBiezacegoDnia.getTime() + 1);
-                }
-            });
-
+            const endOfWeek = new Date(viewStart); endOfWeek.setDate(endOfWeek.getDate() + numDays - 1); endOfWeek.setHours(23,59,59,999); let dayLayouts = Array.from({length: numDays}, () => []);
+            events.forEach(event => { if (!event.start || !event.end || isNaN(event.start.getTime()) || isNaN(event.end.getTime()) || event.end <= viewStart || event.start >= endOfWeek) return; let obecnyPoczatekCzesc = new Date(event.start); const ostatecznyKoniec = new Date(event.end); while (obecnyPoczatekCzesc < ostatecznyKoniec) { let koniecBiezacegoDnia = new Date(obecnyPoczatekCzesc); koniecBiezacegoDnia.setHours(23, 59, 59, 999); let obecnyKoniecCzesc = new Date(Math.min(koniecBiezacegoDnia, ostatecznyKoniec)); if (obecnyPoczatekCzesc >= viewStart && obecnyPoczatekCzesc <= endOfWeek) { let vStart0 = new Date(viewStart); vStart0.setHours(0,0,0,0); let eStart0 = new Date(obecnyPoczatekCzesc); eStart0.setHours(0,0,0,0); let dayIndexFixed = Math.round((eStart0 - vStart0) / 86400000); if (dayIndexFixed >= 0 && dayIndexFixed < numDays) { const startHour = obecnyPoczatekCzesc.getHours() + (obecnyPoczatekCzesc.getMinutes() / 60); const endHour = obecnyKoniecCzesc.getHours() + (obecnyKoniecCzesc.getMinutes() / 60) + (obecnyKoniecCzesc.getSeconds() > 0 ? 0.01 : 0); dayLayouts[dayIndexFixed].push({ event, startHour, endHour, isLocal: !event.isGoogle, isContinuation: obecnyPoczatekCzesc.getTime() > event.start.getTime() }); } } obecnyPoczatekCzesc = new Date(koniecBiezacegoDnia.getTime() + 1); } });
             for (let d = 0; d < numDays; d++) {
-                let dayEvs = dayLayouts[d]; if (dayEvs.length === 0) continue;
-                dayEvs.sort((a,b) => a.startHour - b.startHour || b.endHour - a.endHour);
-                let columns = [];
-                for (let ev of dayEvs) { let placed = false; for (let col of columns) { let overlap = col.some(e => e.startHour < ev.endHour && e.endHour > ev.startHour); if (!overlap) { col.push(ev); placed = true; break; } } if (!placed) columns.push([ev]); }
-                let numCols = columns.length; const kolumnaEl = domColumns[d]; const godzinaWysokosc = (kolumnaEl.clientHeight - 40) / 24;
-
+                let dayEvs = dayLayouts[d]; if (dayEvs.length === 0) continue; dayEvs.sort((a,b) => a.startHour - b.startHour || b.endHour - a.endHour); let columns = []; for (let ev of dayEvs) { let placed = false; for (let col of columns) { let overlap = col.some(e => e.startHour < ev.endHour && e.endHour > ev.startHour); if (!overlap) { col.push(ev); placed = true; break; } } if (!placed) columns.push([ev]); } let numCols = columns.length; const kolumnaEl = domColumns[d]; const godzinaWysokosc = (kolumnaEl.clientHeight - 40) / 24;
                 for (let c = 0; c < numCols; c++) {
                     for (let item of columns[c]) {
-                        const catId = item.event.category || 'inne'; const catDef = getCategoryDef(catId);
-                        const block = document.createElement('div'); block.className = 'event-block'; const realId = item.event.originalId || item.event.id;
-                        if(item.event.isTask && item.event.isDone) { block.classList.add('task-done'); }
-
-                        if(item.isLocal && realId) {
-                            block.classList.add('local-event'); block.setAttribute('draggable', 'true'); block.title = "Złap by przenieść, przytrzymaj CTRL by skopiować";
-                            block.addEventListener('dragstart', (e) => { e.dataTransfer.setData('text/plain', JSON.stringify({id: realId, instanceTime: item.event.instanceTime})); e.dataTransfer.effectAllowed = 'copyMove'; setTimeout(() => block.style.opacity = '0.5', 0); });
-                            block.addEventListener('dragend', () => { block.style.opacity = '1'; });
-                        }
-                        
+                        const catId = item.event.category || 'inne'; const catDef = getCategoryDef(catId); const block = document.createElement('div'); block.className = 'event-block'; const realId = item.event.originalId || item.event.id; if(item.event.isTask && item.event.isDone) { block.classList.add('task-done'); }
+                        if(item.isLocal && realId) { block.classList.add('local-event'); block.setAttribute('draggable', 'true'); block.title = "Złap by przenieść, przytrzymaj CTRL by skopiować"; block.addEventListener('dragstart', (e) => { e.dataTransfer.setData('text/plain', JSON.stringify({id: realId, instanceTime: item.event.instanceTime})); e.dataTransfer.effectAllowed = 'copyMove'; setTimeout(() => block.style.opacity = '0.5', 0); }); block.addEventListener('dragend', () => { block.style.opacity = '1'; }); }
                         block.style.top = `${item.startHour * godzinaWysokosc + 40}px`; block.style.height = `${Math.max((item.endHour - item.startHour) * godzinaWysokosc, 55)}px`; block.style.left = `calc(8px + (100% - 16px) / ${numCols} * ${c})`; block.style.width = `calc((100% - 16px) / ${numCols})`;
-                        
-                        const box = document.createElement('div'); box.className = 'event-box';
-                        let tytul = item.event.title || "Wydarzenie"; if (item.isContinuation) tytul = `(cd.) ${tytul}`;
-                        const lid = document.createElement('div'); lid.className = 'event-lid'; lid.style.background = catDef.gradient; lid.style.color = catDef.textColor || '#ffffff'; 
-                        if (item.event.isTask) { lid.innerHTML = `<span class="task-title-text">${item.event.isDone ? '☑️ ' : '☐ '}${tytul}</span>`; } else { lid.innerText = tytul; }
-                        
-                        const content = document.createElement('div'); content.className = 'event-content'; content.style.background = catDef.gradient; content.style.color = catDef.textColor || '#ffffff';
-                        const timeSpan = document.createElement('span'); timeSpan.innerText = String(item.event.start.getHours()).padStart(2,'0') + ":" + String(item.event.start.getMinutes()).padStart(2,'0'); 
-                        if(item.event.repeat && item.event.repeat !== 'none') timeSpan.innerText += ' 🔄'; content.appendChild(timeSpan);
-
-                        if (item.isLocal && realId) {
-                            const actions = document.createElement('div'); actions.className = 'event-actions';
-                            if (item.event.isTask) { const chkBtn = document.createElement('button'); chkBtn.className = 'task-checkbox-btn'; chkBtn.innerHTML = item.event.isDone ? '✓ Done' : '☐ Oznacz'; chkBtn.onclick = (e) => { e.stopPropagation(); przełączStanZadania(realId, item.event.instanceTime); }; actions.appendChild(chkBtn); }
-                            const editBtn = document.createElement('button'); editBtn.innerHTML = '✎'; editBtn.onclick = (e) => { e.stopPropagation(); otworzModal(null, null, realId, item.event.instanceTime); };
-                            const delBtn = document.createElement('button'); delBtn.innerHTML = '×'; delBtn.onclick = (e) => { e.stopPropagation(); usunLokalne(realId, item.event.instanceTime); };
-                            actions.appendChild(editBtn); actions.appendChild(delBtn); content.appendChild(actions);
-                        }
-                        box.appendChild(content); box.appendChild(lid); block.appendChild(box); kolumnaEl.appendChild(block);
+                        const box = document.createElement('div'); box.className = 'event-box'; let tytul = item.event.title || "Wydarzenie"; if (item.isContinuation) tytul = `(cd.) ${tytul}`; const lid = document.createElement('div'); lid.className = 'event-lid'; lid.style.background = catDef.gradient; lid.style.color = catDef.textColor || '#ffffff'; if (item.event.isTask) { lid.innerHTML = `<span class="task-title-text">${item.event.isDone ? '☑️ ' : '☐ '}${tytul}</span>`; } else { lid.innerText = tytul; }
+                        const content = document.createElement('div'); content.className = 'event-content'; content.style.background = catDef.gradient; content.style.color = catDef.textColor || '#ffffff'; const timeSpan = document.createElement('span'); timeSpan.innerText = String(item.event.start.getHours()).padStart(2,'0') + ":" + String(item.event.start.getMinutes()).padStart(2,'0'); if(item.event.repeat && item.event.repeat !== 'none') timeSpan.innerText += ' 🔄'; content.appendChild(timeSpan);
+                        if (item.isLocal && realId) { const actions = document.createElement('div'); actions.className = 'event-actions'; if (item.event.isTask) { const chkBtn = document.createElement('button'); chkBtn.className = 'task-checkbox-btn'; chkBtn.innerHTML = item.event.isDone ? '✓ Done' : '☐ Oznacz'; chkBtn.onclick = (e) => { e.stopPropagation(); przełączStanZadania(realId, item.event.instanceTime); }; actions.appendChild(chkBtn); } const editBtn = document.createElement('button'); editBtn.innerHTML = '✎'; editBtn.onclick = (e) => { e.stopPropagation(); otworzModal(null, null, realId, item.event.instanceTime); }; const delBtn = document.createElement('button'); delBtn.innerHTML = '×'; delBtn.onclick = (e) => { e.stopPropagation(); usunLokalne(realId, item.event.instanceTime); }; actions.appendChild(editBtn); actions.appendChild(delBtn); content.appendChild(actions); } box.appendChild(content); box.appendChild(lid); block.appendChild(box); kolumnaEl.appendChild(block);
                     }
                 }
             }
         }
 
-        function przełączStanZadania(idStr, instanceTime) {
-            const index = wydarzeniaLokalne.findIndex(ev => ev.id === idStr);
-            if (index !== -1) {
-                let ev = wydarzeniaLokalne[index];
-                if (ev.repeat && ev.repeat !== 'none' && instanceTime) {
-                    let detached = detachInstance(idStr, instanceTime); detached.isDone = !detached.isDone;
-                } else {
-                    ev.isDone = !ev.isDone;
-                }
-                localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne)); odswiezWidok();
-                if (activeConn && activeConn.open) { activeConn.send({ type: 'PUSH_DATA', data: { wydarzenia: wydarzeniaLokalne, kategorie: CATEGORIES } }); }
-            }
-        }
-
-        function budujMiesiac(wszystkieWydarzenia) { 
-            const grid = document.getElementById('month-grid'); grid.innerHTML = ''; const rok = aktualnaDataPrzegladania.getFullYear(); const miesiac = aktualnaDataPrzegladania.getMonth(); const dniTyg = ['Pon', 'Wto', 'Śro', 'Czw', 'Pią', 'Sob', 'Nie']; dniTyg.forEach(d => { let h = document.createElement('div'); h.className = 'month-header-cell'; h.innerText = d; grid.appendChild(h); }); let pierwszyDzien = new Date(rok, miesiac, 1); let startDniaTyg = pierwszyDzien.getDay() - 1; if(startDniaTyg === -1) startDniaTyg = 6; let dniWMiesiacu = new Date(rok, miesiac + 1, 0).getDate(); for(let i = 0; i < startDniaTyg; i++) { let cell = document.createElement('div'); cell.className = 'month-cell empty'; grid.appendChild(cell); } for(let i = 1; i <= dniWMiesiacu; i++) { let cell = document.createElement('div'); cell.className = 'month-cell'; let dataKafelka = new Date(rok, miesiac, i); if(isToday(dataKafelka)) cell.classList.add('current-day-highlight'); cell.innerHTML = `<div class="month-cell-day">${i}</div>`; cell.addEventListener('click', () => { currentView = 'day'; aktualnaDataPrzegladania = dataKafelka; viewSelect.value = 'day'; odswiezWidok(); }); let startDnia = new Date(rok, miesiac, i, 0, 0, 0); let koniecDnia = new Date(rok, miesiac, i, 23, 59, 59); let evDzis = wszystkieWydarzenia.filter(ev => ev.start <= koniecDnia && ev.end >= startDnia); evDzis.forEach(ev => { let el = document.createElement('div'); el.className = 'month-event-pill'; const catDef = getCategoryDef(ev.category); el.style.background = catDef.gradient; el.style.color = catDef.textColor || '#ffffff'; const prefix = ev.isTask ? (ev.isDone ? '☑️ ' : '☐ ') : ''; el.innerText = prefix + ev.title; if(ev.isTask && ev.isDone) el.style.textDecoration = 'line-through'; cell.appendChild(el); }); grid.appendChild(cell); }
-        }
-        function budujRok(wszystkieWydarzenia) { 
-            const grid = document.getElementById('view-year'); grid.innerHTML = ''; const rok = aktualnaDataPrzegladania.getFullYear(); const miesiaceNazwy = ['Styczeń','Luty','Marzec','Kwiecień','Maj','Czerwiec','Lipiec','Sierpień','Wrzesień','Październik','Listopad','Grudzień']; for(let m = 0; m < 12; m++) { let block = document.createElement('div'); block.className = 'year-month-block'; let tytul = document.createElement('div'); tytul.className = 'year-month-title'; tytul.innerText = miesiaceNazwy[m]; block.appendChild(tytul); let daysGrid = document.createElement('div'); daysGrid.className = 'year-days-grid'; ['P','W','Ś','C','P','S','N'].forEach(d => { let h = document.createElement('div'); h.className = 'year-day-h'; h.innerText = d; daysGrid.appendChild(h); }); let pierwszyDzien = new Date(rok, m, 1); let startDnia = pierwszyDzien.getDay() - 1; if(startDnia === -1) startDnia = 6; let dniWMc = new Date(rok, m + 1, 0).getDate(); for(let i=0; i<startDnia; i++) { daysGrid.appendChild(document.createElement('div')); } for(let i=1; i<=dniWMc; i++) { let cell = document.createElement('div'); cell.className = 'year-day-cell'; cell.innerText = i; let dStart = new Date(rok, m, i, 0,0,0); let dEnd = new Date(rok, m, i, 23,59,59); let dataDlaKomorki = new Date(rok, m, i); if(isToday(dataDlaKomorki)) cell.classList.add('current-day-highlight'); cell.addEventListener('click', () => { currentView = 'day'; aktualnaDataPrzegladania = dataDlaKomorki; viewSelect.value = 'day'; odswiezWidok(); }); let evDzis = wszystkieWydarzenia.filter(ev => ev.start <= dEnd && ev.end >= dStart); if(evDzis.length > 0) { const mainCat = getCategoryDef(evDzis[0].category); cell.style.background = mainCat.gradient; cell.style.color = mainCat.textColor || '#ffffff'; cell.style.fontWeight = "bold"; cell.style.boxShadow = `1px 1px 3px rgba(0,0,0,0.3)`; } daysGrid.appendChild(cell); } block.appendChild(daysGrid); grid.appendChild(block); }
-        }
-
+        function przełączStanZadania(idStr, instanceTime) { const index = wydarzeniaLokalne.findIndex(ev => ev.id === idStr); if (index !== -1) { let ev = wydarzeniaLokalne[index]; if (ev.repeat && ev.repeat !== 'none' && instanceTime) { let detached = detachInstance(idStr, instanceTime); detached.isDone = !detached.isDone; } else { ev.isDone = !ev.isDone; } localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne)); odswiezWidok(); if (activeConn && activeConn.open) { activeConn.send({ type: 'PUSH_DATA', data: { wydarzenia: wydarzeniaLokalne, kategorie: CATEGORIES } }); } } }
+        function budujMiesiac(wszystkieWydarzenia) { const grid = document.getElementById('month-grid'); grid.innerHTML = ''; const rok = aktualnaDataPrzegladania.getFullYear(); const miesiac = aktualnaDataPrzegladania.getMonth(); const dniTyg = ['Pon', 'Wto', 'Śro', 'Czw', 'Pią', 'Sob', 'Nie']; dniTyg.forEach(d => { let h = document.createElement('div'); h.className = 'month-header-cell'; h.innerText = d; grid.appendChild(h); }); let pierwszyDzien = new Date(rok, miesiac, 1); let startDniaTyg = pierwszyDzien.getDay() - 1; if(startDniaTyg === -1) startDniaTyg = 6; let dniWMiesiacu = new Date(rok, miesiac + 1, 0).getDate(); for(let i = 0; i < startDniaTyg; i++) { let cell = document.createElement('div'); cell.className = 'month-cell empty'; grid.appendChild(cell); } for(let i = 1; i <= dniWMiesiacu; i++) { let cell = document.createElement('div'); cell.className = 'month-cell'; let dataKafelka = new Date(rok, miesiac, i); if(isToday(dataKafelka)) cell.classList.add('current-day-highlight'); cell.innerHTML = `<div class="month-cell-day">${i}</div>`; cell.addEventListener('click', () => { currentView = 'day'; aktualnaDataPrzegladania = dataKafelka; viewSelect.value = 'day'; odswiezWidok(); }); let startDnia = new Date(rok, miesiac, i, 0, 0, 0); let koniecDnia = new Date(rok, miesiac, i, 23, 59, 59); let evDzis = wszystkieWydarzenia.filter(ev => ev.start <= koniecDnia && ev.end >= startDnia); evDzis.forEach(ev => { let el = document.createElement('div'); el.className = 'month-event-pill'; const catDef = getCategoryDef(ev.category); el.style.background = catDef.gradient; el.style.color = catDef.textColor || '#ffffff'; const prefix = ev.isTask ? (ev.isDone ? '☑️ ' : '☐ ') : ''; el.innerText = prefix + ev.title; if(ev.isTask && ev.isDone) el.style.textDecoration = 'line-through'; cell.appendChild(el); }); grid.appendChild(cell); } }
+        function budujRok(wszystkieWydarzenia) { const grid = document.getElementById('view-year'); grid.innerHTML = ''; const rok = aktualnaDataPrzegladania.getFullYear(); const miesiaceNazwy = ['Styczeń','Luty','Marzec','Kwiecień','Maj','Czerwiec','Lipiec','Sierpień','Wrzesień','Październik','Listopad','Grudzień']; for(let m = 0; m < 12; m++) { let block = document.createElement('div'); block.className = 'year-month-block'; let tytul = document.createElement('div'); tytul.className = 'year-month-title'; tytul.innerText = miesiaceNazwy[m]; block.appendChild(tytul); let daysGrid = document.createElement('div'); daysGrid.className = 'year-days-grid'; ['P','W','Ś','C','P','S','N'].forEach(d => { let h = document.createElement('div'); h.className = 'year-day-h'; h.innerText = d; daysGrid.appendChild(h); }); let pierwszyDzien = new Date(rok, m, 1); let startDnia = pierwszyDzien.getDay() - 1; if(startDnia === -1) startDnia = 6; let dniWMc = new Date(rok, m + 1, 0).getDate(); for(let i=0; i<startDnia; i++) { daysGrid.appendChild(document.createElement('div')); } for(let i=1; i<=dniWMc; i++) { let cell = document.createElement('div'); cell.className = 'year-day-cell'; cell.innerText = i; let dStart = new Date(rok, m, i, 0,0,0); let dEnd = new Date(rok, m, i, 23,59,59); let dataDlaKomorki = new Date(rok, m, i); if(isToday(dataDlaKomorki)) cell.classList.add('current-day-highlight'); cell.addEventListener('click', () => { currentView = 'day'; aktualnaDataPrzegladania = dataDlaKomorki; viewSelect.value = 'day'; odswiezWidok(); }); let evDzis = wszystkieWydarzenia.filter(ev => ev.start <= dEnd && ev.end >= dStart); if(evDzis.length > 0) { const mainCat = getCategoryDef(evDzis[0].category); cell.style.background = mainCat.gradient; cell.style.color = mainCat.textColor || '#ffffff'; cell.style.fontWeight = "bold"; cell.style.boxShadow = `1px 1px 3px rgba(0,0,0,0.3)`; } daysGrid.appendChild(cell); } block.appendChild(daysGrid); grid.appendChild(block); } }
         function updateCurrentTimeLine(numDays) { const now = new Date(); const line = document.getElementById('current-time-line'); if(!line || domColumns.length === 0) return; let activeIndex = -1; for (let i = 0; i < domColumns.length; i++) { let colDate = new Date(domColumns[i].dataset.date); if (isToday(colDate)) { activeIndex = i; break; } } if (activeIndex !== -1) { line.style.display = 'block'; const kolumnaEl = domColumns[activeIndex]; const godzinaWysokosc = (kolumnaEl.clientHeight - 40) / 24; const topPos = (now.getHours() + (now.getMinutes() / 60)) * godzinaWysokosc; line.style.top = `${topPos + 40}px`; line.style.width = `calc(100% / ${numDays})`; line.style.left = `calc(${activeIndex} * (100% / ${numDays}))`; } else { line.style.display = 'none'; } }
 
         let edytowaneIdKategorii = null;
@@ -766,9 +558,7 @@
                 const st = instanceTime ? new Date(instanceTime) : new Date(ev.start); const duration = new Date(ev.end).getTime() - new Date(ev.start).getTime(); const en = instanceTime ? new Date(instanceTime + duration) : new Date(ev.end);
                 if (ev.category === 'zakupy-30dni' && (ev.title.includes('💡') || ev.title.includes('🛒'))) { document.getElementById('ev-type').value = 'idea30'; } else { document.getElementById('ev-type').value = ev.isTask ? 'task' : 'event'; }
                 document.getElementById('ev-title').value = ev.title.replace('💡 ', '').replace('🛒 Weryfikacja: ', ''); document.getElementById('ev-category').value = ev.category || 'inne'; document.getElementById('ev-repeat').value = ev.repeat || 'none'; document.getElementById('ev-date').value = st.toISOString(); document.getElementById('ev-start-h').value = String(st.getHours()).padStart(2, '0'); document.getElementById('ev-start-m').value = String(st.getMinutes()).padStart(2, '0'); document.getElementById('ev-end-h').value = String(en.getHours()).padStart(2, '0'); document.getElementById('ev-end-m').value = String(en.getMinutes()).padStart(2, '0');
-            } else {
-                document.getElementById('modal-title').innerText = "Dodaj wpis"; document.getElementById('ev-type').value = 'event'; document.getElementById('ev-title').value = ''; document.getElementById('ev-category').value = 'inne'; document.getElementById('ev-repeat').value = 'none'; document.getElementById('ev-date').value = data.toISOString(); let gPocz = String(godzina).padStart(2, '0'); let gKon = String(godzina + 1 > 23 ? 23 : godzina + 1).padStart(2, '0'); document.getElementById('ev-start-h').value = gPocz; document.getElementById('ev-start-m').value = '00'; document.getElementById('ev-end-h').value = gKon; document.getElementById('ev-end-m').value = '00';
-            }
+            } else { document.getElementById('modal-title').innerText = "Dodaj wpis"; document.getElementById('ev-type').value = 'event'; document.getElementById('ev-title').value = ''; document.getElementById('ev-category').value = 'inne'; document.getElementById('ev-repeat').value = 'none'; document.getElementById('ev-date').value = data.toISOString(); let gPocz = String(godzina).padStart(2, '0'); let gKon = String(godzina + 1 > 23 ? 23 : godzina + 1).padStart(2, '0'); document.getElementById('ev-start-h').value = gPocz; document.getElementById('ev-start-m').value = '00'; document.getElementById('ev-end-h').value = gKon; document.getElementById('ev-end-m').value = '00'; }
             document.getElementById('ev-type').dispatchEvent(new Event('change')); document.getElementById('ev-title').focus();
         }
         function zamknijModal() { document.getElementById('event-modal').style.display = 'none'; editingEventId = null; editingInstanceTime = null; }
@@ -781,23 +571,11 @@
             lines.forEach(line => {
                 const liniaStr = line.trim(); if (!liniaStr) return; const dateMatch = liniaStr.match(/^(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{4})/); if (!dateMatch) return; 
                 const d = parseInt(dateMatch[1], 10); const m = parseInt(dateMatch[2], 10) - 1; const y = parseInt(dateMatch[3], 10); if (isNaN(d) || isNaN(m) || isNaN(y)) return;
-                if (line.includes('\t')) {
-                    const cols = line.split('\t'); const valL = cols.length > 2 ? cols[2].trim() : ''; const valM = cols.length > 3 ? cols[3].trim() : '';
-                    if (valL.includes('12')) { if (stworzIWstawDoHarmonogramu(y, m, d, 6, 0, 18, 0, 'Zmiana Dzienna 12h', 'zmiana-dzienna')) dodane++; } else if (valL.includes('8')) { if (stworzIWstawDoHarmonogramu(y, m, d, 6, 0, 14, 0, 'Praca 8h', 'praca')) dodane++; }
-                    if (valM.includes('12')) { if (stworzIWstawDoHarmonogramu(y, m, d, 18, 0, 6, 0, 'Zmiana Nocna 12h', 'zmiana-nocna', true)) dodane++; }
-                } else {
-                    const reszta = liniaStr.substring(dateMatch[0].length).trim(); const bezDnia = reszta.replace(/^[a-ząćęłńóśźżĄĆĘŁŃÓŚŹŻ]+\s*/i, '');
-                    if (bezDnia.includes('12')) { const spacje = reszta.match(/\s+(?=12)/); if (spacje && spacje[0].length > 7) { if (stworzIWstawDoHarmonogramu(y, m, d, 18, 0, 6, 0, 'Zmiana Nocna 12h', 'zmiana-nocna', true)) dodane++; } else { if (stworzIWstawDoHarmonogramu(y, m, d, 6, 0, 18, 0, 'Zmiana Dzienna 12h', 'zmiana-dzienna')) dodane++; } } else if (bezDnia.includes('8')) { if (stworzIWstawDoHarmonogramu(y, m, d, 6, 0, 14, 0, 'Praca 8h', 'praca')) dodane++; }
-                }
-            });
-            if (dodane > 0) { localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne)); odswiezWidok(); zamknijModalPraca(); alert(`Zapisano ${dodane} dyżurów.`); } else { alert('Nie dodano zmian.'); }
+                if (line.includes('\t')) { const cols = line.split('\t'); const valL = cols.length > 2 ? cols[2].trim() : ''; const valM = cols.length > 3 ? cols[3].trim() : ''; if (valL.includes('12')) { if (stworzIWstawDoHarmonogramu(y, m, d, 6, 0, 18, 0, 'Zmiana Dzienna 12h', 'zmiana-dzienna')) dodane++; } else if (valL.includes('8')) { if (stworzIWstawDoHarmonogramu(y, m, d, 6, 0, 14, 0, 'Praca 8h', 'praca')) dodane++; } if (valM.includes('12')) { if (stworzIWstawDoHarmonogramu(y, m, d, 18, 0, 6, 0, 'Zmiana Nocna 12h', 'zmiana-nocna', true)) dodane++; } } else { const reszta = liniaStr.substring(dateMatch[0].length).trim(); const bezDnia = reszta.replace(/^[a-ząćęłńóśźżĄĆĘŁŃÓŚŹŻ]+\s*/i, ''); if (bezDnia.includes('12')) { const spacje = reszta.match(/\s+(?=12)/); if (spacje && spacje[0].length > 7) { if (stworzIWstawDoHarmonogramu(y, m, d, 18, 0, 6, 0, 'Zmiana Nocna 12h', 'zmiana-nocna', true)) dodane++; } else { if (stworzIWstawDoHarmonogramu(y, m, d, 6, 0, 18, 0, 'Zmiana Dzienna 12h', 'zmiana-dzienna')) dodane++; } } else if (bezDnia.includes('8')) { if (stworzIWstawDoHarmonogramu(y, m, d, 6, 0, 14, 0, 'Praca 8h', 'praca')) dodane++; } }
+            }); if (dodane > 0) { localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne)); odswiezWidok(); zamknijModalPraca(); alert(`Zapisano ${dodane} dyżurów.`); } else { alert('Nie dodano zmian.'); }
         }
 
-        function stworzIWstawDoHarmonogramu(y, m, d, h1, m1, h2, m2, title, category, nextDay = false) {
-            const start = new Date(y, m, d, h1, m1, 0); const end = new Date(y, m, d, h2, m2, 0); if (nextDay) end.setDate(end.getDate() + 1);
-            const istniejace = wydarzeniaLokalne.some(ev => ev.title === title && new Date(ev.start).getTime() === start.getTime());
-            if (!istniejace) { wydarzeniaLokalne.push({ id: Date.now().toString() + Math.random().toString(36).substr(2, 5), title: title, category: category, repeat: 'none', isTask: false, isDone: false, start: start.toISOString(), end: end.toISOString() }); return true; } return false;
-        }
+        function stworzIWstawDoHarmonogramu(y, m, d, h1, m1, h2, m2, title, category, nextDay = false) { const start = new Date(y, m, d, h1, m1, 0); const end = new Date(y, m, d, h2, m2, 0); if (nextDay) end.setDate(end.getDate() + 1); const istniejace = wydarzeniaLokalne.some(ev => ev.title === title && new Date(ev.start).getTime() === start.getTime()); if (!istniejace) { wydarzeniaLokalne.push({ id: Date.now().toString() + Math.random().toString(36).substr(2, 5), title: title, category: category, repeat: 'none', isTask: false, isDone: false, start: start.toISOString(), end: end.toISOString() }); return true; } return false; }
 
         function zapiszWydarzenieLokalne() {
             const title = document.getElementById('ev-title').value || "Wpis"; const category = document.getElementById('ev-category').value; const repeat = document.getElementById('ev-repeat').value; const evType = document.getElementById('ev-type').value; const isTask = evType === 'task';
@@ -811,40 +589,21 @@
                     if (evType === 'idea30') { if (ev.title.includes('💡')) finalTitle = "💡 " + title; if (ev.title.includes('🛒')) finalTitle = "🛒 Weryfikacja: " + title; }
                     
                     if (ev.repeat && ev.repeat !== 'none' && editingInstanceTime) {
-                        if (confirm('Edytujesz wydarzenie z serii cyklicznej.\n\nCzy chcesz zmienić TYLKO TO jedno wystąpienie (OK), czy zaktualizować CAŁĄ serię (Anuluj)?')) {
-                            let detached = detachInstance(editingEventId, editingInstanceTime);
-                            detached.title = finalTitle; detached.category = category; detached.repeat = repeat; detached.isTask = isTask; detached.start = startDate.toISOString(); detached.end = endDate.toISOString();
-                        } else {
-                            wydarzeniaLokalne[index].title = finalTitle; wydarzeniaLokalne[index].category = category; wydarzeniaLokalne[index].repeat = repeat; wydarzeniaLokalne[index].isTask = isTask; wydarzeniaLokalne[index].start = startDate.toISOString(); wydarzeniaLokalne[index].end = endDate.toISOString(); wydarzeniaLokalne[index].exceptions = [];
-                        }
-                    } else {
-                        wydarzeniaLokalne[index].title = finalTitle; wydarzeniaLokalne[index].category = category; wydarzeniaLokalne[index].repeat = repeat; wydarzeniaLokalne[index].isTask = isTask; wydarzeniaLokalne[index].start = startDate.toISOString(); wydarzeniaLokalne[index].end = endDate.toISOString(); 
-                    }
+                        if (confirm('Edytujesz wydarzenie z serii cyklicznej.\n\nCzy chcesz zmienić TYLKO TO jedno wystąpienie (OK), czy zaktualizować CAŁĄ serię (Anuluj)?')) { let detached = detachInstance(editingEventId, editingInstanceTime); detached.title = finalTitle; detached.category = category; detached.repeat = repeat; detached.isTask = isTask; detached.start = startDate.toISOString(); detached.end = endDate.toISOString(); } 
+                        else { wydarzeniaLokalne[index].title = finalTitle; wydarzeniaLokalne[index].category = category; wydarzeniaLokalne[index].repeat = repeat; wydarzeniaLokalne[index].isTask = isTask; wydarzeniaLokalne[index].start = startDate.toISOString(); wydarzeniaLokalne[index].end = endDate.toISOString(); wydarzeniaLokalne[index].exceptions = []; }
+                    } else { wydarzeniaLokalne[index].title = finalTitle; wydarzeniaLokalne[index].category = category; wydarzeniaLokalne[index].repeat = repeat; wydarzeniaLokalne[index].isTask = isTask; wydarzeniaLokalne[index].start = startDate.toISOString(); wydarzeniaLokalne[index].end = endDate.toISOString(); }
                 } 
             } else { 
-                if (evType === 'idea30') {
-                    wydarzeniaLokalne.push({ id: Date.now().toString() + 'A', title: "💡 " + title, category: 'zakupy-30dni', repeat: 'none', isTask: false, isDone: false, start: startDate.toISOString(), end: endDate.toISOString() });
-                    const startDate30 = new Date(startDate); startDate30.setDate(startDate30.getDate() + 30); const endDate30 = new Date(endDate); endDate30.setDate(endDate30.getDate() + 30);
-                    wydarzeniaLokalne.push({ id: Date.now().toString() + 'B', title: "🛒 Weryfikacja: " + title, category: 'zakupy-30dni', repeat: 'none', isTask: false, isDone: false, start: startDate30.toISOString(), end: endDate30.toISOString() });
-                } else {
-                    wydarzeniaLokalne.push({ id: Date.now().toString() + Math.random().toString(36).substr(2, 5), title: title, category: category, repeat: repeat, isTask: isTask, isDone: false, start: startDate.toISOString(), end: endDate.toISOString() });
-                }
-            }
-            localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne)); zamknijModal(); odswiezWidok();
+                if (evType === 'idea30') { wydarzeniaLokalne.push({ id: Date.now().toString() + 'A', title: "💡 " + title, category: 'zakupy-30dni', repeat: 'none', isTask: false, isDone: false, start: startDate.toISOString(), end: endDate.toISOString() }); const startDate30 = new Date(startDate); startDate30.setDate(startDate30.getDate() + 30); const endDate30 = new Date(endDate); endDate30.setDate(endDate30.getDate() + 30); wydarzeniaLokalne.push({ id: Date.now().toString() + 'B', title: "🛒 Weryfikacja: " + title, category: 'zakupy-30dni', repeat: 'none', isTask: false, isDone: false, start: startDate30.toISOString(), end: endDate30.toISOString() }); } 
+                else { wydarzeniaLokalne.push({ id: Date.now().toString() + Math.random().toString(36).substr(2, 5), title: title, category: category, repeat: repeat, isTask: isTask, isDone: false, start: startDate.toISOString(), end: endDate.toISOString() }); }
+            } localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne)); zamknijModal(); odswiezWidok();
         }
         
         function usunLokalne(idStr, instanceTime) { 
             let parent = wydarzeniaLokalne.find(ev => ev.id === idStr);
             if (parent && parent.repeat && parent.repeat !== 'none' && instanceTime) {
-                if (confirm('To jest zdarzenie z serii.\n\nCzy chcesz usunąć TYLKO TO jedno wystąpienie (OK), czy usunąć CAŁĄ serię (Anuluj)?')) {
-                    if (!parent.exceptions) parent.exceptions = []; parent.exceptions.push(instanceTime);
-                } else {
-                    wydarzeniaLokalne = wydarzeniaLokalne.filter(ev => ev.id !== idStr);
-                }
-            } else {
-                wydarzeniaLokalne = wydarzeniaLokalne.filter(ev => ev.id !== idStr); 
-            }
-            localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne)); odswiezWidok(); 
+                if (confirm('To jest zdarzenie z serii.\n\nCzy chcesz usunąć TYLKO TO jedno wystąpienie (OK), czy usunąć CAŁĄ serię (Anuluj)?')) { if (!parent.exceptions) parent.exceptions = []; parent.exceptions.push(instanceTime); } else { wydarzeniaLokalne = wydarzeniaLokalne.filter(ev => ev.id !== idStr); }
+            } else { wydarzeniaLokalne = wydarzeniaLokalne.filter(ev => ev.id !== idStr); } localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne)); odswiezWidok(); 
         }
 
         function formatujZakresTygodnia(dataZrodlowa, type) { const dataPocz = new Date(dataZrodlowa); if (type === 'B') { dataPocz.setDate(dataPocz.getDate() - 1); } else if (type === 'C') { dataPocz.setDate(dataPocz.getDate() - 3); } else if (type === 'D') { let dayNum = dataPocz.getDay(); let dff = dataPocz.getDate() - dayNum + (dayNum === 0 ? -6 : 1); dataPocz.setDate(dff); } const dataKoncowa = new Date(dataPocz); dataKoncowa.setDate(dataPocz.getDate() + 6); const pDzien = String(dataPocz.getDate()).padStart(2, '0'); const pMiesiac = String(dataPocz.getMonth() + 1).padStart(2, '0'); const kDzien = String(dataKoncowa.getDate()).padStart(2, '0'); const kMiesiac = String(dataKoncowa.getMonth() + 1).padStart(2, '0'); return pMiesiac === kMiesiac ? `(${pDzien} - ${kDzien}.${kMiesiac}.${dataKoncowa.getFullYear()})` : `(${pDzien}.${pMiesiac} - ${kDzien}.${kMiesiac}.${dataKoncowa.getFullYear()})`; }
@@ -861,14 +620,13 @@
         function parseICalDate(line) { const parts = line.split(':'); if (parts.length < 2) return null; let dStr = parts[1]; const y = dStr.substring(0, 4), m = dStr.substring(4, 6), d = dStr.substring(6, 8); if (dStr.length === 8) return new Date(y, m - 1, d); const hr = dStr.substring(9, 11), min = dStr.substring(11, 13), sec = dStr.substring(13, 15); return dStr.endsWith('Z') ? new Date(Date.UTC(y, m - 1, d, hr, min, sec)) : new Date(y, m - 1, d, hr, min, sec); }
         function toggleFullScreen() { const btn = document.getElementById('btn-fullscreen'); if (!document.fullscreenElement) { document.documentElement.requestFullscreen().catch(err => console.log(err)); btn.innerText = "🗗"; } else { document.exitFullscreen(); btn.innerText = "⛶"; } }
 
-        window.addEventListener('DOMContentLoaded', () => { try { checkUrlForSync(); spraweMobileLauncher(); odswiezWidok(); fetchAndRenderCalendar(); } catch (err) { } });
+        window.addEventListener('DOMContentLoaded', () => { try { checkUrlForSync(); spraweMobileLauncher(); aktualizujPrzyciskDzisiaj(new Date()); odswiezWidok(); fetchAndRenderCalendar(); } catch (err) { } });
         window.addEventListener('resize', spraweMobileLauncher);
         setInterval(() => { if(currentView === 'day' || currentView.startsWith('week')) { updateCurrentTimeLine(currentView === 'day' ? 1 : 7); } }, 60000); 
 
         document.addEventListener('keydown', function(e) {
             const modalEvent = document.getElementById('event-modal'); const modalPraca = document.getElementById('praca-modal'); const modalSync = document.getElementById('sync-modal'); const modalCat = document.getElementById('category-modal'); const modalManageCat = document.getElementById('manage-cat-modal');
             const isEventOpen = modalEvent.style.display === 'flex'; const isPracaOpen = modalPraca.style.display === 'flex'; const isSyncOpen = modalSync.style.display === 'flex'; const isCatOpen = modalCat.style.display === 'flex'; const isManageCatOpen = modalManageCat.style.display === 'flex';
-
             if (isCatOpen) { if (e.key === 'Escape') { e.preventDefault(); zamknijModalKategorii(); } else if (e.key === 'Enter') { e.preventDefault(); zapiszNowaKategorie(); }
             } else if (isManageCatOpen) { if (e.key === 'Escape') { e.preventDefault(); zamknijZarzadzanieKategoriami(); }
             } else if (isEventOpen) { if (e.key === 'Escape') { e.preventDefault(); zamknijModal(); } else if (e.key === 'Enter') { e.preventDefault(); zapiszWydarzenieLokalne(); }

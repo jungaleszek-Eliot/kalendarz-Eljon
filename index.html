@@ -249,7 +249,7 @@
         <div class="modal-box">
             <h3>🗑️ Usuń wpisy z okresu</h3>
             <p style="font-size: 0.75rem; color: var(--text-muted); text-align: center; margin-top: -10px;">
-                Wybierz zakres dat, aby trwale usunąć wszystkie rozpoczynające się w nim wydarzenia i zadania.
+                Wybierz zakres dat oraz zaznacz, co chcesz trwale usunąć.
             </p>
             
             <label style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: -5px;">Od dnia:</label>
@@ -258,9 +258,18 @@
             <label style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: -5px; margin-top: 10px;">Do dnia (włącznie):</label>
             <input type="date" id="clear-end-date">
 
-            <div class="modal-btns" style="margin-top: 20px;">
+            <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 10px; background: var(--input-bg); padding: 10px; border-radius: 10px;">
+                <label style="font-size: 0.85rem; display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                    <input type="checkbox" id="chk-clear-events" checked style="width: 16px; height: 16px; accent-color: var(--highlight);"> 📅 Usuń wydarzenia
+                </label>
+                <label style="font-size: 0.85rem; display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                    <input type="checkbox" id="chk-clear-tasks" checked style="width: 16px; height: 16px; accent-color: var(--highlight);"> ☑️ Usuń zadania
+                </label>
+            </div>
+
+            <div class="modal-btns" style="margin-top: 15px;">
                 <button class="nav-btn" onclick="zamknijModalCzyszczenia()">Anuluj</button>
-                <button class="nav-btn" style="background: var(--highlight); color: white;" onclick="wyczyscWybranyOkres()">Skasuj wpisy</button>
+                <button class="nav-btn" style="background: var(--highlight); color: white;" onclick="wyczyscWybranyOkres()">Skasuj wybrane</button>
             </div>
         </div>
     </div>
@@ -476,28 +485,43 @@
             document.getElementById('clear-start-date').value = dzis.toISOString().split('T')[0];
             const zaTydzien = new Date(dzis); zaTydzien.setDate(dzis.getDate() + 7);
             document.getElementById('clear-end-date').value = zaTydzien.toISOString().split('T')[0];
+            document.getElementById('chk-clear-events').checked = true;
+            document.getElementById('chk-clear-tasks').checked = true;
         }
         function zamknijModalCzyszczenia() { document.getElementById('clear-period-modal').style.display = 'none'; }
 
         function wyczyscWybranyOkres() {
             const startStr = document.getElementById('clear-start-date').value;
             const endStr = document.getElementById('clear-end-date').value;
+            const clearEvents = document.getElementById('chk-clear-events').checked;
+            const clearTasks = document.getElementById('chk-clear-tasks').checked;
             
             if(!startStr || !endStr) return alert("Proszę wybrać obie daty.");
+            if(!clearEvents && !clearTasks) return alert("Zaznacz przynajmniej jedną opcję do usunięcia (Wydarzenia lub Zadania).");
             
             const startDate = new Date(startStr); startDate.setHours(0, 0, 0, 0);
             const endDate = new Date(endStr); endDate.setHours(23, 59, 59, 999);
             
             if(startDate > endDate) return alert("Data początkowa nie może być późniejsza niż końcowa.");
             
-            if(!confirm(`Czy na pewno chcesz bezpowrotnie usunąć wpisy rozpoczynające się w okresie od ${startStr} do ${endStr}?`)) return;
+            if(!confirm(`Czy na pewno chcesz usunąć zaznaczone elementy z okresu od ${startStr} do ${endStr}?`)) return;
 
             const poczatkowaLiczba = wydarzeniaLokalne.length;
             
             wydarzeniaLokalne = wydarzeniaLokalne.filter(ev => {
                 const evStart = new Date(ev.start);
-                // Zachowaj te wydarzenia, które zaczynają się przed wybranym okresem, albo po nim.
-                return evStart < startDate || evStart > endDate;
+                // Sprawdzamy czy wpis mieści się w wybranym przedziale czasowym [startDate, endDate]
+                const wZakresie = evStart >= startDate && evStart <= endDate;
+                
+                if (wZakresie) {
+                    const isTask = ev.isTask === true;
+                    // Jeśli to zadanie, a użytkownik zaznaczył usuwanie zadań -> usuwamy (odrzucamy)
+                    if (isTask && clearTasks) return false;
+                    // Jeśli to wydarzenie, a użytkownik zaznaczył usuwanie wydarzeń -> usuwamy (odrzucamy)
+                    if (!isTask && clearEvents) return false;
+                }
+                // W przeciwnym razie zachowujemy wpis
+                return true;
             });
             
             const usunieto = poczatkowaLiczba - wydarzeniaLokalne.length;
@@ -505,8 +529,8 @@
             odswiezWidok();
             zamknijModalCzyszczenia();
             
-            if(usunieto > 0) alert(`Sukces! Usunięto ${usunieto} wpisów/serii z wybranego okresu.`);
-            else alert('W wybranym okresie nie znaleziono żadnych wpisów do usunięcia.');
+            if(usunieto > 0) alert(`Sukces! Usunięto ${usunieto} wpisów z wybranego okresu.`);
+            else alert('W wybranym okresie nie znaleziono elementów pasujących do zaznaczonych kryteriów.');
         }
 
         function initP2PSync() { if (typeof Peer === 'undefined' || typeof QRCode === 'undefined') return; if (localPeer && !localPeer.destroyed) return; let savedPin = localStorage.getItem('MY_SYNC_PIN'); if (!savedPin) { savedPin = Math.floor(100000 + Math.random() * 900000).toString(); localStorage.setItem('MY_SYNC_PIN', savedPin); } mySyncPin = savedPin; const pinEl = document.getElementById('mySyncPinDisplay'); if (pinEl) pinEl.textContent = mySyncPin; const statusEl = document.getElementById('syncPeerStatus'); if (statusEl) statusEl.textContent = "Inicjalizacja..."; const qrTarget = document.getElementById('qrcode'); if (qrTarget) { qrTarget.innerHTML = ''; const syncUrl = window.location.href.split('#')[0] + '#sync=' + mySyncPin; try { new QRCode(qrTarget, { text: syncUrl, width: 100, height: 100, colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M }); } catch(e) { } } try { localPeer = new Peer('kalendarz-' + mySyncPin, { config: { 'iceServers': [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:stun1.l.google.com:19302' }] } }); localPeer.on('open', () => { if (statusEl) statusEl.textContent = "Gotowy"; }); localPeer.on('connection', (conn) => { setupConnection(conn); alert('Drugie urządzenie się podłączyło!'); }); localPeer.on('error', (err) => { if (statusEl) statusEl.textContent = "Błąd"; }); } catch (e) { } }

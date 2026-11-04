@@ -395,13 +395,13 @@
         }
         setInterval(updateClock, 1000); updateClock();
 
-        function aktualizujPrzyciskDzisiaj(dataOdniesienia) {
+      function aktualizujPrzyciskDzisiaj(dataOdniesienia) {
             const btn = document.getElementById('btn-today');
             if (btn) {
                 const dz = String(dataOdniesienia.getDate()).padStart(2, '0');
                 const ms = String(dataOdniesienia.getMonth() + 1).padStart(2, '0');
                 const rk = dataOdniesienia.getFullYear();
-                btn.innerText = \${dz}.${ms}.${rk}`;`
+                btn.innerText = `${dz}.${ms}.${rk}`;
             }
         }
 

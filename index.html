@@ -499,37 +499,75 @@
             if(!startStr || !endStr) return alert("Proszę wybrać obie daty.");
             if(!clearEvents && !clearTasks) return alert("Zaznacz przynajmniej jedną opcję do usunięcia (Wydarzenia lub Zadania).");
             
-            const startDate = new Date(startStr); startDate.setHours(0, 0, 0, 0);
-            const endDate = new Date(endStr); endDate.setHours(23, 59, 59, 999);
+            // Bezpieczne parsowanie daty - omija błędy stref czasowych przeglądarki
+            const [sy, sm, sd] = startStr.split('-').map(Number);
+            const [ey, em, ed] = endStr.split('-').map(Number);
+            const startDate = new Date(sy, sm - 1, sd, 0, 0, 0, 0);
+            const endDate = new Date(ey, em - 1, ed, 23, 59, 59, 999);
             
             if(startDate > endDate) return alert("Data początkowa nie może być późniejsza niż końcowa.");
             
-            if(!confirm(`Czy na pewno chcesz usunąć zaznaczone elementy przecinające się z okresem od ${startStr} do ${endStr}?`)) return;
+            if(!confirm(`Czy na pewno chcesz usunąć wybrane elementy z okresu od ${startStr} do ${endStr}?`)) return;
 
-            const poczatkowaLiczba = wydarzeniaLokalne.length;
+            let usunieto = 0;
+            let zmodyfikowanoCykliczne = 0;
             
             wydarzeniaLokalne = wydarzeniaLokalne.filter(ev => {
+                const isTask = ev.isTask === true;
+                const shouldDeleteType = (isTask && clearTasks) || (!isTask && clearEvents);
+                
+                if (!shouldDeleteType) return true; // Zostaw, jeśli typ nie pasuje do checkboxów
+                
+                // 1. Obsługa wydarzeń cyklicznych
+                if (ev.repeat && ev.repeat !== 'none') {
+                    let currStart = new Date(ev.start);
+                    const duration = new Date(ev.end).getTime() - currStart.getTime();
+                    let safety = 0;
+                    
+                    while (currStart <= endDate && safety < 2000) {
+                        const instanceStart = new Date(currStart);
+                        const instanceEnd = new Date(currStart.getTime() + duration);
+                        
+                        // Jeśli instancja z cyklu wpada w nasz usuwany tydzień
+                        if (instanceStart <= endDate && instanceEnd >= startDate) {
+                            const iTime = instanceStart.getTime();
+                            if (!ev.exceptions) ev.exceptions = [];
+                            if (!ev.exceptions.includes(iTime)) {
+                                ev.exceptions.push(iTime); // Ukrywa wpis w tym konkretnym dniu
+                                zmodyfikowanoCykliczne++;
+                            }
+                        }
+                        
+                        if (ev.repeat === 'daily') currStart.setDate(currStart.getDate() + 1);
+                        else if (ev.repeat === 'weekly') currStart.setDate(currStart.getDate() + 7);
+                        else if (ev.repeat === 'monthly') currStart.setMonth(currStart.getMonth() + 1);
+                        else if (ev.repeat === 'yearly') currStart.setFullYear(currStart.getFullYear() + 1);
+                        safety++;
+                    }
+                    return true; // Zostawiamy bazowy wpis, usunęliśmy tylko instancje
+                }
+                
+                // 2. Obsługa standardowych, jednorazowych wydarzeń (np. z Excela)
                 const evStart = new Date(ev.start);
                 const evEnd = new Date(ev.end || ev.start);
                 
-                // Sprawdzamy czy wpis przecina się z wybranym zakresem [startDate, endDate]
-                const wZakresie = evStart <= endDate && evEnd >= startDate;
-                
-                if (wZakresie) {
-                    const isTask = !!ev.isTask;
-                    if (isTask && clearTasks) return false;
-                    if (!isTask && clearEvents) return false;
+                if (evStart <= endDate && evEnd >= startDate) {
+                    usunieto++;
+                    return false; // Usuń bezpowrotnie
                 }
-                return true;
+                
+                return true; // Zostaw
             });
             
-            const usunieto = poczatkowaLiczba - wydarzeniaLokalne.length;
             localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne));
             odswiezWidok();
             zamknijModalCzyszczenia();
             
-            if(usunieto > 0) alert(`Sukces! Usunięto ${usunieto} wpisów z wybranego okresu.`);
-            else alert('W wybranym okresie nie znaleziono elementów pasujących do zaznaczonych kryteriów.');
+            if(usunieto > 0 || zmodyfikowanoCykliczne > 0) {
+                alert(`Sukces! Usunięto ${usunieto} jednorazowych wpisów i wyczyszczono ${zmodyfikowanoCykliczne} powtórzeń cyklicznych.`);
+            } else {
+                alert('W wybranym okresie nie znaleziono elementów pasujących do zaznaczonych kryteriów. (Wydarzenia importowane z Google nie mogą być tutaj usunięte).');
+            }
         }
 
         function initP2PSync() { if (typeof Peer === 'undefined' || typeof QRCode === 'undefined') return; if (localPeer && !localPeer.destroyed) return; let savedPin = localStorage.getItem('MY_SYNC_PIN'); if (!savedPin) { savedPin = Math.floor(100000 + Math.random() * 900000).toString(); localStorage.setItem('MY_SYNC_PIN', savedPin); } mySyncPin = savedPin; const pinEl = document.getElementById('mySyncPinDisplay'); if (pinEl) pinEl.textContent = mySyncPin; const statusEl = document.getElementById('syncPeerStatus'); if (statusEl) statusEl.textContent = "Inicjalizacja..."; const qrTarget = document.getElementById('qrcode'); if (qrTarget) { qrTarget.innerHTML = ''; const syncUrl = window.location.href.split('#')[0] + '#sync=' + mySyncPin; try { new QRCode(qrTarget, { text: syncUrl, width: 100, height: 100, colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M }); } catch(e) { } } try { localPeer = new Peer('kalendarz-' + mySyncPin, { config: { 'iceServers': [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:stun1.l.google.com:19302' }] } }); localPeer.on('open', () => { if (statusEl) statusEl.textContent = "Gotowy"; }); localPeer.on('connection', (conn) => { setupConnection(conn); alert('Drugie urządzenie się podłączyło!'); }); localPeer.on('error', (err) => { if (statusEl) statusEl.textContent = "Błąd"; }); } catch (e) { } }

@@ -35,45 +35,11 @@
         
         /* Ekran startowy dla telefonów */
         #mobile-launcher {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 35px;
-            width: 100vw;
-            height: 100vh;
-            position: fixed;
-            top: 0; left: 0;
-            background: var(--bg-color);
-            z-index: 90;
-            padding: 20px;
-            box-sizing: border-box;
+            display: none; flex-direction: column; align-items: center; justify-content: center; gap: 35px; width: 100vw; height: 100vh; position: fixed; top: 0; left: 0; background: var(--bg-color); z-index: 90; padding: 20px; box-sizing: border-box;
         }
-        .mobile-launcher-menu {
-            display: flex;
-            flex-direction: column;
-            gap: 18px;
-            width: 100%;
-            max-width: 290px;
-        }
-        .mobile-launch-btn {
-            width: 100%;
-            padding: 18px 20px;
-            font-size: 1.15rem;
-            font-weight: 700;
-            text-align: center;
-            border-radius: 16px;
-            box-shadow: var(--shadow-outer);
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            border: none;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        .mobile-launch-btn:active {
-            box-shadow: var(--shadow-inner);
-            transform: scale(0.97);
-        }
+        .mobile-launcher-menu { display: flex; flex-direction: column; gap: 18px; width: 100%; max-width: 290px; }
+        .mobile-launch-btn { width: 100%; padding: 18px 20px; font-size: 1.15rem; font-weight: 700; text-align: center; border-radius: 16px; box-shadow: var(--shadow-outer); background-color: var(--bg-color); color: var(--text-main); border: none; cursor: pointer; transition: all 0.2s ease; }
+        .mobile-launch-btn:active { box-shadow: var(--shadow-inner); transform: scale(0.97); }
 
         .top-controls { display: flex; flex-direction: column; max-width: 1400px; width: 100%; margin: 0 auto 15px auto; gap: 15px; flex-shrink: 0; }
         .nav-row { display: flex; justify-content: space-between; align-items: center; gap: 15px; flex-wrap: wrap; width: 100%; }
@@ -101,24 +67,9 @@
         .large-clock-widget { padding: 10px 0; text-align: center; }
         
         .flip-clock { display: flex; gap: 8px; justify-content: center; align-items: center; font-size: 5rem; font-weight: 800; letter-spacing: -2px; cursor: pointer; }
-        .flip-digit { 
-            background-color: var(--bg-color); 
-            color: var(--text-main); 
-            padding: 18px 12px; 
-            border-radius: 16px; 
-            min-width: 85px; 
-            position: relative; 
-            box-shadow: var(--shadow-outer); 
-            border: 1px solid var(--border-color);
-            perspective: 800px; 
-            line-height: 1; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-        }
+        .flip-digit { background-color: var(--bg-color); color: var(--text-main); padding: 18px 12px; border-radius: 16px; min-width: 85px; position: relative; box-shadow: var(--shadow-outer); border: 1px solid var(--border-color); perspective: 800px; line-height: 1; display: flex; justify-content: center; align-items: center; }
         .flip-digit::after { content: ''; position: absolute; top: 50%; left: 0; right: 0; height: 2px; background-color: var(--line-color); margin-top: -1px; z-index: 10; }
         .flip-colon { font-size: 4rem; color: var(--text-main); font-weight: 900; margin-top: -10px; text-shadow: var(--shadow-outer); }
-        
         .flip-anim { animation: flipDrop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); transform-origin: top center; }
         @keyframes flipDrop { 0% { transform: rotateX(-90deg); filter: brightness(0.3); opacity: 0; } 100% { transform: rotateX(0deg); filter: brightness(1); opacity: 1; } }
         
@@ -137,7 +88,6 @@
         .holiday-name { font-weight: 600; text-align: right; color: var(--text-main); max-width: 150px; line-height: 1.2; }
 
         .calendar-main-area { display: flex; flex-grow: 1; position: relative; border-radius: 20px; box-shadow: var(--shadow-outer); overflow: hidden; background: var(--grid-bg); padding: 10px; }
-        
         .time-labels { width: 70px; flex-shrink: 0; border-right: 2px solid var(--border-color); display: flex; flex-direction: column; }
         .time-label { flex-grow: 1; text-align: right; padding-right: 12px; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); box-sizing: border-box; display: flex; align-items: flex-start; justify-content: flex-end; transform: translateY(-7px); }
         
@@ -145,7 +95,7 @@
         .day-column { flex: 1; position: relative; border-right: 1px solid var(--border-color); height: 100%; transition: background-color 0.3s; }
         .day-column:last-child { border-right: none; }
         .day-column:hover { background-color: rgba(163, 177, 198, 0.05); }
-        .day-column.drag-over { background-color: rgba(239, 68, 68, 0.15) !important; box-shadow: inset 0 0 10px rgba(239, 68, 68, 0.3); }
+        .day-column.drag-over { background-color: rgba(239, 68, 68, 0.08) !important; box-shadow: inset 0 0 10px rgba(239, 68, 68, 0.2); }
         
         .day-grid-bg { position: absolute; top: 40px; bottom: 0; left: 0; right: 0; z-index: 1; pointer-events: none; background-image: linear-gradient(to bottom, var(--line-color) 1px, transparent 1px), linear-gradient(to bottom, var(--night-bg) 0%, var(--night-bg) 25%, var(--day-bg) 25%, var(--day-bg) 91.666%, var(--night-bg) 91.666%, var(--night-bg) 100%); background-size: 100% calc(100% / 24), 100% 100%; }
 
@@ -163,38 +113,15 @@
         .event-box { position: relative; width: 100%; height: 100%; }
         .event-block:hover { z-index: 25; }
         
-        .event-content { 
-            position: absolute; top: 12px; left: 0; right: 0; bottom: 0; border-radius: 10px; 
-            border: 1px solid rgba(255,255,255,0.25); box-shadow: 0 4px 10px rgba(0,0,0,0.15), inset 0 0 10px rgba(255,255,255,0.15); 
-            padding: 24px 2px 6px 2px; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; gap: 4px; 
-            color: white; font-size: 0.75rem; font-weight: 600; backdrop-filter: blur(8px); text-align: center;
-            transition: all 0.2s ease;
-        }
-        
-        .event-block.task-done .event-content,
-        .event-block.task-done .event-lid {
-            opacity: 0.65;
-            filter: grayscale(40%);
-        }
-        .event-block.task-done .task-title-text {
-            text-decoration: line-through;
-        }
-        
-        .event-lid { 
-            position: absolute; top: 0; left: 0; right: 0; height: 30px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.35); 
-            box-shadow: 0 3px 6px rgba(0,0,0,0.2); z-index: 20; transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1); 
-            display: flex; align-items: center; justify-content: center; text-align: center; font-size: 0.75rem; font-weight: 700; 
-            text-shadow: 0 1px 3px rgba(0,0,0,0.3); overflow: hidden; padding: 0 4px; pointer-events: none; white-space: nowrap; text-overflow: ellipsis;
-        }
+        .event-content { position: absolute; top: 12px; left: 0; right: 0; bottom: 0; border-radius: 10px; border: 1px solid rgba(255,255,255,0.25); box-shadow: 0 4px 10px rgba(0,0,0,0.15), inset 0 0 10px rgba(255,255,255,0.15); padding: 24px 2px 6px 2px; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; gap: 4px; color: white; font-size: 0.75rem; font-weight: 600; backdrop-filter: blur(8px); text-align: center; transition: all 0.2s ease; }
+        .event-block.task-done .event-content, .event-block.task-done .event-lid { opacity: 0.65; filter: grayscale(40%); }
+        .event-block.task-done .task-title-text { text-decoration: line-through; }
+        .event-lid { position: absolute; top: 0; left: 0; right: 0; height: 30px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.35); box-shadow: 0 3px 6px rgba(0,0,0,0.2); z-index: 20; transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1); display: flex; align-items: center; justify-content: center; text-align: center; font-size: 0.75rem; font-weight: 700; text-shadow: 0 1px 3px rgba(0,0,0,0.3); overflow: hidden; padding: 0 4px; pointer-events: none; white-space: nowrap; text-overflow: ellipsis; }
         .event-lid::after { content: ''; position: absolute; inset: 0; background: linear-gradient(rgba(255,255,255,0.2), transparent); border-radius: inherit; pointer-events: none; }
         .event-block:hover .event-lid { transform: translateY(-8px); }
         .event-content span, .event-content .event-actions { position: relative; z-index: 2; text-shadow: 0 1px 2px rgba(0,0,0,0.2); }
         
-        .task-checkbox-btn {
-            background: rgba(255,255,255,0.25); border: 1px solid rgba(255,255,255,0.4);
-            color: white; border-radius: 4px; cursor: pointer; padding: 1px 5px; font-size: 0.75rem;
-            margin-right: 4px; display: inline-flex; align-items: center; justify-content: center;
-        }
+        .task-checkbox-btn { background: rgba(255,255,255,0.25); border: 1px solid rgba(255,255,255,0.4); color: white; border-radius: 4px; cursor: pointer; padding: 1px 5px; font-size: 0.75rem; margin-right: 4px; display: inline-flex; align-items: center; justify-content: center; }
         .task-checkbox-btn:hover { background: rgba(255,255,255,0.8); color: black; }
 
         .event-actions { display: flex; gap: 4px; margin-top: auto; padding-bottom: 2px; flex-wrap: wrap; justify-content: center; }
@@ -271,7 +198,6 @@
 </head>
 <body>
 
-    <!-- Ekran Startowy Telefoniczny -->
     <div id="mobile-launcher">
         <div id="mobile-clock-holder"></div>
         <div class="mobile-launcher-menu">
@@ -290,12 +216,10 @@
                     <option value="light">⚪ Klasyczny Jasny</option>
                     <option value="dark">⚫ Klasyczny Ciemny</option>
                 </select>
-
                 <label class="color-picker-wrapper" title="Wybierz własny kolor z palety">
                     🎨
                     <input type="color" id="bg-color-picker" class="hidden-color-picker">
                 </label>
-                
                 <select id="view-select" class="theme-select">
                     <option value="day">Dzień</option>
                     <option value="weekA">Układ A (Dzisiaj + 6 dni)</option>
@@ -330,7 +254,6 @@
                     <div class="flip-digit" id="flip-minute">--</div>
                 </div>
             </div>
-            
             <div class="holidays-widget">
                 <div class="holidays-title">Święta w tym miesiącu</div>
                 <div class="holidays-list-container" id="holidays-list"></div>
@@ -345,61 +268,37 @@
         </div>
     </div>
 
-    <div id="view-month" class="view-container">
-        <div class="month-grid" id="month-grid"></div>
-    </div>
-
+    <div id="view-month" class="view-container"><div class="month-grid" id="month-grid"></div></div>
     <div id="view-year" class="view-container"></div>
 
-    <!-- Modal Synchronizacji P2P -->
     <div class="modal-overlay" id="sync-modal">
         <div class="modal-box wide">
             <h3>☁️ Centrum Synchronizacji (P2P)</h3>
-            <p style="font-size: 0.8rem; color: var(--text-muted); text-align: center; margin-top: -10px;">
-                Połącz urządzenia bezpośrednio i prześlij kalendarz z pominięciem chmury.
-            </p>
-
             <div style="background: var(--input-bg); padding: 15px; border-radius: 10px; margin-bottom: 5px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                     <strong style="font-size: 0.9rem;">Krok 1: Połącz z urządzeniem</strong>
                     <span id="syncPeerStatus" style="font-size: 0.75rem; background: var(--accent); color: white; padding: 2px 6px; border-radius: 6px;">Gotowy</span>
                 </div>
                 <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
-                    <div id="qrcodeBox" style="background: white; padding: 5px; border-radius: 10px;">
-                        <div id="qrcode" style="width: 100px; height: 100px;"></div>
-                    </div>
-                    <div style="flex: 1; text-align: center;">
-                        <p style="font-size: 0.8rem; margin-bottom: 5px;">Zeskanuj kod lub podaj ten PIN:</p>
-                        <div id="mySyncPinDisplay" style="font-size: 1.5rem; font-weight: 900; color: var(--highlight); letter-spacing: 2px;">------</div>
-                    </div>
+                    <div id="qrcodeBox" style="background: white; padding: 5px; border-radius: 10px;"><div id="qrcode" style="width: 100px; height: 100px;"></div></div>
+                    <div style="flex: 1; text-align: center;"><p style="font-size: 0.8rem; margin-bottom: 5px;">Zeskanuj kod lub podaj ten PIN:</p><div id="mySyncPinDisplay" style="font-size: 1.5rem; font-weight: 900; color: var(--highlight); letter-spacing: 2px;">------</div></div>
                 </div>
                 <div style="display: flex; gap: 10px; margin-top: 15px;">
                     <input type="text" id="remotePinInput" placeholder="Wpisz PIN z drugiego ekranu" style="flex: 1; text-align: center; letter-spacing: 2px; font-weight: bold; text-transform: uppercase;">
                     <button class="nav-btn" style="background: #10b981; color: white;" onclick="connectAndPairPeer()">Połącz</button>
                 </div>
             </div>
-
             <div id="syncDirectionBox" style="background: var(--input-bg); padding: 15px; border-radius: 10px;">
                 <strong style="display:block; margin-bottom: 10px; font-size: 0.9rem;">Krok 2: Wybierz kierunek synchronizacji</strong>
                 <div style="display: flex; gap: 10px;">
-                    <button class="nav-btn" style="flex: 1; background: var(--accent); color: white; display: flex; flex-direction: column; align-items: center; padding: 10px;" onclick="sendDataToRemote()">
-                        <span style="font-weight: 900; margin-bottom: 5px;">WYŚLIJ STĄD</span>
-                        <span style="font-size: 0.7rem; font-weight: normal;">Zastąp dane na drugim ekranie</span>
-                    </button>
-                    <button class="nav-btn" style="flex: 1; background: var(--highlight); color: white; display: flex; flex-direction: column; align-items: center; padding: 10px;" onclick="requestDataFromRemote()">
-                        <span style="font-weight: 900; margin-bottom: 5px;">POBIERZ TUTAJ</span>
-                        <span style="font-size: 0.7rem; font-weight: normal;">Pobierz z drugiego urządzenia</span>
-                    </button>
+                    <button class="nav-btn" style="flex: 1; background: var(--accent); color: white; display: flex; flex-direction: column; align-items: center; padding: 10px;" onclick="sendDataToRemote()"><span style="font-weight: 900; margin-bottom: 5px;">WYŚLIJ STĄD</span><span style="font-size: 0.7rem; font-weight: normal;">Zastąp dane na drugim ekranie</span></button>
+                    <button class="nav-btn" style="flex: 1; background: var(--highlight); color: white; display: flex; flex-direction: column; align-items: center; padding: 10px;" onclick="requestDataFromRemote()"><span style="font-weight: 900; margin-bottom: 5px;">POBIERZ TUTAJ</span><span style="font-size: 0.7rem; font-weight: normal;">Pobierz z drugiego urządzenia</span></button>
                 </div>
             </div>
-
-            <div class="modal-btns" style="margin-top: 5px;">
-                <button class="nav-btn" onclick="zamknijModalSync()">Zakończ</button>
-            </div>
+            <div class="modal-btns" style="margin-top: 5px;"><button class="nav-btn" onclick="zamknijModalSync()">Zakończ</button></div>
         </div>
     </div>
 
-    <!-- Modal Zdarzeń / Zadań -->
     <div class="modal-overlay" id="event-modal">
         <div class="modal-box">
             <h3 id="modal-title">Zarządzaj wpisem</h3>
@@ -435,14 +334,10 @@
             </select>
 
             <label style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: -10px;">Godzina rozpoczęcia:</label>
-            <div class="time-row">
-                <select id="ev-start-h"></select><span>:</span><select id="ev-start-m"></select>
-            </div>
+            <div class="time-row"><select id="ev-start-h"></select><span>:</span><select id="ev-start-m"></select></div>
             
             <label style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: -10px;">Godzina zakończenia:</label>
-            <div class="time-row">
-                <select id="ev-end-h"></select><span>:</span><select id="ev-end-m"></select>
-            </div>
+            <div class="time-row"><select id="ev-end-h"></select><span>:</span><select id="ev-end-m"></select></div>
 
             <input type="hidden" id="ev-date"> 
             <div class="modal-btns">
@@ -452,60 +347,36 @@
         </div>
     </div>
 
-    <!-- Modal Nowej Kategorii -->
     <div class="modal-overlay" id="category-modal" style="z-index: 106;">
         <div class="modal-box">
             <h3 id="modal-kat-title">Stwórz własną kategorię</h3>
-            
             <label style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: -10px;">Nazwa kategorii:</label>
             <input type="text" id="nowa-kat-nazwa" placeholder="Np. Trening, Zjazd na studia..." autocomplete="off">
-            
             <div style="display: flex; gap: 15px; margin-top: 5px;">
-                <div style="flex: 1;">
-                    <label style="font-size: 0.85rem; color: var(--text-muted); display: block; margin-bottom: 5px;">Kolor tła:</label>
-                    <input type="color" id="nowa-kat-kolor" value="#a855f7">
-                </div>
-                <div style="flex: 1;">
-                    <label style="font-size: 0.85rem; color: var(--text-muted); display: block; margin-bottom: 5px;">Kolor tekstu:</label>
-                    <input type="color" id="nowa-kat-tekst" value="#ffffff">
-                </div>
+                <div style="flex: 1;"><label style="font-size: 0.85rem; color: var(--text-muted); display: block; margin-bottom: 5px;">Kolor tła:</label><input type="color" id="nowa-kat-kolor" value="#a855f7"></div>
+                <div style="flex: 1;"><label style="font-size: 0.85rem; color: var(--text-muted); display: block; margin-bottom: 5px;">Kolor tekstu:</label><input type="color" id="nowa-kat-tekst" value="#ffffff"></div>
             </div>
-            
-            <div class="modal-btns" style="margin-top: 15px;">
-                <button class="nav-btn" onclick="zamknijModalKategorii()">Anuluj</button>
-                <button class="nav-btn btn-save" onclick="zapiszNowaKategorie()">Zapisz</button>
-            </div>
+            <div class="modal-btns" style="margin-top: 15px;"><button class="nav-btn" onclick="zamknijModalKategorii()">Anuluj</button><button class="nav-btn btn-save" onclick="zapiszNowaKategorie()">Zapisz</button></div>
         </div>
     </div>
 
-    <!-- Modal Zarządzania Kategoriami -->
     <div class="modal-overlay" id="manage-cat-modal" style="z-index: 105;">
         <div class="modal-box">
             <h3>Zarządzaj kategoriami</h3>
-            <p style="font-size: 0.75rem; color: var(--text-muted); text-align: center; margin-top: -10px;">Możesz edytować i usuwać tylko te kategorie, które zostały dodane przez Ciebie.</p>
             <div id="custom-cat-list" style="display:flex; flex-direction:column; gap:10px; max-height: 250px; overflow-y:auto; margin-bottom: 5px; padding-right: 5px;"></div>
-            <div class="modal-btns">
-                <button class="nav-btn" onclick="zamknijZarzadzanieKategoriami()">Gotowe</button>
-            </div>
+            <div class="modal-btns"><button class="nav-btn" onclick="zamknijZarzadzanieKategoriami()">Gotowe</button></div>
         </div>
     </div>
 
-    <!-- Modal Importu Pracy -->
     <div class="modal-overlay" id="praca-modal">
         <div class="modal-box wide">
             <h3>Wklej Harmonogram z Excela</h3>
-            <p style="font-size: 0.8rem; color: var(--text-muted); text-align: center; margin-top: -10px;">Skopiuj wiersze (od kolumny z datą do kolumny ze zmianami 1 i 2) i wklej poniżej.</p>
-            <textarea id="praca-textarea" class="praca-input" placeholder="01/10/2026  czwartek        12&#10;02/10/2026  piątek  WR&#10;03/10/2026  sobota  W5&#10;04/10/2026  niedziela   12"></textarea>
-            
+            <textarea id="praca-textarea" class="praca-input" placeholder="Wklej tu..."></textarea>
             <div style="display: flex; gap: 10px; margin-top: 5px;">
                 <button class="nav-btn" style="flex: 1; font-size: 0.8rem; background: var(--highlight); color: white;" onclick="wyczyscGrafikZKalendarza()">🗑️ Wyczyść zaimportowany grafik</button>
                 <button class="nav-btn" style="flex: 1; font-size: 0.8rem;" onclick="document.getElementById('praca-textarea').value=''">🧹 Wyczyść okno</button>
             </div>
-
-            <div class="modal-btns" style="margin-top: 10px;">
-                <button class="nav-btn" onclick="zamknijModalPraca()">Anuluj</button>
-                <button class="nav-btn btn-save" onclick="importujHarmonogram()">Importuj</button>
-            </div>
+            <div class="modal-btns" style="margin-top: 10px;"><button class="nav-btn" onclick="zamknijModalPraca()">Anuluj</button><button class="nav-btn btn-save" onclick="importujHarmonogram()">Importuj</button></div>
         </div>
     </div>
 
@@ -522,164 +393,59 @@
             'inne': { name: 'Inne', gradient: 'linear-gradient(135deg, #94a3b8, #475569)', textColor: '#ffffff' }
         };
 
-        // Zabezpieczony odczyt z localStorage z wstrzyknięciem nowej kategorii 30 Dni
         let CATEGORIES = {};
-        try {
-            CATEGORIES = JSON.parse(localStorage.getItem('mojeKategorie')) || { ...DOMYSLNE_KATEGORIE };
-            if (!CATEGORIES['zakupy-30dni']) { 
-                CATEGORIES['zakupy-30dni'] = DOMYSLNE_KATEGORIE['zakupy-30dni']; 
-                localStorage.setItem('mojeKategorie', JSON.stringify(CATEGORIES)); 
-            }
-        } catch (e) {
-            CATEGORIES = { ...DOMYSLNE_KATEGORIE };
-        }
-
+        try { CATEGORIES = JSON.parse(localStorage.getItem('mojeKategorie')) || { ...DOMYSLNE_KATEGORIE }; if (!CATEGORIES['zakupy-30dni']) { CATEGORIES['zakupy-30dni'] = DOMYSLNE_KATEGORIE['zakupy-30dni']; localStorage.setItem('mojeKategorie', JSON.stringify(CATEGORIES)); } } catch (e) { CATEGORIES = { ...DOMYSLNE_KATEGORIE }; }
         let wydarzeniaLokalne = [];
-        try {
-            const rawEv = localStorage.getItem('mojeWydarzenia');
-            wydarzeniaLokalne = rawEv ? JSON.parse(rawEv) : [];
-            if (!Array.isArray(wydarzeniaLokalne)) wydarzeniaLokalne = [];
-        } catch (e) {
-            console.error("Błąd odczytu wydarzeń:", e);
-            wydarzeniaLokalne = [];
-        }
+        try { const rawEv = localStorage.getItem('mojeWydarzenia'); wydarzeniaLokalne = rawEv ? JSON.parse(rawEv) : []; if (!Array.isArray(wydarzeniaLokalne)) wydarzeniaLokalne = []; } catch (e) { wydarzeniaLokalne = []; }
 
-        // Obsługa formularza dla Zasady 30 Dni
         document.getElementById('ev-type').addEventListener('change', function(e) {
             const catSelect = document.getElementById('ev-category');
-            if (e.target.value === 'idea30') {
-                catSelect.value = 'zakupy-30dni';
-                catSelect.disabled = true;
-                document.getElementById('ev-title').placeholder = "Co chcesz kupić? (np. Konsola)";
-            } else {
-                catSelect.disabled = false;
-                document.getElementById('ev-title').placeholder = "Nazwa wydarzenia lub zadania...";
-            }
+            if (e.target.value === 'idea30') { catSelect.value = 'zakupy-30dni'; catSelect.disabled = true; document.getElementById('ev-title').placeholder = "Co chcesz kupić? (np. Konsola)"; } 
+            else { catSelect.disabled = false; document.getElementById('ev-title').placeholder = "Nazwa wydarzenia lub zadania..."; }
         });
 
-        const STALE_SWIETA = [
-            { d: 1, m: 1, name: 'Nowy Rok' }, { d: 6, m: 1, name: 'Trzech Króli' }, { d: 21, m: 1, name: 'Dzień Babci' }, { d: 22, m: 1, name: 'Dzień Dziadka' },
-            { d: 14, m: 2, name: 'Walentynki' }, { d: 8, m: 3, name: 'Dzień Kobiet' }, { d: 10, m: 3, name: 'Dzień Mężczyzn' }, { d: 1, m: 5, name: 'Święto Pracy' },
-            { d: 3, m: 5, name: 'Święto Konstytucji 3 Maja' }, { d: 26, m: 5, name: 'Dzień Matki' }, { d: 1, m: 6, name: 'Dzień Dziecka' }, { d: 23, m: 6, name: 'Dzień Ojca' },
-            { d: 15, m: 8, name: 'Wniebowzięcie NMP' }, { d: 1, m: 11, name: 'Wszystkich Świętych' }, { d: 11, m: 11, name: 'Święto Niepodległości' },
-            { d: 6, m: 12, name: 'Mikołajki' }, { d: 24, m: 12, name: 'Wigilia' }, { d: 25, m: 12, name: 'Boże Narodzenie' }, { d: 26, m: 12, name: 'Drugi Dzień Świąt' }, { d: 31, m: 12, name: 'Sylwester' }
-        ];
+        const STALE_SWIETA = [ { d: 1, m: 1, name: 'Nowy Rok' }, { d: 6, m: 1, name: 'Trzech Króli' }, { d: 21, m: 1, name: 'Dzień Babci' }, { d: 22, m: 1, name: 'Dzień Dziadka' }, { d: 14, m: 2, name: 'Walentynki' }, { d: 8, m: 3, name: 'Dzień Kobiet' }, { d: 10, m: 3, name: 'Dzień Mężczyzn' }, { d: 1, m: 5, name: 'Święto Pracy' }, { d: 3, m: 5, name: 'Święto Konstytucji 3 Maja' }, { d: 26, m: 5, name: 'Dzień Matki' }, { d: 1, m: 6, name: 'Dzień Dziecka' }, { d: 23, m: 6, name: 'Dzień Ojca' }, { d: 15, m: 8, name: 'Wniebowzięcie NMP' }, { d: 1, m: 11, name: 'Wszystkich Świętych' }, { d: 11, m: 11, name: 'Święto Niepodległości' }, { d: 6, m: 12, name: 'Mikołajki' }, { d: 24, m: 12, name: 'Wigilia' }, { d: 25, m: 12, name: 'Boże Narodzenie' }, { d: 26, m: 12, name: 'Drugi Dzień Świąt' }, { d: 31, m: 12, name: 'Sylwester' } ];
         const RUCHOME_2026 = [ { d: 5, m: 4, name: 'Wielkanoc' }, { d: 6, m: 4, name: 'Poniedziałek Wielkanocny' }, { d: 24, m: 5, name: 'Zielone Świątki' }, { d: 4, m: 6, name: 'Boże Ciało' } ];
 
         const hoursOptions = Array.from({length: 24}, (_, i) => `<option value="${String(i).padStart(2,'0')}">${String(i).padStart(2,'0')}</option>`).join('');
         const minsOptions = Array.from({length: 60}, (_, i) => `<option value="${String(i).padStart(2,'0')}">${String(i).padStart(2,'0')}</option>`).join('');
-        
-        document.getElementById('ev-start-h').innerHTML = hoursOptions; document.getElementById('ev-end-h').innerHTML = hoursOptions;
-        document.getElementById('ev-start-m').innerHTML = minsOptions; document.getElementById('ev-end-m').innerHTML = minsOptions;
+        document.getElementById('ev-start-h').innerHTML = hoursOptions; document.getElementById('ev-end-h').innerHTML = hoursOptions; document.getElementById('ev-start-m').innerHTML = minsOptions; document.getElementById('ev-end-m').innerHTML = minsOptions;
 
         function inicjalizujKategorie() {
             const legendContainer = document.getElementById('legend-container'); const selectCategory = document.getElementById('ev-category');
             legendContainer.innerHTML = ''; selectCategory.innerHTML = '';
-            
-            Object.keys(CATEGORIES).forEach(key => {
-                const cat = CATEGORIES[key]; const item = document.createElement('div'); item.className = 'legend-item';
-                item.innerHTML = `<div class="legend-color" style="background: ${cat.gradient};"></div><span>${cat.name}</span>`;
-                legendContainer.appendChild(item);
-                const option = document.createElement('option'); option.value = key; option.innerText = cat.name; selectCategory.appendChild(option);
-            });
+            Object.keys(CATEGORIES).forEach(key => { const cat = CATEGORIES[key]; const item = document.createElement('div'); item.className = 'legend-item'; item.innerHTML = `<div class="legend-color" style="background: ${cat.gradient};"></div><span>${cat.name}</span>`; legendContainer.appendChild(item); const option = document.createElement('option'); option.value = key; option.innerText = cat.name; selectCategory.appendChild(option); });
         }
         inicjalizujKategorie();
-
         function getCategoryDef(catId) { return CATEGORIES[catId] || CATEGORIES['inne'] || { name: 'Inne', gradient: '#94a3b8', textColor: '#ffffff' }; }
-
-        function zgadnijKategorie(title) {
-            const t = (title || "").toLowerCase();
-            if (t.includes('dzienna')) return 'zmiana-dzienna'; if (t.includes('nocna')) return 'zmiana-nocna';
-            if (t.includes('lekarz') || t.includes('dentysta') || t.includes('badanie') || t.includes('wizyta')) return 'zdrowie';
-            if (t.includes('spotkanie') || t.includes('praca') || t.includes('dyżur') || t.includes('szkolenie')) return 'praca';
-            if (t.includes('kino') || t.includes('impreza') || t.includes('basen') || t.includes('trening') || t.includes('mecz')) return 'rozrywka';
-            if (t.includes('urodziny') || t.includes('szkoła') || t.includes('wywiadówka') || t.includes('zakupy')) return 'dom';
-            if (t.includes('ważne') || t.includes('zapłacić') || t.includes('rat') || t.includes('rachunek') || t.includes('!')) return 'wazne';
-            return 'inne';
-        }
+        function zgadnijKategorie(title) { const t = (title || "").toLowerCase(); if (t.includes('dzienna')) return 'zmiana-dzienna'; if (t.includes('nocna')) return 'zmiana-nocna'; if (t.includes('lekarz') || t.includes('dentysta') || t.includes('badanie') || t.includes('wizyta')) return 'zdrowie'; if (t.includes('spotkanie') || t.includes('praca') || t.includes('dyżur') || t.includes('szkolenie')) return 'praca'; if (t.includes('kino') || t.includes('impreza') || t.includes('basen') || t.includes('trening') || t.includes('mecz')) return 'rozrywka'; if (t.includes('urodziny') || t.includes('szkoła') || t.includes('wywiadówka') || t.includes('zakupy')) return 'dom'; if (t.includes('ważne') || t.includes('zapłacić') || t.includes('rat') || t.includes('rachunek') || t.includes('!')) return 'wazne'; return 'inne'; }
 
         let ostGodzina = -1; let ostMinuta = -1;
-        function updateClock() {
-            const now = new Date(); const h = String(now.getHours()).padStart(2, '0'); const m = String(now.getMinutes()).padStart(2, '0');
-            const hEl = document.getElementById('flip-hour'); const mEl = document.getElementById('flip-minute');
-            if (h !== ostGodzina && hEl) { hEl.innerText = h; hEl.classList.remove('flip-anim'); void hEl.offsetWidth; hEl.classList.add('flip-anim'); ostGodzina = h; }
-            if (m !== ostMinuta && mEl) { mEl.innerText = m; mEl.classList.remove('flip-anim'); void mEl.offsetWidth; mEl.classList.add('flip-anim'); ostMinuta = m; }
-        }
+        function updateClock() { const now = new Date(); const h = String(now.getHours()).padStart(2, '0'); const m = String(now.getMinutes()).padStart(2, '0'); const hEl = document.getElementById('flip-hour'); const mEl = document.getElementById('flip-minute'); if (h !== ostGodzina && hEl) { hEl.innerText = h; hEl.classList.remove('flip-anim'); void hEl.offsetWidth; hEl.classList.add('flip-anim'); ostGodzina = h; } if (m !== ostMinuta && mEl) { mEl.innerText = m; mEl.classList.remove('flip-anim'); void mEl.offsetWidth; mEl.classList.add('flip-anim'); ostMinuta = m; } }
         setInterval(updateClock, 1000); updateClock();
 
         const flipClockEl = document.getElementById('flip-clock-element');
-        flipClockEl.addEventListener('dblclick', () => { if (!document.fullscreenElement) { flipClockEl.classList.add('fullscreen-clock-mode'); flipClockEl.requestFullscreen().catch(err => console.log(err)); } else { document.exitFullscreen(); } });
-        document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement) flipClockEl.classList.remove('fullscreen-clock-mode'); });
+        flipClockEl.addEventListener('dblclick', () => { if (!document.fullscreenElement) { flipClockEl.classList.add('fullscreen-clock-mode'); flipClockEl.requestFullscreen().catch(err => console.log(err)); } else { document.exitFullscreen(); } }); document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement) flipClockEl.classList.remove('fullscreen-clock-mode'); });
 
         function aktualizujSwieta() {
-            const widget = document.getElementById('holidays-list'); 
-            const widgetTitle = document.querySelector('.holidays-title');
-            if(!widget) return;
-
+            const widget = document.getElementById('holidays-list'); const widgetTitle = document.querySelector('.holidays-title'); if(!widget) return;
             let swieta = [];
-
-            if (currentView === 'year') {
-                swieta = [...STALE_SWIETA, ...RUCHOME_2026];
-                if (widgetTitle) widgetTitle.innerText = "Święta w tym roku";
-            } else {
-                let dataPocz = new Date(aktualnaDataPrzegladania);
-                let dataKon = new Date(aktualnaDataPrzegladania);
-
-                if (currentView.startsWith('week')) {
-                    if (currentView === 'weekB') dataPocz.setDate(dataPocz.getDate() - 1);
-                    else if (currentView === 'weekC') dataPocz.setDate(dataPocz.getDate() - 3);
-                    else if (currentView === 'weekD') {
-                        let dayNum = dataPocz.getDay();
-                        let diff = dataPocz.getDate() - dayNum + (dayNum === 0 ? -6 : 1);
-                        dataPocz.setDate(diff);
-                    }
-                    dataKon = new Date(dataPocz);
-                    dataKon.setDate(dataKon.getDate() + 6);
-                } else if (currentView === 'month') {
-                    dataPocz.setDate(1);
-                    dataKon = new Date(dataPocz.getFullYear(), dataPocz.getMonth() + 1, 0);
-                }
-
-                let m1 = dataPocz.getMonth() + 1;
-                let y1 = dataPocz.getFullYear();
-                let m2 = dataKon.getMonth() + 1;
-                let y2 = dataKon.getFullYear();
-
-                swieta.push(...STALE_SWIETA.filter(s => s.m === m1));
-                if (y1 === 2026) swieta.push(...RUCHOME_2026.filter(s => s.m === m1));
-
-                if (m1 !== m2 || y1 !== y2) {
-                    swieta.push(...STALE_SWIETA.filter(s => s.m === m2));
-                    if (y2 === 2026) swieta.push(...RUCHOME_2026.filter(s => s.m === m2));
-                    if (widgetTitle) widgetTitle.innerText = "Święta w tym okresie";
-                } else {
-                    if (widgetTitle) widgetTitle.innerText = "Święta w tym miesiącu";
-                }
+            if (currentView === 'year') { swieta = [...STALE_SWIETA, ...RUCHOME_2026]; if (widgetTitle) widgetTitle.innerText = "Święta w tym roku"; } else {
+                let dataPocz = new Date(aktualnaDataPrzegladania); let dataKon = new Date(aktualnaDataPrzegladania);
+                if (currentView.startsWith('week')) { if (currentView === 'weekB') dataPocz.setDate(dataPocz.getDate() - 1); else if (currentView === 'weekC') dataPocz.setDate(dataPocz.getDate() - 3); else if (currentView === 'weekD') { let dayNum = dataPocz.getDay(); let diff = dataPocz.getDate() - dayNum + (dayNum === 0 ? -6 : 1); dataPocz.setDate(diff); } dataKon = new Date(dataPocz); dataKon.setDate(dataKon.getDate() + 6); } else if (currentView === 'month') { dataPocz.setDate(1); dataKon = new Date(dataPocz.getFullYear(), dataPocz.getMonth() + 1, 0); }
+                let m1 = dataPocz.getMonth() + 1; let y1 = dataPocz.getFullYear(); let m2 = dataKon.getMonth() + 1; let y2 = dataKon.getFullYear();
+                swieta.push(...STALE_SWIETA.filter(s => s.m === m1)); if (y1 === 2026) swieta.push(...RUCHOME_2026.filter(s => s.m === m1));
+                if (m1 !== m2 || y1 !== y2) { swieta.push(...STALE_SWIETA.filter(s => s.m === m2)); if (y2 === 2026) swieta.push(...RUCHOME_2026.filter(s => s.m === m2)); if (widgetTitle) widgetTitle.innerText = "Święta w tym okresie"; } else { if (widgetTitle) widgetTitle.innerText = "Święta w tym miesiącu"; }
             }
-
-            swieta.sort((a, b) => a.m - b.m || a.d - b.d);
-
-            widget.innerHTML = '';
-            if (swieta.length === 0) {
-                widget.innerHTML = '<div class="holiday-item" style="justify-content:center;">Brak świąt w tym okresie</div>';
-            } else {
-                swieta.forEach(s => {
-                    const div = document.createElement('div'); div.className = 'holiday-item';
-                    div.innerHTML = `<span class="holiday-date">${String(s.d).padStart(2,'0')}.${String(s.m).padStart(2,'0')}</span><span class="holiday-name">${s.name}</span>`;
-                    widget.appendChild(div);
-                });
-            }
+            swieta.sort((a, b) => a.m - b.m || a.d - b.d); widget.innerHTML = '';
+            if (swieta.length === 0) { widget.innerHTML = '<div class="holiday-item" style="justify-content:center;">Brak świąt w tym okresie</div>'; } else { swieta.forEach(s => { const div = document.createElement('div'); div.className = 'holiday-item'; div.innerHTML = `<span class="holiday-date">${String(s.d).padStart(2,'0')}.${String(s.m).padStart(2,'0')}</span><span class="holiday-name">${s.name}</span>`; widget.appendChild(div); }); }
         }
 
         function applySmartContrast(hex) {
             const root = document.documentElement; root.style.setProperty('--grid-bg', hex); root.style.setProperty('--bg-color', hex);
-            let r = parseInt(hex.substring(1, 3), 16); let g = parseInt(hex.substring(3, 5), 16); let b = parseInt(hex.substring(5, 7), 16);
-            let brightness = (r * 299 + g * 587 + b * 114) / 1000;
-            if (brightness > 128) { 
-                root.style.setProperty('--text-main', '#1a202c'); root.style.setProperty('--text-muted', '#4a5568'); root.style.setProperty('--border-color', 'rgba(0, 0, 0, 0.25)'); root.style.setProperty('--line-color', 'rgba(0, 0, 0, 0.15)'); root.style.setProperty('--shadow-outer', '9px 9px 16px rgba(0,0,0,0.12), -9px -9px 16px rgba(255,255,255,0.8)'); root.style.setProperty('--shadow-inner', 'inset 6px 6px 10px rgba(0,0,0,0.1), inset -6px -6px 10px rgba(255,255,255,0.8)'); root.style.setProperty('--night-bg', 'rgba(0, 0, 0, 0.08)'); root.style.setProperty('--day-bg', 'transparent'); root.style.setProperty('--modal-bg', 'rgba(240, 244, 248, 0.95)'); root.style.setProperty('--input-bg', 'rgba(0, 0, 0, 0.05)'); root.style.setProperty('--input-text', '#1a202c');
-            } else { 
-                root.style.setProperty('--text-main', '#f7fafc'); root.style.setProperty('--text-muted', '#cbd5e0'); root.style.setProperty('--border-color', 'rgba(255, 255, 255, 0.25)'); root.style.setProperty('--line-color', 'rgba(255, 255, 255, 0.15)'); root.style.setProperty('--shadow-outer', '8px 8px 16px rgba(0, 0, 0, 0.8), -8px -8px 16px rgba(255, 255, 255, 0.1)'); root.style.setProperty('--shadow-inner', 'inset 6px 6px 10px rgba(0, 0, 0, 0.6), inset -6px -6px 10px rgba(255,255,255, 0.05)'); root.style.setProperty('--night-bg', 'rgba(0, 0, 0, 0.3)'); root.style.setProperty('--day-bg', 'rgba(255, 255, 255, 0.03)'); root.style.setProperty('--modal-bg', 'rgba(30, 35, 45, 0.95)'); root.style.setProperty('--input-bg', 'rgba(0, 0, 0, 0.3)'); root.style.setProperty('--input-text', '#f7fafc');
-            }
+            let r = parseInt(hex.substring(1, 3), 16); let g = parseInt(hex.substring(3, 5), 16); let b = parseInt(hex.substring(5, 7), 16); let brightness = (r * 299 + g * 587 + b * 114) / 1000;
+            if (brightness > 128) { root.style.setProperty('--text-main', '#1a202c'); root.style.setProperty('--text-muted', '#4a5568'); root.style.setProperty('--border-color', 'rgba(0, 0, 0, 0.25)'); root.style.setProperty('--line-color', 'rgba(0, 0, 0, 0.15)'); root.style.setProperty('--shadow-outer', '9px 9px 16px rgba(0,0,0,0.12), -9px -9px 16px rgba(255,255,255,0.8)'); root.style.setProperty('--shadow-inner', 'inset 6px 6px 10px rgba(0,0,0,0.1), inset -6px -6px 10px rgba(255,255,255,0.8)'); root.style.setProperty('--night-bg', 'rgba(0, 0, 0, 0.08)'); root.style.setProperty('--day-bg', 'transparent'); root.style.setProperty('--modal-bg', 'rgba(240, 244, 248, 0.95)'); root.style.setProperty('--input-bg', 'rgba(0, 0, 0, 0.05)'); root.style.setProperty('--input-text', '#1a202c'); } 
+            else { root.style.setProperty('--text-main', '#f7fafc'); root.style.setProperty('--text-muted', '#cbd5e0'); root.style.setProperty('--border-color', 'rgba(255, 255, 255, 0.25)'); root.style.setProperty('--line-color', 'rgba(255, 255, 255, 0.15)'); root.style.setProperty('--shadow-outer', '8px 8px 16px rgba(0, 0, 0, 0.8), -8px -8px 16px rgba(255, 255, 255, 0.1)'); root.style.setProperty('--shadow-inner', 'inset 6px 6px 10px rgba(0, 0, 0, 0.6), inset -6px -6px 10px rgba(255,255,255, 0.05)'); root.style.setProperty('--night-bg', 'rgba(0, 0, 0, 0.3)'); root.style.setProperty('--day-bg', 'rgba(255, 255, 255, 0.03)'); root.style.setProperty('--modal-bg', 'rgba(30, 35, 45, 0.95)'); root.style.setProperty('--input-bg', 'rgba(0, 0, 0, 0.3)'); root.style.setProperty('--input-text', '#f7fafc'); }
         }
 
         const themeSelect = document.getElementById('app-theme'); const colorPicker = document.getElementById('bg-color-picker');
@@ -687,177 +453,72 @@
         if (savedCustomBg) { colorPicker.value = savedCustomBg; applySmartContrast(savedCustomBg); } 
         else { const savedTheme = localStorage.getItem('app-theme') || 'light'; if (savedTheme !== 'light') { document.body.setAttribute('data-theme', savedTheme); } themeSelect.value = savedTheme; colorPicker.value = savedTheme === 'dark' ? "#1a1e24" : "#e0e5ec"; }
 
-        themeSelect.addEventListener('change', (e) => {
-            const theme = e.target.value; if (theme === 'light') document.body.removeAttribute('data-theme'); else document.body.setAttribute('data-theme', theme);
-            localStorage.setItem('app-theme', theme); ['--grid-bg', '--bg-color', '--text-main', '--text-muted', '--border-color', '--line-color', '--shadow-outer', '--shadow-inner', '--night-bg', '--day-bg', '--modal-bg', '--input-bg', '--input-text'].forEach(prop => document.documentElement.style.removeProperty(prop)); localStorage.removeItem('custom-bg-color'); colorPicker.value = theme === 'dark' ? "#1a1e24" : "#e0e5ec"; 
-        });
+        themeSelect.addEventListener('change', (e) => { const theme = e.target.value; if (theme === 'light') document.body.removeAttribute('data-theme'); else document.body.setAttribute('data-theme', theme); localStorage.setItem('app-theme', theme); ['--grid-bg', '--bg-color', '--text-main', '--text-muted', '--border-color', '--line-color', '--shadow-outer', '--shadow-inner', '--night-bg', '--day-bg', '--modal-bg', '--input-bg', '--input-text'].forEach(prop => document.documentElement.style.removeProperty(prop)); localStorage.removeItem('custom-bg-color'); colorPicker.value = theme === 'dark' ? "#1a1e24" : "#e0e5ec"; });
         colorPicker.addEventListener('input', (e) => { const c = e.target.value; applySmartContrast(c); localStorage.setItem('custom-bg-color', c); });
 
         const viewSelect = document.getElementById('view-select'); let currentView = localStorage.getItem('app-view');
         if (!['day', 'weekA', 'weekB', 'weekC', 'weekD', 'month', 'year'].includes(currentView)) { currentView = 'weekA'; localStorage.setItem('app-view', currentView); }
         viewSelect.value = currentView; viewSelect.addEventListener('change', (e) => { currentView = e.target.value; localStorage.setItem('app-view', currentView); odswiezWidok(); });
 
-        let aktualnaDataPrzegladania = new Date(); let wydarzeniaGoogle = []; 
-        let domColumns = []; let editingEventId = null;
+        let aktualnaDataPrzegladania = new Date(); let wydarzeniaGoogle = []; let domColumns = []; let editingEventId = null; let editingInstanceTime = null;
 
-        // ------------- Zabezpieczona P2P SYNCHRONIZACJA -------------
         let localPeer = null; let activeConn = null; let mySyncPin = '';
 
-        function otworzModalSync() {
-            document.getElementById('sync-modal').style.display = 'flex';
-            initP2PSync();
-            const lastRemotePin = localStorage.getItem('LAST_REMOTE_PIN');
-            if (lastRemotePin) { const pinInput = document.getElementById('remotePinInput'); if (pinInput) pinInput.value = lastRemotePin; }
-        }
+        function otworzModalSync() { document.getElementById('sync-modal').style.display = 'flex'; initP2PSync(); const lastRemotePin = localStorage.getItem('LAST_REMOTE_PIN'); if (lastRemotePin) { const pinInput = document.getElementById('remotePinInput'); if (pinInput) pinInput.value = lastRemotePin; } }
         function zamknijModalSync() { document.getElementById('sync-modal').style.display = 'none'; }
 
         function initP2PSync() {
-            if (typeof Peer === 'undefined' || typeof QRCode === 'undefined') {
-                const statusEl = document.getElementById('syncPeerStatus');
-                if (statusEl) statusEl.textContent = "Brak sieci P2P";
-                alert("Nie można załadować modułu P2P. Sprawdź połączenie z internetem.");
-                return;
-            }
+            if (typeof Peer === 'undefined' || typeof QRCode === 'undefined') return;
             if (localPeer && !localPeer.destroyed) return;
-            let savedPin = localStorage.getItem('MY_SYNC_PIN');
-            if (!savedPin) { savedPin = Math.floor(100000 + Math.random() * 900000).toString(); localStorage.setItem('MY_SYNC_PIN', savedPin); }
-            mySyncPin = savedPin;
-            const pinEl = document.getElementById('mySyncPinDisplay'); if (pinEl) pinEl.textContent = mySyncPin;
+            let savedPin = localStorage.getItem('MY_SYNC_PIN'); if (!savedPin) { savedPin = Math.floor(100000 + Math.random() * 900000).toString(); localStorage.setItem('MY_SYNC_PIN', savedPin); }
+            mySyncPin = savedPin; const pinEl = document.getElementById('mySyncPinDisplay'); if (pinEl) pinEl.textContent = mySyncPin;
             const statusEl = document.getElementById('syncPeerStatus'); if (statusEl) statusEl.textContent = "Inicjalizacja..."; 
-            const qrTarget = document.getElementById('qrcode');
-            if (qrTarget) {
-                qrTarget.innerHTML = '';
-                const syncUrl = window.location.href.split('#')[0] + '#sync=' + mySyncPin;
-                try {
-                    new QRCode(qrTarget, { text: syncUrl, width: 100, height: 100, colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M });
-                } catch(e) { console.error(e); }
-            }
-            try {
-                localPeer = new Peer('kalendarz-' + mySyncPin, { config: { 'iceServers': [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:stun1.l.google.com:19302' }] } });
-                localPeer.on('open', () => { if (statusEl) statusEl.textContent = "Gotowy"; });
-                localPeer.on('connection', (conn) => { setupConnection(conn); alert('Drugie urządzenie się podłączyło!'); });
-                localPeer.on('error', (err) => { console.error('Błąd PeerJS:', err); if (statusEl) statusEl.textContent = "Błąd"; });
-            } catch (e) { console.error(e); }
+            const qrTarget = document.getElementById('qrcode'); if (qrTarget) { qrTarget.innerHTML = ''; const syncUrl = window.location.href.split('#')[0] + '#sync=' + mySyncPin; try { new QRCode(qrTarget, { text: syncUrl, width: 100, height: 100, colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M }); } catch(e) { } }
+            try { localPeer = new Peer('kalendarz-' + mySyncPin, { config: { 'iceServers': [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:stun1.l.google.com:19302' }] } }); localPeer.on('open', () => { if (statusEl) statusEl.textContent = "Gotowy"; }); localPeer.on('connection', (conn) => { setupConnection(conn); alert('Drugie urządzenie się podłączyło!'); }); localPeer.on('error', (err) => { if (statusEl) statusEl.textContent = "Błąd"; }); } catch (e) { }
         }
+        function connectAndPairPeer() { const pinInput = document.getElementById('remotePinInput'); const pin = pinInput ? pinInput.value.trim() : ''; if (!pin) return alert('Wpisz kod PIN!'); const statusEl = document.getElementById('syncPeerStatus'); if (statusEl && statusEl.textContent === "Inicjalizacja...") return alert('Poczekaj...'); localStorage.setItem('LAST_REMOTE_PIN', pin); if (!localPeer) return; if (statusEl) statusEl.textContent = "Łączenie..."; const conn = localPeer.connect('kalendarz-' + pin, { reliable: true }); let connectionTimeout = setTimeout(() => { if (statusEl && statusEl.textContent === "Łączenie...") { statusEl.textContent = "Gotowy"; alert('Brak odpowiedzi. Sieć blokuje sygnał P2P!'); conn.close(); } }, 8000); conn.on('open', () => { clearTimeout(connectionTimeout); setupConnection(conn); alert('Urządzenia sparowane pomyślnie!'); if (statusEl) statusEl.textContent = "Połączono"; }); }
+        function setupConnection(conn) { activeConn = conn; activeConn.on('data', (payload) => { if (payload.type === 'PUSH_DATA') { if (confirm('Drugie urządzenie przesyła nową bazę danych. Zastąpić obecne dane?')) { if (payload.data.wydarzenia) { wydarzeniaLokalne = payload.data.wydarzenia; localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne)); } if (payload.data.kategorie) { CATEGORIES = payload.data.kategorie; localStorage.setItem('mojeKategorie', JSON.stringify(CATEGORIES)); inicjalizujKategorie(); } zamknijModalSync(); odswiezWidok(); alert('Baza zaktualizowana!'); } } else if (payload.type === 'PULL_REQUEST') { if (confirm('Drugie urządzenie prosi o pobranie Twojej bazy kalendarza. Udostępnić?')) { activeConn.send({ type: 'PUSH_DATA', data: { wydarzenia: wydarzeniaLokalne, kategorie: CATEGORIES } }); alert('Wysłano dane do drugiego urządzenia!'); } } }); activeConn.on('close', () => { alert('Połączenie rozłączone.'); }); }
+        function sendDataToRemote() { if (!activeConn || !activeConn.open) return alert('Brak aktywnego połączenia!'); if (confirm('UWAGA! Zastąpisz WSZYSTKIE dane na drugim urządzeniu. Kontynuować?')) { activeConn.send({ type: 'PUSH_DATA', data: { wydarzenia: wydarzeniaLokalne, kategorie: CATEGORIES } }); alert('Wysłano dane do drugiego urządzenia!'); } }
+        function requestDataFromRemote() { if (!activeConn || !activeConn.open) return alert('Brak aktywnego połączenia!'); activeConn.send({ type: 'PULL_REQUEST' }); alert('Wysłano prośbę o pobranie danych z drugiego urządzenia...'); }
+        function checkUrlForSync() { const hash = window.location.hash; if (hash.startsWith('#sync=')) { const pin = hash.replace('#sync=', ''); setTimeout(() => { otworzModalSync(); const pinInput = document.getElementById('remotePinInput'); if (pinInput) pinInput.value = pin; connectAndPairPeer(); }, 600); } }
 
-        function connectAndPairPeer() {
-            const pinInput = document.getElementById('remotePinInput'); const pin = pinInput ? pinInput.value.trim() : '';
-            if (!pin) return alert('Wpisz kod PIN!');
-            const statusEl = document.getElementById('syncPeerStatus'); if (statusEl && statusEl.textContent === "Inicjalizacja...") return alert('Poczekaj ułamek sekundy...');
-            localStorage.setItem('LAST_REMOTE_PIN', pin);
-            if (!localPeer) return alert('Błąd usługi synchronizacji. Zresetuj stronę.');
-            if (statusEl) statusEl.textContent = "Łączenie...";
-            const conn = localPeer.connect('kalendarz-' + pin, { reliable: true });
-            let connectionTimeout = setTimeout(() => { if (statusEl && statusEl.textContent === "Łączenie...") { statusEl.textContent = "Gotowy"; alert('Brak odpowiedzi. Sieć blokuje sygnał P2P!'); conn.close(); } }, 8000);
-            conn.on('open', () => { clearTimeout(connectionTimeout); setupConnection(conn); alert('Urządzenia sparowane pomyślnie!'); if (statusEl) statusEl.textContent = "Połączono"; });
-        }
-
-        function setupConnection(conn) {
-            activeConn = conn;
-            activeConn.on('data', (payload) => {
-                if (payload.type === 'PUSH_DATA') {
-                    if (confirm('Drugie urządzenie przesyła nową bazę danych. Zastąpić obecne dane?')) {
-                        if (payload.data.wydarzenia) { wydarzeniaLokalne = payload.data.wydarzenia; localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne)); }
-                        if (payload.data.kategorie) { CATEGORIES = payload.data.kategorie; localStorage.setItem('mojeKategorie', JSON.stringify(CATEGORIES)); inicjalizujKategorie(); }
-                        zamknijModalSync(); odswiezWidok(); alert('Baza zaktualizowana!');
-                    }
-                } else if (payload.type === 'PULL_REQUEST') {
-                    if (confirm('Drugie urządzenie prosi o pobranie Twojej bazy kalendarza. Udostępnić?')) {
-                        activeConn.send({ type: 'PUSH_DATA', data: { wydarzenia: wydarzeniaLokalne, kategorie: CATEGORIES } });
-                        alert('Wysłano dane do drugiego urządzenia!');
-                    }
-                }
-            });
-            activeConn.on('close', () => { alert('Połączenie rozłączone.'); });
-        }
-
-        function sendDataToRemote() {
-            if (!activeConn || !activeConn.open) return alert('Brak aktywnego połączenia z drugim urządzeniem!');
-            if (confirm('UWAGA! Zastąpisz WSZYSTKIE dane na drugim urządzeniu. Kontynuować?')) {
-                activeConn.send({ type: 'PUSH_DATA', data: { wydarzenia: wydarzeniaLokalne, kategorie: CATEGORIES } }); alert('Wysłano dane do drugiego urządzenia!');
-            }
-        }
-
-        function requestDataFromRemote() {
-            if (!activeConn || !activeConn.open) return alert('Brak aktywnego połączenia z drugim urządzeniem!');
-            activeConn.send({ type: 'PULL_REQUEST' }); alert('Wysłano prośbę o pobranie danych z drugiego urządzenia...');
-        }
-
-        function checkUrlForSync() {
-            const hash = window.location.hash;
-            if (hash.startsWith('#sync=')) {
-                const pin = hash.replace('#sync=', '');
-                setTimeout(() => { otworzModalSync(); const pinInput = document.getElementById('remotePinInput'); if (pinInput) pinInput.value = pin; connectAndPairPeer(); }, 600);
-            }
-        }
-
-        // ------------- OBSŁUGA EKRANU STARTOWEGO DLA TELEFONÓW -------------
         function isMobilePhone() { return window.innerWidth <= 600; }
-
-        function spraweMobileLauncher() {
-            const launcher = document.getElementById('mobile-launcher');
-            const clockHolder = document.getElementById('mobile-clock-holder');
-            const mainClockHolder = document.getElementById('main-clock-widget');
-            const clockEl = document.getElementById('flip-clock-element');
-            const homeBtn = document.getElementById('btn-mobile-home');
-
-            if (isMobilePhone()) {
-                homeBtn.style.display = 'inline-block';
-                if (!launcher.dataset.visited) {
-                    pokazMobileLauncher();
-                }
-            } else {
-                launcher.style.display = 'none';
-                homeBtn.style.display = 'none';
-                if (clockEl.parentNode !== mainClockHolder) {
-                    mainClockHolder.appendChild(clockEl);
-                }
-            }
-        }
-
-        function pokazMobileLauncher() {
-            const launcher = document.getElementById('mobile-launcher');
-            const clockHolder = document.getElementById('mobile-clock-holder');
-            const clockEl = document.getElementById('flip-clock-element');
-            
-            clockHolder.appendChild(clockEl);
-            launcher.style.display = 'flex';
-        }
-
-        function otworzZMobile(mode) {
-            const launcher = document.getElementById('mobile-launcher');
-            const mainClockHolder = document.getElementById('main-clock-widget');
-            const clockEl = document.getElementById('flip-clock-element');
-            
-            launcher.dataset.visited = "true";
-            launcher.style.display = 'none';
-            mainClockHolder.appendChild(clockEl);
-
-            if (mode !== 'calendar') {
-                otworzModal(new Date(), new Date().getHours());
-                document.getElementById('ev-type').value = mode;
-                document.getElementById('ev-type').dispatchEvent(new Event('change'));
-            }
-        }
+        function spraweMobileLauncher() { const launcher = document.getElementById('mobile-launcher'); const clockHolder = document.getElementById('mobile-clock-holder'); const mainClockHolder = document.getElementById('main-clock-widget'); const clockEl = document.getElementById('flip-clock-element'); const homeBtn = document.getElementById('btn-mobile-home'); if (isMobilePhone()) { homeBtn.style.display = 'inline-block'; if (!launcher.dataset.visited) { pokazMobileLauncher(); } } else { launcher.style.display = 'none'; homeBtn.style.display = 'none'; if (clockEl.parentNode !== mainClockHolder) { mainClockHolder.appendChild(clockEl); } } }
+        function pokazMobileLauncher() { const launcher = document.getElementById('mobile-launcher'); const clockHolder = document.getElementById('mobile-clock-holder'); const clockEl = document.getElementById('flip-clock-element'); clockHolder.appendChild(clockEl); launcher.style.display = 'flex'; }
+        function otworzZMobile(mode) { const launcher = document.getElementById('mobile-launcher'); const mainClockHolder = document.getElementById('main-clock-widget'); const clockEl = document.getElementById('flip-clock-element'); launcher.dataset.visited = "true"; launcher.style.display = 'none'; mainClockHolder.appendChild(clockEl); if (mode !== 'calendar') { otworzModal(new Date(), new Date().getHours()); document.getElementById('ev-type').value = mode; document.getElementById('ev-type').dispatchEvent(new Event('change')); } }
 
         const timeLabels = document.getElementById('time-labels');
         const emptyHeader = document.createElement('div'); emptyHeader.className = 'day-header'; emptyHeader.style.borderBottom = "2px solid transparent"; emptyHeader.innerHTML = "&nbsp;<br>&nbsp;"; timeLabels.appendChild(emptyHeader);
         for (let i = 0; i < 24; i++) { const label = document.createElement('div'); label.className = 'time-label'; label.innerText = `${i}:00`; timeLabels.appendChild(label); }
 
-        document.getElementById('btn-prev').addEventListener('click', () => {
-            if (currentView === 'day') aktualnaDataPrzegladania.setDate(aktualnaDataPrzegladania.getDate() - 1);
-            else if (currentView.startsWith('week')) aktualnaDataPrzegladania.setDate(aktualnaDataPrzegladania.getDate() - 7);
-            else if (currentView === 'month') aktualnaDataPrzegladania.setMonth(aktualnaDataPrzegladania.getMonth() - 1);
-            else if (currentView === 'year') aktualnaDataPrzegladania.setFullYear(aktualnaDataPrzegladania.getFullYear() - 1); odswiezWidok(); 
-        });
-        document.getElementById('btn-next').addEventListener('click', () => {
-            if (currentView === 'day') aktualnaDataPrzegladania.setDate(aktualnaDataPrzegladania.getDate() + 1);
-            else if (currentView.startsWith('week')) aktualnaDataPrzegladania.setDate(aktualnaDataPrzegladania.getDate() + 7);
-            else if (currentView === 'month') aktualnaDataPrzegladania.setMonth(aktualnaDataPrzegladania.getMonth() + 1);
-            else if (currentView === 'year') aktualnaDataPrzegladania.setFullYear(aktualnaDataPrzegladania.getFullYear() + 1); odswiezWidok(); 
-        });
+        document.getElementById('btn-prev').addEventListener('click', () => { if (currentView === 'day') aktualnaDataPrzegladania.setDate(aktualnaDataPrzegladania.getDate() - 1); else if (currentView.startsWith('week')) aktualnaDataPrzegladania.setDate(aktualnaDataPrzegladania.getDate() - 7); else if (currentView === 'month') aktualnaDataPrzegladania.setMonth(aktualnaDataPrzegladania.getMonth() - 1); else if (currentView === 'year') aktualnaDataPrzegladania.setFullYear(aktualnaDataPrzegladania.getFullYear() - 1); odswiezWidok(); });
+        document.getElementById('btn-next').addEventListener('click', () => { if (currentView === 'day') aktualnaDataPrzegladania.setDate(aktualnaDataPrzegladania.getDate() + 1); else if (currentView.startsWith('week')) aktualnaDataPrzegladania.setDate(aktualnaDataPrzegladania.getDate() + 7); else if (currentView === 'month') aktualnaDataPrzegladania.setMonth(aktualnaDataPrzegladania.getMonth() + 1); else if (currentView === 'year') aktualnaDataPrzegladania.setFullYear(aktualnaDataPrzegladania.getFullYear() + 1); odswiezWidok(); });
 
         function isToday(d) { const now = new Date(); return d.getDate() === now.getDate() && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear(); }
+
+        // --- Nowa funkcja do odrywania wydarzeń z serii (Indywidualna Pamięć) ---
+        function detachInstance(id, instanceTime) {
+            let parentIndex = wydarzeniaLokalne.findIndex(e => e.id === id);
+            if (parentIndex === -1) return null;
+            let parent = wydarzeniaLokalne[parentIndex];
+            
+            if (!parent.exceptions) parent.exceptions = [];
+            if (!parent.exceptions.includes(instanceTime)) parent.exceptions.push(instanceTime);
+            
+            let detached = JSON.parse(JSON.stringify(parent));
+            detached.id = Date.now().toString() + Math.random().toString(36).substr(2, 5);
+            detached.repeat = 'none';
+            detached.exceptions = [];
+            
+            let st = new Date(instanceTime);
+            let duration = new Date(parent.end).getTime() - new Date(parent.start).getTime();
+            let en = new Date(instanceTime + duration);
+            detached.start = st.toISOString();
+            detached.end = en.toISOString();
+            
+            wydarzeniaLokalne.push(detached);
+            return detached;
+        }
 
         function expandEvents(events) {
             let expanded = [];
@@ -866,7 +527,7 @@
 
             events.forEach(ev => {
                 if (!ev.repeat || ev.repeat === 'none') {
-                    expanded.push(ev);
+                    expanded.push({ ...ev, instanceTime: new Date(ev.start).getTime() });
                 } else {
                     let currStart = new Date(ev.start); let duration = new Date(ev.end).getTime() - currStart.getTime(); let safety = 0;
                     if (currStart < viewLimitStart) {
@@ -877,7 +538,10 @@
                     }
                     while (currStart <= viewLimitEnd && safety < 1000) {
                         if (currStart.getTime() + duration >= viewLimitStart.getTime()) {
-                            expanded.push({ ...ev, start: new Date(currStart), end: new Date(currStart.getTime() + duration), originalId: ev.id });
+                            let iTime = currStart.getTime();
+                            if (!ev.exceptions || !ev.exceptions.includes(iTime)) {
+                                expanded.push({ ...ev, start: new Date(currStart), end: new Date(currStart.getTime() + duration), originalId: ev.id, instanceTime: iTime });
+                            }
                         }
                         if (ev.repeat === 'daily') currStart.setDate(currStart.getDate() + 1); else if (ev.repeat === 'weekly') currStart.setDate(currStart.getDate() + 7); else if (ev.repeat === 'monthly') currStart.setMonth(currStart.getMonth() + 1); else if (ev.repeat === 'yearly') currStart.setFullYear(currStart.getFullYear() + 1);
                         safety++;
@@ -893,8 +557,7 @@
             
             if (currentView === 'day' || currentView.startsWith('week')) {
                 let nrTygodnia = getWeekNumber(aktualnaDataPrzegladania);
-                if (currentView === 'day') {
-                    let dz = String(aktualnaDataPrzegladania.getDate()).padStart(2, '0'); let ms = String(aktualnaDataPrzegladania.getMonth() + 1).padStart(2, '0'); tytulEl.innerText = `${dz}.${ms}.${aktualnaDataPrzegladania.getFullYear()}`;
+                if (currentView === 'day') { let dz = String(aktualnaDataPrzegladania.getDate()).padStart(2, '0'); let ms = String(aktualnaDataPrzegladania.getMonth() + 1).padStart(2, '0'); tytulEl.innerText = `${dz}.${ms}.${aktualnaDataPrzegladania.getFullYear()}`;
                 } else if (currentView === 'weekA') { tytulEl.innerText = `Tydzień ${nrTygodnia} ${formatujZakresTygodnia(aktualnaDataPrzegladania, 'A')}`;
                 } else if (currentView === 'weekB') { tytulEl.innerText = `Tydzień ${nrTygodnia} ${formatujZakresTygodnia(aktualnaDataPrzegladania, 'B')}`;
                 } else if (currentView === 'weekC') { tytulEl.innerText = `Tydzień ${nrTygodnia} ${formatujZakresTygodnia(aktualnaDataPrzegladania, 'C')}`;
@@ -908,10 +571,9 @@
             let poszerzoneLokalne = expandEvents(sformatowaneLokalne);
             let wszystkieWydarzenia = [...wydarzeniaGoogle.map(e => ({...e, isGoogle: true})), ...poszerzoneLokalne.map(e => ({...e, isGoogle: false}))];
 
-            if (currentView === 'day' || currentView.startsWith('week')) { document.getElementById('view-day-week').style.display = 'flex'; budujDzienTydzien(wszystkieWydarzenia);
-            } else if (currentView === 'month') { document.getElementById('view-month').style.display = 'flex'; budujMiesiac(wszystkieWydarzenia);
-            } else if (currentView === 'year') { document.getElementById('view-year').style.display = 'grid'; budujRok(wszystkieWydarzenia); }
-            
+            if (currentView === 'day' || currentView.startsWith('week')) { document.getElementById('view-day-week').style.display = 'flex'; budujDzienTydzien(wszystkieWydarzenia); } 
+            else if (currentView === 'month') { document.getElementById('view-month').style.display = 'flex'; budujMiesiac(wszystkieWydarzenia); } 
+            else if (currentView === 'year') { document.getElementById('view-year').style.display = 'grid'; budujRok(wszystkieWydarzenia); }
             aktualizujSwieta();
         }
 
@@ -926,8 +588,7 @@
             for (let i = 0; i < numDays; i++) {
                 let d = new Date(viewStart); d.setDate(d.getDate() + i);
                 const col = document.createElement('div'); col.className = 'day-column';
-                if(isToday(d)) col.classList.add('current-day-highlight'); 
-                col.dataset.date = d.toISOString(); 
+                if(isToday(d)) col.classList.add('current-day-highlight'); col.dataset.date = d.toISOString(); 
                 const gridBg = document.createElement('div'); gridBg.className = 'day-grid-bg'; col.appendChild(gridBg);
                 const header = document.createElement('div'); header.className = 'day-header';
                 if(isToday(d)) header.classList.add('current-day-text');
@@ -942,29 +603,64 @@
                     if (kliknietaGodzina < 0) kliknietaGodzina = 0; if (kliknietaGodzina > 23) kliknietaGodzina = 23; otworzModal(d, kliknietaGodzina);
                 });
 
-                col.addEventListener('dragover', (e) => { e.preventDefault(); col.classList.add('drag-over'); });
-                col.addEventListener('dragleave', (e) => { col.classList.remove('drag-over'); });
+                // Wskaźnik upuszczania - Logika Drag & Drop
+                col.addEventListener('dragover', (e) => { 
+                    e.preventDefault(); col.classList.add('drag-over'); 
+                    
+                    let indicator = document.getElementById('drag-drop-indicator');
+                    if (!indicator) {
+                        indicator = document.createElement('div'); indicator.id = 'drag-drop-indicator'; indicator.style.position = 'absolute'; indicator.style.left = '0'; indicator.style.right = '0'; indicator.style.height = '2px'; indicator.style.backgroundColor = 'var(--highlight)'; indicator.style.boxShadow = '0 0 8px var(--highlight)'; indicator.style.zIndex = '100'; indicator.style.pointerEvents = 'none';
+                        indicator.innerHTML = '<span id="drag-drop-time" style="position:absolute; right:2px; top:-16px; font-size:10px; background:var(--highlight); color:white; padding:1px 4px; border-radius:4px; font-weight:bold;"></span>';
+                    }
+                    if (indicator.parentElement !== col) { col.appendChild(indicator); }
+                    indicator.style.display = 'block';
+                    
+                    const rect = col.getBoundingClientRect(); const kontenerWysokosc = col.clientHeight - 40; const godzinaWysokosc = kontenerWysokosc / 24; const upuszczenieY = e.clientY - rect.top - 40;
+                    let nowaGodzinaFloat = upuszczenieY / godzinaWysokosc; if (nowaGodzinaFloat < 0) nowaGodzinaFloat = 0; if (nowaGodzinaFloat > 23.75) nowaGodzinaFloat = 23.75; 
+                    const kwadranse = Math.round(nowaGodzinaFloat * 4) / 4; const nowaGodzina = Math.floor(kwadranse); const noweMinuty = Math.round((kwadranse - nowaGodzina) * 60);
+                    
+                    indicator.style.top = `${40 + (kwadranse * godzinaWysokosc)}px`;
+                    document.getElementById('drag-drop-time').innerText = String(nowaGodzina).padStart(2,'0') + ':' + String(noweMinuty).padStart(2,'0');
+                });
+                
+                col.addEventListener('dragleave', (e) => { 
+                    col.classList.remove('drag-over'); 
+                    let ind = document.getElementById('drag-drop-indicator');
+                    if (ind && e.relatedTarget && !col.contains(e.relatedTarget)) { ind.style.display = 'none'; }
+                });
+                
                 col.addEventListener('drop', (e) => {
                     e.preventDefault(); col.classList.remove('drag-over');
-                    const eventId = e.dataTransfer.getData('text/plain'); if (!eventId) return;
-                    const eventIndex = wydarzeniaLokalne.findIndex(ev => ev.id === eventId);
+                    let ind = document.getElementById('drag-drop-indicator'); if (ind) ind.style.display = 'none';
+
+                    const rawData = e.dataTransfer.getData('text/plain'); if (!rawData) return;
+                    let data; try { data = JSON.parse(rawData); } catch(err) { data = { id: rawData, instanceTime: null }; }
+                    
+                    const eventIndex = wydarzeniaLokalne.findIndex(ev => ev.id === data.id);
                     if (eventIndex > -1) {
                         const rect = col.getBoundingClientRect(); const kontenerWysokosc = col.clientHeight - 40; const godzinaWysokosc = kontenerWysokosc / 24; const upuszczenieY = e.clientY - rect.top - 40;
                         let nowaGodzinaFloat = upuszczenieY / godzinaWysokosc; if (nowaGodzinaFloat < 0) nowaGodzinaFloat = 0; if (nowaGodzinaFloat > 23.75) nowaGodzinaFloat = 23.75; 
                         const kwadranse = Math.round(nowaGodzinaFloat * 4) / 4; const nowaGodzina = Math.floor(kwadranse); const noweMinuty = Math.round((kwadranse - nowaGodzina) * 60);
+                        
                         const stareEv = wydarzeniaLokalne[eventIndex]; const czasTrwania = new Date(stareEv.end).getTime() - new Date(stareEv.start).getTime();
                         const docelowaDataKolumny = new Date(col.dataset.date); docelowaDataKolumny.setHours(nowaGodzina, noweMinuty, 0, 0); const nowyKoniec = new Date(docelowaDataKolumny.getTime() + czasTrwania);
+                        const isRepeating = stareEv.repeat && stareEv.repeat !== 'none' && data.instanceTime;
 
-                        if (e.ctrlKey) { wydarzeniaLokalne.push({ id: Date.now().toString() + Math.random().toString(36).substr(2, 5), title: stareEv.title, category: stareEv.category, repeat: stareEv.repeat, isTask: stareEv.isTask, isDone: false, start: docelowaDataKolumny.toISOString(), end: nowyKoniec.toISOString() }); } 
-                        else { wydarzeniaLokalne[eventIndex].start = docelowaDataKolumny.toISOString(); wydarzeniaLokalne[eventIndex].end = nowyKoniec.toISOString(); }
-                        localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne)); 
-                        odswiezWidok();
+                        if (e.ctrlKey) { 
+                            let nowaKopia = JSON.parse(JSON.stringify(stareEv)); nowaKopia.id = Date.now().toString() + Math.random().toString(36).substr(2, 5); nowaKopia.repeat = 'none'; nowaKopia.exceptions = []; nowaKopia.start = docelowaDataKolumny.toISOString(); nowaKopia.end = nowyKoniec.toISOString(); wydarzeniaLokalne.push(nowaKopia);
+                        } 
+                        else { 
+                            if (isRepeating) {
+                                let detached = detachInstance(data.id, data.instanceTime); detached.start = docelowaDataKolumny.toISOString(); detached.end = nowyKoniec.toISOString();
+                            } else {
+                                wydarzeniaLokalne[eventIndex].start = docelowaDataKolumny.toISOString(); wydarzeniaLokalne[eventIndex].end = nowyKoniec.toISOString(); 
+                            }
+                        }
+                        localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne)); odswiezWidok();
                     }
                 });
             }
-
-            renderEvents(wszystkieWydarzenia, viewStart, numDays);
-            updateCurrentTimeLine(numDays);
+            renderEvents(wszystkieWydarzenia, viewStart, numDays); updateCurrentTimeLine(numDays);
         }
 
         function renderEvents(events, viewStart, numDays) {
@@ -973,27 +669,15 @@
 
             events.forEach(event => {
                 if (!event.start || !event.end || isNaN(event.start.getTime()) || isNaN(event.end.getTime()) || event.end <= viewStart || event.start >= endOfWeek) return;
-                
                 let obecnyPoczatekCzesc = new Date(event.start); const ostatecznyKoniec = new Date(event.end);
-                
                 while (obecnyPoczatekCzesc < ostatecznyKoniec) {
                     let koniecBiezacegoDnia = new Date(obecnyPoczatekCzesc); koniecBiezacegoDnia.setHours(23, 59, 59, 999);
                     let obecnyKoniecCzesc = new Date(Math.min(koniecBiezacegoDnia, ostatecznyKoniec));
-
                     if (obecnyPoczatekCzesc >= viewStart && obecnyPoczatekCzesc <= endOfWeek) {
-                        let vStart0 = new Date(viewStart); vStart0.setHours(0,0,0,0);
-                        let eStart0 = new Date(obecnyPoczatekCzesc); eStart0.setHours(0,0,0,0);
-                        let dayIndexFixed = Math.round((eStart0 - vStart0) / 86400000);
-
+                        let vStart0 = new Date(viewStart); vStart0.setHours(0,0,0,0); let eStart0 = new Date(obecnyPoczatekCzesc); eStart0.setHours(0,0,0,0); let dayIndexFixed = Math.round((eStart0 - vStart0) / 86400000);
                         if (dayIndexFixed >= 0 && dayIndexFixed < numDays) {
-                            const startHour = obecnyPoczatekCzesc.getHours() + (obecnyPoczatekCzesc.getMinutes() / 60);
-                            const endHour = obecnyKoniecCzesc.getHours() + (obecnyKoniecCzesc.getMinutes() / 60) + (obecnyKoniecCzesc.getSeconds() > 0 ? 0.01 : 0);
-                            
-                            dayLayouts[dayIndexFixed].push({
-                                event, startHour, endHour, 
-                                isLocal: !event.isGoogle,
-                                isContinuation: obecnyPoczatekCzesc.getTime() > event.start.getTime()
-                            });
+                            const startHour = obecnyPoczatekCzesc.getHours() + (obecnyPoczatekCzesc.getMinutes() / 60); const endHour = obecnyKoniecCzesc.getHours() + (obecnyKoniecCzesc.getMinutes() / 60) + (obecnyKoniecCzesc.getSeconds() > 0 ? 0.01 : 0);
+                            dayLayouts[dayIndexFixed].push({ event, startHour, endHour, isLocal: !event.isGoogle, isContinuation: obecnyPoczatekCzesc.getTime() > event.start.getTime() });
                         }
                     }
                     obecnyPoczatekCzesc = new Date(koniecBiezacegoDnia.getTime() + 1);
@@ -1001,341 +685,169 @@
             });
 
             for (let d = 0; d < numDays; d++) {
-                let dayEvs = dayLayouts[d];
-                if (dayEvs.length === 0) continue;
-                
+                let dayEvs = dayLayouts[d]; if (dayEvs.length === 0) continue;
                 dayEvs.sort((a,b) => a.startHour - b.startHour || b.endHour - a.endHour);
-                
                 let columns = [];
-                for (let ev of dayEvs) {
-                    let placed = false;
-                    for (let col of columns) {
-                        let overlap = col.some(e => e.startHour < ev.endHour && e.endHour > ev.startHour);
-                        if (!overlap) { col.push(ev); placed = true; break; }
-                    }
-                    if (!placed) columns.push([ev]);
-                }
-                
-                let numCols = columns.length;
-                const kolumnaEl = domColumns[d]; 
-                const zawartoscWysokosc = kolumnaEl.clientHeight - 40; 
-                const godzinaWysokosc = zawartoscWysokosc / 24;
+                for (let ev of dayEvs) { let placed = false; for (let col of columns) { let overlap = col.some(e => e.startHour < ev.endHour && e.endHour > ev.startHour); if (!overlap) { col.push(ev); placed = true; break; } } if (!placed) columns.push([ev]); }
+                let numCols = columns.length; const kolumnaEl = domColumns[d]; const godzinaWysokosc = (kolumnaEl.clientHeight - 40) / 24;
 
                 for (let c = 0; c < numCols; c++) {
                     for (let item of columns[c]) {
                         const catId = item.event.category || 'inne'; const catDef = getCategoryDef(catId);
-                        const topPosition = item.startHour * godzinaWysokosc; 
-                        const blockHeight = (item.endHour - item.startHour) * godzinaWysokosc;
-                        
-                        const block = document.createElement('div'); block.className = 'event-block';
-                        const realId = item.event.originalId || item.event.id;
-
-                        if(item.event.isTask && item.event.isDone) {
-                            block.classList.add('task-done');
-                        }
+                        const block = document.createElement('div'); block.className = 'event-block'; const realId = item.event.originalId || item.event.id;
+                        if(item.event.isTask && item.event.isDone) { block.classList.add('task-done'); }
 
                         if(item.isLocal && realId) {
                             block.classList.add('local-event'); block.setAttribute('draggable', 'true'); block.title = "Złap by przenieść, przytrzymaj CTRL by skopiować";
-                            block.addEventListener('dragstart', (e) => { e.dataTransfer.setData('text/plain', realId); e.dataTransfer.effectAllowed = 'copyMove'; setTimeout(() => block.style.opacity = '0.5', 0); });
+                            block.addEventListener('dragstart', (e) => { e.dataTransfer.setData('text/plain', JSON.stringify({id: realId, instanceTime: item.event.instanceTime})); e.dataTransfer.effectAllowed = 'copyMove'; setTimeout(() => block.style.opacity = '0.5', 0); });
                             block.addEventListener('dragend', () => { block.style.opacity = '1'; });
                         }
                         
-                        block.style.top = `${topPosition + 40}px`; 
-                        block.style.height = `${Math.max(blockHeight, 55)}px`; 
-                        block.style.left = `calc(8px + (100% - 16px) / ${numCols} * ${c})`;
-                        block.style.width = `calc((100% - 16px) / ${numCols})`;
+                        block.style.top = `${item.startHour * godzinaWysokosc + 40}px`; block.style.height = `${Math.max((item.endHour - item.startHour) * godzinaWysokosc, 55)}px`; block.style.left = `calc(8px + (100% - 16px) / ${numCols} * ${c})`; block.style.width = `calc((100% - 16px) / ${numCols})`;
                         
                         const box = document.createElement('div'); box.className = 'event-box';
                         let tytul = item.event.title || "Wydarzenie"; if (item.isContinuation) tytul = `(cd.) ${tytul}`;
+                        const lid = document.createElement('div'); lid.className = 'event-lid'; lid.style.background = catDef.gradient; lid.style.color = catDef.textColor || '#ffffff'; 
+                        if (item.event.isTask) { lid.innerHTML = `<span class="task-title-text">${item.event.isDone ? '☑️ ' : '☐ '}${tytul}</span>`; } else { lid.innerText = tytul; }
                         
-                        const lid = document.createElement('div'); lid.className = 'event-lid'; 
-                        lid.style.background = catDef.gradient; lid.style.color = catDef.textColor || '#ffffff'; 
-                        
-                        if (item.event.isTask) {
-                            const chkIcon = item.event.isDone ? '☑️ ' : '☐ ';
-                            lid.innerHTML = `<span class="task-title-text">${chkIcon}${tytul}</span>`;
-                        } else {
-                            lid.innerText = tytul;
-                        }
-                        
-                        const content = document.createElement('div'); content.className = 'event-content'; 
-                        content.style.background = catDef.gradient; content.style.color = catDef.textColor || '#ffffff';
-                        const godzStartFormat = String(item.event.start.getHours()).padStart(2,'0') + ":" + String(item.event.start.getMinutes()).padStart(2,'0');
-                        
-                        const timeSpan = document.createElement('span'); timeSpan.innerText = godzStartFormat; 
-                        if(item.event.repeat && item.event.repeat !== 'none') timeSpan.innerText += ' 🔄';
-                        content.appendChild(timeSpan);
+                        const content = document.createElement('div'); content.className = 'event-content'; content.style.background = catDef.gradient; content.style.color = catDef.textColor || '#ffffff';
+                        const timeSpan = document.createElement('span'); timeSpan.innerText = String(item.event.start.getHours()).padStart(2,'0') + ":" + String(item.event.start.getMinutes()).padStart(2,'0'); 
+                        if(item.event.repeat && item.event.repeat !== 'none') timeSpan.innerText += ' 🔄'; content.appendChild(timeSpan);
 
                         if (item.isLocal && realId) {
                             const actions = document.createElement('div'); actions.className = 'event-actions';
-                            
-                            if (item.event.isTask) {
-                                const chkBtn = document.createElement('button');
-                                chkBtn.className = 'task-checkbox-btn';
-                                chkBtn.innerHTML = item.event.isDone ? '✓ Done' : '☐ Oznacz';
-                                chkBtn.onclick = (e) => { e.stopPropagation(); przełączStanZadania(realId); };
-                                actions.appendChild(chkBtn);
-                            }
-
-                            const editBtn = document.createElement('button'); editBtn.innerHTML = '✎'; editBtn.onclick = (e) => { e.stopPropagation(); otworzModal(null, null, realId); };
-                            const delBtn = document.createElement('button'); delBtn.innerHTML = '×'; delBtn.onclick = (e) => { e.stopPropagation(); usunLokalne(realId); };
+                            if (item.event.isTask) { const chkBtn = document.createElement('button'); chkBtn.className = 'task-checkbox-btn'; chkBtn.innerHTML = item.event.isDone ? '✓ Done' : '☐ Oznacz'; chkBtn.onclick = (e) => { e.stopPropagation(); przełączStanZadania(realId, item.event.instanceTime); }; actions.appendChild(chkBtn); }
+                            const editBtn = document.createElement('button'); editBtn.innerHTML = '✎'; editBtn.onclick = (e) => { e.stopPropagation(); otworzModal(null, null, realId, item.event.instanceTime); };
+                            const delBtn = document.createElement('button'); delBtn.innerHTML = '×'; delBtn.onclick = (e) => { e.stopPropagation(); usunLokalne(realId, item.event.instanceTime); };
                             actions.appendChild(editBtn); actions.appendChild(delBtn); content.appendChild(actions);
                         }
-                        
                         box.appendChild(content); box.appendChild(lid); block.appendChild(box); kolumnaEl.appendChild(block);
                     }
                 }
             }
         }
 
-        function przełączStanZadania(idStr) {
+        function przełączStanZadania(idStr, instanceTime) {
             const index = wydarzeniaLokalne.findIndex(ev => ev.id === idStr);
             if (index !== -1) {
-                wydarzeniaLokalne[index].isDone = !wydarzeniaLokalne[index].isDone;
-                localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne));
-                odswiezWidok();
-                if (activeConn && activeConn.open) {
-                    activeConn.send({ type: 'PUSH_DATA', data: { wydarzenia: wydarzeniaLokalne, kategorie: CATEGORIES } });
+                let ev = wydarzeniaLokalne[index];
+                if (ev.repeat && ev.repeat !== 'none' && instanceTime) {
+                    let detached = detachInstance(idStr, instanceTime); detached.isDone = !detached.isDone;
+                } else {
+                    ev.isDone = !ev.isDone;
                 }
+                localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne)); odswiezWidok();
+                if (activeConn && activeConn.open) { activeConn.send({ type: 'PUSH_DATA', data: { wydarzenia: wydarzeniaLokalne, kategorie: CATEGORIES } }); }
             }
         }
 
         function budujMiesiac(wszystkieWydarzenia) { 
-            const grid = document.getElementById('month-grid'); grid.innerHTML = '';
-            const rok = aktualnaDataPrzegladania.getFullYear(); const miesiac = aktualnaDataPrzegladania.getMonth();
-            const dniTyg = ['Pon', 'Wto', 'Śro', 'Czw', 'Pią', 'Sob', 'Nie']; dniTyg.forEach(d => { let h = document.createElement('div'); h.className = 'month-header-cell'; h.innerText = d; grid.appendChild(h); });
-            let pierwszyDzien = new Date(rok, miesiac, 1); let startDniaTyg = pierwszyDzien.getDay() - 1; if(startDniaTyg === -1) startDniaTyg = 6; let dniWMiesiacu = new Date(rok, miesiac + 1, 0).getDate();
-            for(let i = 0; i < startDniaTyg; i++) { let cell = document.createElement('div'); cell.className = 'month-cell empty'; grid.appendChild(cell); }
-            for(let i = 1; i <= dniWMiesiacu; i++) { let cell = document.createElement('div'); cell.className = 'month-cell'; let dataKafelka = new Date(rok, miesiac, i); if(isToday(dataKafelka)) cell.classList.add('current-day-highlight'); cell.innerHTML = `<div class="month-cell-day">${i}</div>`; cell.addEventListener('click', () => { currentView = 'day'; aktualnaDataPrzegladania = dataKafelka; viewSelect.value = 'day'; odswiezWidok(); }); let startDnia = new Date(rok, miesiac, i, 0, 0, 0); let koniecDnia = new Date(rok, miesiac, i, 23, 59, 59); let evDzis = wszystkieWydarzenia.filter(ev => ev.start <= koniecDnia && ev.end >= startDnia); evDzis.forEach(ev => { let el = document.createElement('div'); el.className = 'month-event-pill'; const catDef = getCategoryDef(ev.category); el.style.background = catDef.gradient; el.style.color = catDef.textColor || '#ffffff'; const prefix = ev.isTask ? (ev.isDone ? '☑️ ' : '☐ ') : ''; el.innerText = prefix + ev.title; if(ev.isTask && ev.isDone) el.style.textDecoration = 'line-through'; cell.appendChild(el); }); grid.appendChild(cell); }
+            const grid = document.getElementById('month-grid'); grid.innerHTML = ''; const rok = aktualnaDataPrzegladania.getFullYear(); const miesiac = aktualnaDataPrzegladania.getMonth(); const dniTyg = ['Pon', 'Wto', 'Śro', 'Czw', 'Pią', 'Sob', 'Nie']; dniTyg.forEach(d => { let h = document.createElement('div'); h.className = 'month-header-cell'; h.innerText = d; grid.appendChild(h); }); let pierwszyDzien = new Date(rok, miesiac, 1); let startDniaTyg = pierwszyDzien.getDay() - 1; if(startDniaTyg === -1) startDniaTyg = 6; let dniWMiesiacu = new Date(rok, miesiac + 1, 0).getDate(); for(let i = 0; i < startDniaTyg; i++) { let cell = document.createElement('div'); cell.className = 'month-cell empty'; grid.appendChild(cell); } for(let i = 1; i <= dniWMiesiacu; i++) { let cell = document.createElement('div'); cell.className = 'month-cell'; let dataKafelka = new Date(rok, miesiac, i); if(isToday(dataKafelka)) cell.classList.add('current-day-highlight'); cell.innerHTML = `<div class="month-cell-day">${i}</div>`; cell.addEventListener('click', () => { currentView = 'day'; aktualnaDataPrzegladania = dataKafelka; viewSelect.value = 'day'; odswiezWidok(); }); let startDnia = new Date(rok, miesiac, i, 0, 0, 0); let koniecDnia = new Date(rok, miesiac, i, 23, 59, 59); let evDzis = wszystkieWydarzenia.filter(ev => ev.start <= koniecDnia && ev.end >= startDnia); evDzis.forEach(ev => { let el = document.createElement('div'); el.className = 'month-event-pill'; const catDef = getCategoryDef(ev.category); el.style.background = catDef.gradient; el.style.color = catDef.textColor || '#ffffff'; const prefix = ev.isTask ? (ev.isDone ? '☑️ ' : '☐ ') : ''; el.innerText = prefix + ev.title; if(ev.isTask && ev.isDone) el.style.textDecoration = 'line-through'; cell.appendChild(el); }); grid.appendChild(cell); }
         }
-
         function budujRok(wszystkieWydarzenia) { 
-            const grid = document.getElementById('view-year'); grid.innerHTML = ''; const rok = aktualnaDataPrzegladania.getFullYear();
-            const miesiaceNazwy = ['Styczeń','Luty','Marzec','Kwiecień','Maj','Czerwiec','Lipiec','Sierpień','Wrzesień','Październik','Listopad','Grudzień'];
-            for(let m = 0; m < 12; m++) {
-                let block = document.createElement('div'); block.className = 'year-month-block'; let tytul = document.createElement('div'); tytul.className = 'year-month-title'; tytul.innerText = miesiaceNazwy[m]; block.appendChild(tytul);
-                let daysGrid = document.createElement('div'); daysGrid.className = 'year-days-grid'; ['P','W','Ś','C','P','S','N'].forEach(d => { let h = document.createElement('div'); h.className = 'year-day-h'; h.innerText = d; daysGrid.appendChild(h); });
-                let pierwszyDzien = new Date(rok, m, 1); let startDnia = pierwszyDzien.getDay() - 1; if(startDnia === -1) startDnia = 6; let dniWMc = new Date(rok, m + 1, 0).getDate();
-                for(let i=0; i<startDnia; i++) { daysGrid.appendChild(document.createElement('div')); }
-                for(let i=1; i<=dniWMc; i++) { let cell = document.createElement('div'); cell.className = 'year-day-cell'; cell.innerText = i; let dStart = new Date(rok, m, i, 0,0,0); let dEnd = new Date(rok, m, i, 23,59,59); let dataDlaKomorki = new Date(rok, m, i); if(isToday(dataDlaKomorki)) cell.classList.add('current-day-highlight'); cell.addEventListener('click', () => { currentView = 'day'; aktualnaDataPrzegladania = dataDlaKomorki; viewSelect.value = 'day'; odswiezWidok(); }); let evDzis = wszystkieWydarzenia.filter(ev => ev.start <= dEnd && ev.end >= dStart); if(evDzis.length > 0) { const mainCat = getCategoryDef(evDzis[0].category); cell.style.background = mainCat.gradient; cell.style.color = mainCat.textColor || '#ffffff'; cell.style.fontWeight = "bold"; cell.style.boxShadow = `1px 1px 3px rgba(0,0,0,0.3)`; } daysGrid.appendChild(cell); } block.appendChild(daysGrid); grid.appendChild(block);
-            }
+            const grid = document.getElementById('view-year'); grid.innerHTML = ''; const rok = aktualnaDataPrzegladania.getFullYear(); const miesiaceNazwy = ['Styczeń','Luty','Marzec','Kwiecień','Maj','Czerwiec','Lipiec','Sierpień','Wrzesień','Październik','Listopad','Grudzień']; for(let m = 0; m < 12; m++) { let block = document.createElement('div'); block.className = 'year-month-block'; let tytul = document.createElement('div'); tytul.className = 'year-month-title'; tytul.innerText = miesiaceNazwy[m]; block.appendChild(tytul); let daysGrid = document.createElement('div'); daysGrid.className = 'year-days-grid'; ['P','W','Ś','C','P','S','N'].forEach(d => { let h = document.createElement('div'); h.className = 'year-day-h'; h.innerText = d; daysGrid.appendChild(h); }); let pierwszyDzien = new Date(rok, m, 1); let startDnia = pierwszyDzien.getDay() - 1; if(startDnia === -1) startDnia = 6; let dniWMc = new Date(rok, m + 1, 0).getDate(); for(let i=0; i<startDnia; i++) { daysGrid.appendChild(document.createElement('div')); } for(let i=1; i<=dniWMc; i++) { let cell = document.createElement('div'); cell.className = 'year-day-cell'; cell.innerText = i; let dStart = new Date(rok, m, i, 0,0,0); let dEnd = new Date(rok, m, i, 23,59,59); let dataDlaKomorki = new Date(rok, m, i); if(isToday(dataDlaKomorki)) cell.classList.add('current-day-highlight'); cell.addEventListener('click', () => { currentView = 'day'; aktualnaDataPrzegladania = dataDlaKomorki; viewSelect.value = 'day'; odswiezWidok(); }); let evDzis = wszystkieWydarzenia.filter(ev => ev.start <= dEnd && ev.end >= dStart); if(evDzis.length > 0) { const mainCat = getCategoryDef(evDzis[0].category); cell.style.background = mainCat.gradient; cell.style.color = mainCat.textColor || '#ffffff'; cell.style.fontWeight = "bold"; cell.style.boxShadow = `1px 1px 3px rgba(0,0,0,0.3)`; } daysGrid.appendChild(cell); } block.appendChild(daysGrid); grid.appendChild(block); }
         }
 
-        function updateCurrentTimeLine(numDays) {
-            const now = new Date(); const line = document.getElementById('current-time-line');
-            if(!line || domColumns.length === 0) return;
-            let activeIndex = -1;
-            for (let i = 0; i < domColumns.length; i++) { let colDate = new Date(domColumns[i].dataset.date); if (isToday(colDate)) { activeIndex = i; break; } }
-            if (activeIndex !== -1) { line.style.display = 'block'; const kolumnaEl = domColumns[activeIndex]; const zawartoscWysokosc = kolumnaEl.clientHeight - 40; const godzinaWysokosc = zawartoscWysokosc / 24; const topPos = (now.getHours() + (now.getMinutes() / 60)) * godzinaWysokosc; line.style.top = `${topPos + 40}px`; line.style.width = `calc(100% / ${numDays})`; line.style.left = `calc(${activeIndex} * (100% / ${numDays}))`; } else { line.style.display = 'none'; }
-        }
+        function updateCurrentTimeLine(numDays) { const now = new Date(); const line = document.getElementById('current-time-line'); if(!line || domColumns.length === 0) return; let activeIndex = -1; for (let i = 0; i < domColumns.length; i++) { let colDate = new Date(domColumns[i].dataset.date); if (isToday(colDate)) { activeIndex = i; break; } } if (activeIndex !== -1) { line.style.display = 'block'; const kolumnaEl = domColumns[activeIndex]; const godzinaWysokosc = (kolumnaEl.clientHeight - 40) / 24; const topPos = (now.getHours() + (now.getMinutes() / 60)) * godzinaWysokosc; line.style.top = `${topPos + 40}px`; line.style.width = `calc(100% / ${numDays})`; line.style.left = `calc(${activeIndex} * (100% / ${numDays}))`; } else { line.style.display = 'none'; } }
 
         let edytowaneIdKategorii = null;
-
-        function otworzZarzadzanieKategoriami() {
-            const list = document.getElementById('custom-cat-list'); list.innerHTML = ''; let hasCustom = false;
-            Object.keys(CATEGORIES).forEach(key => {
-                if (!DOMYSLNE_KATEGORIE[key]) {
-                    hasCustom = true; const cat = CATEGORIES[key]; const div = document.createElement('div');
-                    div.style.display = 'flex'; div.style.justifyContent = 'space-between'; div.style.alignItems = 'center'; div.style.background = 'var(--input-bg)'; div.style.padding = '8px'; div.style.borderRadius = '8px';
-                    div.innerHTML = `
-                        <div style="display:flex; align-items:center; gap:8px;">
-                            <div style="width:16px; height:16px; border-radius:4px; background:${cat.gradient}; border:1px solid rgba(255,255,255,0.3);"></div>
-                            <span style="font-size:0.85rem; font-weight:bold;">${cat.name}</span>
-                        </div>
-                        <div style="display:flex; gap:5px;">
-                            <button class="nav-btn" style="padding:4px 8px; font-size:0.75rem;" onclick="edytujKategorie('${key}')">✎</button>
-                            <button class="nav-btn" style="padding:4px 8px; font-size:0.75rem; background:var(--highlight); color:white;" onclick="usunKategorie('${key}')">×</button>
-                        </div>
-                    `;
-                    list.appendChild(div);
-                }
-            });
-            if (!hasCustom) { list.innerHTML = '<div style="text-align:center; font-size:0.8rem; opacity:0.7;">Brak własnych kategorii.</div>'; }
-            document.getElementById('manage-cat-modal').style.display = 'flex';
-        }
+        function otworzZarzadzanieKategoriami() { const list = document.getElementById('custom-cat-list'); list.innerHTML = ''; let hasCustom = false; Object.keys(CATEGORIES).forEach(key => { if (!DOMYSLNE_KATEGORIE[key]) { hasCustom = true; const cat = CATEGORIES[key]; const div = document.createElement('div'); div.style.display = 'flex'; div.style.justifyContent = 'space-between'; div.style.alignItems = 'center'; div.style.background = 'var(--input-bg)'; div.style.padding = '8px'; div.style.borderRadius = '8px'; div.innerHTML = `<div style="display:flex; align-items:center; gap:8px;"><div style="width:16px; height:16px; border-radius:4px; background:${cat.gradient}; border:1px solid rgba(255,255,255,0.3);"></div><span style="font-size:0.85rem; font-weight:bold;">${cat.name}</span></div><div style="display:flex; gap:5px;"><button class="nav-btn" style="padding:4px 8px; font-size:0.75rem;" onclick="edytujKategorie('${key}')">✎</button><button class="nav-btn" style="padding:4px 8px; font-size:0.75rem; background:var(--highlight); color:white;" onclick="usunKategorie('${key}')">×</button></div>`; list.appendChild(div); } }); if (!hasCustom) { list.innerHTML = '<div style="text-align:center; font-size:0.8rem; opacity:0.7;">Brak własnych kategorii.</div>'; } document.getElementById('manage-cat-modal').style.display = 'flex'; }
         function zamknijZarzadzanieKategoriami() { document.getElementById('manage-cat-modal').style.display = 'none'; }
-
-        function usunKategorie(id) {
-            if(confirm("Czy na pewno chcesz usunąć tę kategorię? Zapisane z nią wpisy staną się 'Inne'.")) {
-                delete CATEGORIES[id]; wydarzeniaLokalne.forEach(ev => { if(ev.category === id) ev.category = 'inne'; });
-                localStorage.setItem('mojeKategorie', JSON.stringify(CATEGORIES)); localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne));
-                inicjalizujKategorie(); otworzZarzadzanieKategoriami(); odswiezWidok();
-            }
-        }
-
-        function edytujKategorie(id) {
-            edytowaneIdKategorii = id; const cat = CATEGORIES[id];
-            document.getElementById('nowa-kat-nazwa').value = cat.name; document.getElementById('nowa-kat-kolor').value = cat.gradient.includes('gradient') ? '#a855f7' : cat.gradient; document.getElementById('nowa-kat-tekst').value = cat.textColor || '#ffffff';
-            document.getElementById('modal-kat-title').innerText = "Edytuj kategorię"; zamknijZarzadzanieKategoriami(); document.getElementById('category-modal').style.display = 'flex';
-        }
-
+        function usunKategorie(id) { if(confirm("Czy na pewno chcesz usunąć tę kategorię? Zapisane z nią wpisy staną się 'Inne'.")) { delete CATEGORIES[id]; wydarzeniaLokalne.forEach(ev => { if(ev.category === id) ev.category = 'inne'; }); localStorage.setItem('mojeKategorie', JSON.stringify(CATEGORIES)); localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne)); inicjalizujKategorie(); otworzZarzadzanieKategoriami(); odswiezWidok(); } }
+        function edytujKategorie(id) { edytowaneIdKategorii = id; const cat = CATEGORIES[id]; document.getElementById('nowa-kat-nazwa').value = cat.name; document.getElementById('nowa-kat-kolor').value = cat.gradient.includes('gradient') ? '#a855f7' : cat.gradient; document.getElementById('nowa-kat-tekst').value = cat.textColor || '#ffffff'; document.getElementById('modal-kat-title').innerText = "Edytuj kategorię"; zamknijZarzadzanieKategoriami(); document.getElementById('category-modal').style.display = 'flex'; }
         function otworzModalKategorii() { edytowaneIdKategorii = null; document.getElementById('modal-kat-title').innerText = "Stwórz własną kategorię"; document.getElementById('nowa-kat-nazwa').value = ''; document.getElementById('category-modal').style.display = 'flex'; document.getElementById('nowa-kat-nazwa').focus(); }
         function zamknijModalKategorii() { document.getElementById('category-modal').style.display = 'none'; }
-        
-        function zapiszNowaKategorie() {
-            const nazwa = document.getElementById('nowa-kat-nazwa').value.trim(); if(!nazwa) return alert("Podaj nazwę dla kategorii!");
-            const bgColor = document.getElementById('nowa-kat-kolor').value; const txtColor = document.getElementById('nowa-kat-tekst').value; const noweId = edytowaneIdKategorii ? edytowaneIdKategorii : 'kat_' + Date.now();
-            CATEGORIES[noweId] = { name: nazwa, gradient: bgColor, textColor: txtColor }; localStorage.setItem('mojeKategorie', JSON.stringify(CATEGORIES));
-            inicjalizujKategorie(); document.getElementById('ev-category').value = noweId; zamknijModalKategorii(); edytowaneIdKategorii = null; odswiezWidok();
-        }
+        function zapiszNowaKategorie() { const nazwa = document.getElementById('nowa-kat-nazwa').value.trim(); if(!nazwa) return alert("Podaj nazwę dla kategorii!"); const bgColor = document.getElementById('nowa-kat-kolor').value; const txtColor = document.getElementById('nowa-kat-tekst').value; const noweId = edytowaneIdKategorii ? edytowaneIdKategorii : 'kat_' + Date.now(); CATEGORIES[noweId] = { name: nazwa, gradient: bgColor, textColor: txtColor }; localStorage.setItem('mojeKategorie', JSON.stringify(CATEGORIES)); inicjalizujKategorie(); document.getElementById('ev-category').value = noweId; zamknijModalKategorii(); edytowaneIdKategorii = null; odswiezWidok(); }
 
-        function otworzModal(data, godzina, idZdarzenia = null) {
-            document.getElementById('event-modal').style.display = 'flex'; editingEventId = idZdarzenia; 
+        function otworzModal(data, godzina, idZdarzenia = null, instanceTime = null) {
+            document.getElementById('event-modal').style.display = 'flex'; editingEventId = idZdarzenia; editingInstanceTime = instanceTime;
             if (editingEventId) {
-                document.getElementById('modal-title').innerText = "Edytuj wpis"; const ev = wydarzeniaLokalne.find(e => e.id === editingEventId); const st = new Date(ev.start); const en = new Date(ev.end);
-                
-                // Odczytaj czy to zasada 30 dni z logiki tytulu i kategorii, by ustawić formularz (lub pozostaw w trybie event/task)
-                if (ev.category === 'zakupy-30dni' && (ev.title.includes('💡') || ev.title.includes('🛒'))) {
-                    document.getElementById('ev-type').value = 'idea30';
-                } else {
-                    document.getElementById('ev-type').value = ev.isTask ? 'task' : 'event';
-                }
-                
-                document.getElementById('ev-title').value = ev.title.replace('💡 ', '').replace('🛒 Weryfikacja: ', ''); 
-                document.getElementById('ev-category').value = ev.category || 'inne'; document.getElementById('ev-repeat').value = ev.repeat || 'none'; document.getElementById('ev-date').value = st.toISOString(); document.getElementById('ev-start-h').value = String(st.getHours()).padStart(2, '0'); document.getElementById('ev-start-m').value = String(st.getMinutes()).padStart(2, '0'); document.getElementById('ev-end-h').value = String(en.getHours()).padStart(2, '0'); document.getElementById('ev-end-m').value = String(en.getMinutes()).padStart(2, '0');
+                document.getElementById('modal-title').innerText = "Edytuj wpis"; const ev = wydarzeniaLokalne.find(e => e.id === editingEventId); 
+                const st = instanceTime ? new Date(instanceTime) : new Date(ev.start); const duration = new Date(ev.end).getTime() - new Date(ev.start).getTime(); const en = instanceTime ? new Date(instanceTime + duration) : new Date(ev.end);
+                if (ev.category === 'zakupy-30dni' && (ev.title.includes('💡') || ev.title.includes('🛒'))) { document.getElementById('ev-type').value = 'idea30'; } else { document.getElementById('ev-type').value = ev.isTask ? 'task' : 'event'; }
+                document.getElementById('ev-title').value = ev.title.replace('💡 ', '').replace('🛒 Weryfikacja: ', ''); document.getElementById('ev-category').value = ev.category || 'inne'; document.getElementById('ev-repeat').value = ev.repeat || 'none'; document.getElementById('ev-date').value = st.toISOString(); document.getElementById('ev-start-h').value = String(st.getHours()).padStart(2, '0'); document.getElementById('ev-start-m').value = String(st.getMinutes()).padStart(2, '0'); document.getElementById('ev-end-h').value = String(en.getHours()).padStart(2, '0'); document.getElementById('ev-end-m').value = String(en.getMinutes()).padStart(2, '0');
             } else {
                 document.getElementById('modal-title').innerText = "Dodaj wpis"; document.getElementById('ev-type').value = 'event'; document.getElementById('ev-title').value = ''; document.getElementById('ev-category').value = 'inne'; document.getElementById('ev-repeat').value = 'none'; document.getElementById('ev-date').value = data.toISOString(); let gPocz = String(godzina).padStart(2, '0'); let gKon = String(godzina + 1 > 23 ? 23 : godzina + 1).padStart(2, '0'); document.getElementById('ev-start-h').value = gPocz; document.getElementById('ev-start-m').value = '00'; document.getElementById('ev-end-h').value = gKon; document.getElementById('ev-end-m').value = '00';
             }
-            document.getElementById('ev-type').dispatchEvent(new Event('change'));
-            document.getElementById('ev-title').focus();
+            document.getElementById('ev-type').dispatchEvent(new Event('change')); document.getElementById('ev-title').focus();
         }
-        function zamknijModal() { document.getElementById('event-modal').style.display = 'none'; editingEventId = null; }
+        function zamknijModal() { document.getElementById('event-modal').style.display = 'none'; editingEventId = null; editingInstanceTime = null; }
         function otworzModalPraca() { document.getElementById('praca-modal').style.display = 'flex'; document.getElementById('praca-textarea').focus(); }
         function zamknijModalPraca() { document.getElementById('praca-modal').style.display = 'none'; document.getElementById('praca-textarea').value = ''; }
-
-        function wyczyscGrafikZKalendarza() {
-            if (confirm('Czy na pewno chcesz usunąć z kalendarza wszystkie wczytane dyżury pracy?')) {
-                wydarzeniaLokalne = wydarzeniaLokalne.filter(ev => ev.category !== 'zmiana-dzienna' && ev.category !== 'zmiana-nocna' && ev.category !== 'praca');
-                localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne)); odswiezWidok(); zamknijModalPraca(); alert('Grafik pracy został wyczyszczony z Twojego kalendarza.');
-            }
-        }
+        function wyczyscGrafikZKalendarza() { if (confirm('Czy na pewno chcesz usunąć z kalendarza wszystkie wczytane dyżury pracy?')) { wydarzeniaLokalne = wydarzeniaLokalne.filter(ev => ev.category !== 'zmiana-dzienna' && ev.category !== 'zmiana-nocna' && ev.category !== 'praca'); localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne)); odswiezWidok(); zamknijModalPraca(); alert('Grafik pracy został wyczyszczony.'); } }
 
         function importujHarmonogram() {
             const text = document.getElementById('praca-textarea').value; const lines = text.split('\n'); let dodane = 0;
             lines.forEach(line => {
-                const liniaStr = line.trim(); if (!liniaStr) return;
-                const dateMatch = liniaStr.match(/^(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{4})/); if (!dateMatch) return; 
-                const d = parseInt(dateMatch[1], 10); const m = parseInt(dateMatch[2], 10) - 1; const y = parseInt(dateMatch[3], 10);
-                if (isNaN(d) || isNaN(m) || isNaN(y)) return;
-
+                const liniaStr = line.trim(); if (!liniaStr) return; const dateMatch = liniaStr.match(/^(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{4})/); if (!dateMatch) return; 
+                const d = parseInt(dateMatch[1], 10); const m = parseInt(dateMatch[2], 10) - 1; const y = parseInt(dateMatch[3], 10); if (isNaN(d) || isNaN(m) || isNaN(y)) return;
                 if (line.includes('\t')) {
                     const cols = line.split('\t'); const valL = cols.length > 2 ? cols[2].trim() : ''; const valM = cols.length > 3 ? cols[3].trim() : '';
-                    if (valL.includes('12')) { if (stworzIWstawDoHarmonogramu(y, m, d, 6, 0, 18, 0, 'Zmiana Dzienna 12h', 'zmiana-dzienna')) dodane++; } 
-                    else if (valL.includes('8')) { if (stworzIWstawDoHarmonogramu(y, m, d, 6, 0, 14, 0, 'Praca 8h', 'praca')) dodane++; }
+                    if (valL.includes('12')) { if (stworzIWstawDoHarmonogramu(y, m, d, 6, 0, 18, 0, 'Zmiana Dzienna 12h', 'zmiana-dzienna')) dodane++; } else if (valL.includes('8')) { if (stworzIWstawDoHarmonogramu(y, m, d, 6, 0, 14, 0, 'Praca 8h', 'praca')) dodane++; }
                     if (valM.includes('12')) { if (stworzIWstawDoHarmonogramu(y, m, d, 18, 0, 6, 0, 'Zmiana Nocna 12h', 'zmiana-nocna', true)) dodane++; }
                 } else {
                     const reszta = liniaStr.substring(dateMatch[0].length).trim(); const bezDnia = reszta.replace(/^[a-ząćęłńóśźżĄĆĘŁŃÓŚŹŻ]+\s*/i, '');
-                    if (bezDnia.includes('12')) { const spacje = reszta.match(/\s+(?=12)/); if (spacje && spacje[0].length > 7) { if (stworzIWstawDoHarmonogramu(y, m, d, 18, 0, 6, 0, 'Zmiana Nocna 12h', 'zmiana-nocna', true)) dodane++; } else { if (stworzIWstawDoHarmonogramu(y, m, d, 6, 0, 18, 0, 'Zmiana Dzienna 12h', 'zmiana-dzienna')) dodane++; } } 
-                    else if (bezDnia.includes('8')) { if (stworzIWstawDoHarmonogramu(y, m, d, 6, 0, 14, 0, 'Praca 8h', 'praca')) dodane++; }
+                    if (bezDnia.includes('12')) { const spacje = reszta.match(/\s+(?=12)/); if (spacje && spacje[0].length > 7) { if (stworzIWstawDoHarmonogramu(y, m, d, 18, 0, 6, 0, 'Zmiana Nocna 12h', 'zmiana-nocna', true)) dodane++; } else { if (stworzIWstawDoHarmonogramu(y, m, d, 6, 0, 18, 0, 'Zmiana Dzienna 12h', 'zmiana-dzienna')) dodane++; } } else if (bezDnia.includes('8')) { if (stworzIWstawDoHarmonogramu(y, m, d, 6, 0, 14, 0, 'Praca 8h', 'praca')) dodane++; }
                 }
             });
-
-            if (dodane > 0) { localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne)); odswiezWidok(); zamknijModalPraca(); alert(`Pomyślnie zaimportowano ${dodane} zmian dyżurowych z Excela.`);
-            } else { alert('Nie dodano nowych zmian.\n\nMożliwe przyczyny:\n1. Te dyżury już są w kalendarzu.\n2. Skopiowany tekst nie miał cyfr "12" lub "8".'); }
+            if (dodane > 0) { localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne)); odswiezWidok(); zamknijModalPraca(); alert(`Zapisano ${dodane} dyżurów.`); } else { alert('Nie dodano zmian.'); }
         }
 
         function stworzIWstawDoHarmonogramu(y, m, d, h1, m1, h2, m2, title, category, nextDay = false) {
             const start = new Date(y, m, d, h1, m1, 0); const end = new Date(y, m, d, h2, m2, 0); if (nextDay) end.setDate(end.getDate() + 1);
             const istniejace = wydarzeniaLokalne.some(ev => ev.title === title && new Date(ev.start).getTime() === start.getTime());
-            if (!istniejace) { wydarzeniaLokalne.push({ id: Date.now().toString() + Math.random().toString(36).substr(2, 5), title: title, category: category, repeat: 'none', isTask: false, isDone: false, start: start.toISOString(), end: end.toISOString() }); return true; }
-            return false;
+            if (!istniejace) { wydarzeniaLokalne.push({ id: Date.now().toString() + Math.random().toString(36).substr(2, 5), title: title, category: category, repeat: 'none', isTask: false, isDone: false, start: start.toISOString(), end: end.toISOString() }); return true; } return false;
         }
 
         function zapiszWydarzenieLokalne() {
-            const title = document.getElementById('ev-title').value || "Wpis"; 
-            const category = document.getElementById('ev-category').value; 
-            const repeat = document.getElementById('ev-repeat').value; 
-            const evType = document.getElementById('ev-type').value;
-            const isTask = evType === 'task';
-            
-            const stH = document.getElementById('ev-start-h').value; 
-            const stM = document.getElementById('ev-start-m').value; 
-            const enH = document.getElementById('ev-end-h').value; 
-            const enM = document.getElementById('ev-end-m').value;
-            
-            const bazowaData = new Date(document.getElementById('ev-date').value); 
-            const startDate = new Date(bazowaData); startDate.setHours(parseInt(stH, 10), parseInt(stM, 10), 0); 
-            const endDate = new Date(bazowaData); endDate.setHours(parseInt(enH, 10), parseInt(enM, 10), 0);
+            const title = document.getElementById('ev-title').value || "Wpis"; const category = document.getElementById('ev-category').value; const repeat = document.getElementById('ev-repeat').value; const evType = document.getElementById('ev-type').value; const isTask = evType === 'task';
+            const stH = document.getElementById('ev-start-h').value; const stM = document.getElementById('ev-start-m').value; const enH = document.getElementById('ev-end-h').value; const enM = document.getElementById('ev-end-m').value;
+            const bazowaData = new Date(document.getElementById('ev-date').value); const startDate = new Date(bazowaData); startDate.setHours(parseInt(stH, 10), parseInt(stM, 10), 0); const endDate = new Date(bazowaData); endDate.setHours(parseInt(enH, 10), parseInt(enM, 10), 0);
             
             if (editingEventId) { 
                 const index = wydarzeniaLokalne.findIndex(ev => ev.id === editingEventId); 
                 if (index !== -1) { 
-                    // Edycja zachowuje odpowiedni prefix w tytule jeśli to była zasada 30 dni
-                    let finalTitle = title;
-                    if (evType === 'idea30') {
-                        if (wydarzeniaLokalne[index].title.includes('💡')) finalTitle = "💡 " + title;
-                        if (wydarzeniaLokalne[index].title.includes('🛒')) finalTitle = "🛒 Weryfikacja: " + title;
-                    }
+                    let ev = wydarzeniaLokalne[index]; let finalTitle = title;
+                    if (evType === 'idea30') { if (ev.title.includes('💡')) finalTitle = "💡 " + title; if (ev.title.includes('🛒')) finalTitle = "🛒 Weryfikacja: " + title; }
                     
-                    wydarzeniaLokalne[index].title = finalTitle; 
-                    wydarzeniaLokalne[index].category = category; 
-                    wydarzeniaLokalne[index].repeat = repeat; 
-                    wydarzeniaLokalne[index].isTask = isTask;
-                    wydarzeniaLokalne[index].start = startDate.toISOString(); 
-                    wydarzeniaLokalne[index].end = endDate.toISOString(); 
+                    if (ev.repeat && ev.repeat !== 'none' && editingInstanceTime) {
+                        if (confirm('Edytujesz wydarzenie z serii cyklicznej.\n\nCzy chcesz zmienić TYLKO TO jedno wystąpienie (OK), czy zaktualizować CAŁĄ serię (Anuluj)?')) {
+                            let detached = detachInstance(editingEventId, editingInstanceTime);
+                            detached.title = finalTitle; detached.category = category; detached.repeat = repeat; detached.isTask = isTask; detached.start = startDate.toISOString(); detached.end = endDate.toISOString();
+                        } else {
+                            wydarzeniaLokalne[index].title = finalTitle; wydarzeniaLokalne[index].category = category; wydarzeniaLokalne[index].repeat = repeat; wydarzeniaLokalne[index].isTask = isTask; wydarzeniaLokalne[index].start = startDate.toISOString(); wydarzeniaLokalne[index].end = endDate.toISOString(); wydarzeniaLokalne[index].exceptions = [];
+                        }
+                    } else {
+                        wydarzeniaLokalne[index].title = finalTitle; wydarzeniaLokalne[index].category = category; wydarzeniaLokalne[index].repeat = repeat; wydarzeniaLokalne[index].isTask = isTask; wydarzeniaLokalne[index].start = startDate.toISOString(); wydarzeniaLokalne[index].end = endDate.toISOString(); 
+                    }
                 } 
             } else { 
                 if (evType === 'idea30') {
-                    // Wpis nr 1: Dzisiaj "Chęć zakupu"
-                    wydarzeniaLokalne.push({ 
-                        id: Date.now().toString() + 'A', 
-                        title: "💡 " + title, 
-                        category: 'zakupy-30dni', 
-                        repeat: 'none', 
-                        isTask: false, 
-                        isDone: false, 
-                        start: startDate.toISOString(), 
-                        end: endDate.toISOString() 
-                    });
-                    
-                    // Wpis nr 2: Przesunięcie o 30 dni w przód ("Weryfikacja")
-                    const startDate30 = new Date(startDate); startDate30.setDate(startDate30.getDate() + 30);
-                    const endDate30 = new Date(endDate); endDate30.setDate(endDate30.getDate() + 30);
-                    
-                    wydarzeniaLokalne.push({ 
-                        id: Date.now().toString() + 'B', 
-                        title: "🛒 Weryfikacja: " + title, 
-                        category: 'zakupy-30dni', 
-                        repeat: 'none', 
-                        isTask: false, 
-                        isDone: false, 
-                        start: startDate30.toISOString(), 
-                        end: endDate30.toISOString() 
-                    });
+                    wydarzeniaLokalne.push({ id: Date.now().toString() + 'A', title: "💡 " + title, category: 'zakupy-30dni', repeat: 'none', isTask: false, isDone: false, start: startDate.toISOString(), end: endDate.toISOString() });
+                    const startDate30 = new Date(startDate); startDate30.setDate(startDate30.getDate() + 30); const endDate30 = new Date(endDate); endDate30.setDate(endDate30.getDate() + 30);
+                    wydarzeniaLokalne.push({ id: Date.now().toString() + 'B', title: "🛒 Weryfikacja: " + title, category: 'zakupy-30dni', repeat: 'none', isTask: false, isDone: false, start: startDate30.toISOString(), end: endDate30.toISOString() });
                 } else {
-                    wydarzeniaLokalne.push({ 
-                        id: Date.now().toString(), 
-                        title: title, 
-                        category: category, 
-                        repeat: repeat, 
-                        isTask: isTask, 
-                        isDone: false, 
-                        start: startDate.toISOString(), 
-                        end: endDate.toISOString() 
-                    });
+                    wydarzeniaLokalne.push({ id: Date.now().toString() + Math.random().toString(36).substr(2, 5), title: title, category: category, repeat: repeat, isTask: isTask, isDone: false, start: startDate.toISOString(), end: endDate.toISOString() });
                 }
             }
-            localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne)); 
-            zamknijModal(); 
-            odswiezWidok();
+            localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne)); zamknijModal(); odswiezWidok();
         }
         
-        function usunLokalne(idStr) { 
-            wydarzeniaLokalne = wydarzeniaLokalne.filter(ev => ev.id !== idStr); 
-            localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne)); 
-            odswiezWidok(); 
+        function usunLokalne(idStr, instanceTime) { 
+            let parent = wydarzeniaLokalne.find(ev => ev.id === idStr);
+            if (parent && parent.repeat && parent.repeat !== 'none' && instanceTime) {
+                if (confirm('To jest zdarzenie z serii.\n\nCzy chcesz usunąć TYLKO TO jedno wystąpienie (OK), czy usunąć CAŁĄ serię (Anuluj)?')) {
+                    if (!parent.exceptions) parent.exceptions = []; parent.exceptions.push(instanceTime);
+                } else {
+                    wydarzeniaLokalne = wydarzeniaLokalne.filter(ev => ev.id !== idStr);
+                }
+            } else {
+                wydarzeniaLokalne = wydarzeniaLokalne.filter(ev => ev.id !== idStr); 
+            }
+            localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne)); odswiezWidok(); 
         }
 
-        function formatujZakresTygodnia(dataZrodlowa, type) {
-            const dataPocz = new Date(dataZrodlowa); 
-            if (type === 'B') { dataPocz.setDate(dataPocz.getDate() - 1); } 
-            else if (type === 'C') { dataPocz.setDate(dataPocz.getDate() - 3); } 
-            else if (type === 'D') { let dayNum = dataPocz.getDay(); let dff = dataPocz.getDate() - dayNum + (dayNum === 0 ? -6 : 1); dataPocz.setDate(dff); }
-            const dataKoncowa = new Date(dataPocz); dataKoncowa.setDate(dataPocz.getDate() + 6);
-            const pDzien = String(dataPocz.getDate()).padStart(2, '0'); const pMiesiac = String(dataPocz.getMonth() + 1).padStart(2, '0'); const kDzien = String(dataKoncowa.getDate()).padStart(2, '0'); const kMiesiac = String(dataKoncowa.getMonth() + 1).padStart(2, '0');
-            return pMiesiac === kMiesiac ? `(${pDzien} - ${kDzien}.${kMiesiac}.${dataKoncowa.getFullYear()})` : `(${pDzien}.${pMiesiac} - ${kDzien}.${kMiesiac}.${dataKoncowa.getFullYear()})`;
-        }
-        
+        function formatujZakresTygodnia(dataZrodlowa, type) { const dataPocz = new Date(dataZrodlowa); if (type === 'B') { dataPocz.setDate(dataPocz.getDate() - 1); } else if (type === 'C') { dataPocz.setDate(dataPocz.getDate() - 3); } else if (type === 'D') { let dayNum = dataPocz.getDay(); let dff = dataPocz.getDate() - dayNum + (dayNum === 0 ? -6 : 1); dataPocz.setDate(dff); } const dataKoncowa = new Date(dataPocz); dataKoncowa.setDate(dataPocz.getDate() + 6); const pDzien = String(dataPocz.getDate()).padStart(2, '0'); const pMiesiac = String(dataPocz.getMonth() + 1).padStart(2, '0'); const kDzien = String(dataKoncowa.getDate()).padStart(2, '0'); const kMiesiac = String(dataKoncowa.getMonth() + 1).padStart(2, '0'); return pMiesiac === kMiesiac ? `(${pDzien} - ${kDzien}.${kMiesiac}.${dataKoncowa.getFullYear()})` : `(${pDzien}.${pMiesiac} - ${kDzien}.${kMiesiac}.${dataKoncowa.getFullYear()})`; }
         function getWeekNumber(d) { const date = new Date(d.getTime()); date.setUTCDate(date.getUTCDate() + 4 - (date.getUTCDay() || 7)); return Math.ceil((((date - new Date(Date.UTC(date.getUTCFullYear(), 0, 1))) / 86400000) + 1) / 7); }
 
         async function fetchAndRenderCalendar() {
@@ -1345,52 +857,12 @@
             try { const res3 = await fetch('https://api.codetabs.com/v1/proxy?quest=' + googleCalendarUrl); if (res3.ok) { const text3 = await res3.text(); if (text3 && text3.includes("BEGIN:VCALENDAR")) { wydarzeniaGoogle = parseICal(text3); odswiezWidok(); return; } } } catch (e) { }
         }
 
-        function parseICal(icalText) {
-            const events = []; const lines = icalText.split(/\r?\n/); let currentEvent = null;
-            for (let i = 0; i < lines.length; i++) {
-                let line = lines[i]; while (i + 1 < lines.length && (lines[i+1].startsWith(' ') || lines[i+1].startsWith('\t'))) { i++; line += lines[i].substring(1); }
-                if (line === 'BEGIN:VEVENT') { currentEvent = {}; } 
-                else if (line === 'END:VEVENT') { if (currentEvent && currentEvent.start) events.push(currentEvent); currentEvent = null; } 
-                else if (currentEvent) {
-                    if (line.startsWith('SUMMARY:')) { currentEvent.title = line.substring(8); currentEvent.category = zgadnijKategorie(currentEvent.title); } 
-                    else if (line.startsWith('DTSTART')) { currentEvent.start = parseICalDate(line); } 
-                    else if (line.startsWith('DTEND')) { currentEvent.end = parseICalDate(line); }
-                }
-            } return events;
-        }
+        function parseICal(icalText) { const events = []; const lines = icalText.split(/\r?\n/); let currentEvent = null; for (let i = 0; i < lines.length; i++) { let line = lines[i]; while (i + 1 < lines.length && (lines[i+1].startsWith(' ') || lines[i+1].startsWith('\t'))) { i++; line += lines[i].substring(1); } if (line === 'BEGIN:VEVENT') { currentEvent = {}; } else if (line === 'END:VEVENT') { if (currentEvent && currentEvent.start) events.push(currentEvent); currentEvent = null; } else if (currentEvent) { if (line.startsWith('SUMMARY:')) { currentEvent.title = line.substring(8); currentEvent.category = zgadnijKategorie(currentEvent.title); } else if (line.startsWith('DTSTART')) { currentEvent.start = parseICalDate(line); } else if (line.startsWith('DTEND')) { currentEvent.end = parseICalDate(line); } } } return events; }
+        function parseICalDate(line) { const parts = line.split(':'); if (parts.length < 2) return null; let dStr = parts[1]; const y = dStr.substring(0, 4), m = dStr.substring(4, 6), d = dStr.substring(6, 8); if (dStr.length === 8) return new Date(y, m - 1, d); const hr = dStr.substring(9, 11), min = dStr.substring(11, 13), sec = dStr.substring(13, 15); return dStr.endsWith('Z') ? new Date(Date.UTC(y, m - 1, d, hr, min, sec)) : new Date(y, m - 1, d, hr, min, sec); }
+        function toggleFullScreen() { const btn = document.getElementById('btn-fullscreen'); if (!document.fullscreenElement) { document.documentElement.requestFullscreen().catch(err => console.log(err)); btn.innerText = "🗗"; } else { document.exitFullscreen(); btn.innerText = "⛶"; } }
 
-        function parseICalDate(line) {
-            const parts = line.split(':'); if (parts.length < 2) return null; let dStr = parts[1];
-            const y = dStr.substring(0, 4), m = dStr.substring(4, 6), d = dStr.substring(6, 8);
-            if (dStr.length === 8) return new Date(y, m - 1, d);
-            const hr = dStr.substring(9, 11), min = dStr.substring(11, 13), sec = dStr.substring(13, 15);
-            return dStr.endsWith('Z') ? new Date(Date.UTC(y, m - 1, d, hr, min, sec)) : new Date(y, m - 1, d, hr, min, sec);
-        }
-
-        function toggleFullScreen() {
-            const btn = document.getElementById('btn-fullscreen');
-            if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(err => console.log(err));
-                btn.innerText = "🗗";
-            } else {
-                document.exitFullscreen();
-                btn.innerText = "⛶";
-            }
-        }
-
-        window.addEventListener('DOMContentLoaded', () => {
-            try {
-                checkUrlForSync();
-                spraweMobileLauncher();
-                odswiezWidok(); 
-                fetchAndRenderCalendar();
-            } catch (err) {
-                console.error("Błąd startu:", err);
-            }
-        });
-        
+        window.addEventListener('DOMContentLoaded', () => { try { checkUrlForSync(); spraweMobileLauncher(); odswiezWidok(); fetchAndRenderCalendar(); } catch (err) { } });
         window.addEventListener('resize', spraweMobileLauncher);
-
         setInterval(() => { if(currentView === 'day' || currentView.startsWith('week')) { updateCurrentTimeLine(currentView === 'day' ? 1 : 7); } }, 60000); 
 
         document.addEventListener('keydown', function(e) {
@@ -1402,11 +874,7 @@
             } else if (isEventOpen) { if (e.key === 'Escape') { e.preventDefault(); zamknijModal(); } else if (e.key === 'Enter') { e.preventDefault(); zapiszWydarzenieLokalne(); }
             } else if (isPracaOpen) { if (e.key === 'Escape') { e.preventDefault(); zamknijModalPraca(); }
             } else if (isSyncOpen) { if (e.key === 'Escape') { e.preventDefault(); zamknijModalSync(); }
-            } else {
-                if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'SELECT' && e.target.tagName !== 'TEXTAREA') {
-                    if (e.key === 'ArrowLeft') { document.getElementById('btn-prev').click(); } else if (e.key === 'ArrowRight') { document.getElementById('btn-next').click(); }
-                }
-            }
+            } else { if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'SELECT' && e.target.tagName !== 'TEXTAREA') { if (e.key === 'ArrowLeft') { document.getElementById('btn-prev').click(); } else if (e.key === 'ArrowRight') { document.getElementById('btn-next').click(); } } }
         });
     </script>
 </body>

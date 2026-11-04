@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kalendarz 3D + Zadania + 30 Dni + P2P</title>
     
-    <!-- Skrypty do obsługi synchronizacji P2P i kodów QR -->
     <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
@@ -143,7 +142,7 @@
         .modal-box.wide { max-width: 550px; }
         .modal-box h3 { margin: 0 0 5px 0; text-align: center; color: var(--text-main); }
         
-        .modal-box input[type="text"], .modal-box input[type="color"], .modal-box select, textarea.praca-input { background: var(--input-bg); border: 1px solid var(--border-color); padding: 12px; border-radius: 10px; color: var(--input-text); font-family: inherit; font-size: 1rem; box-shadow: var(--shadow-inner); outline: none; width: 100%; box-sizing: border-box; transition: background 0.3s, color 0.3s; }
+        .modal-box input[type="text"], .modal-box input[type="date"], .modal-box input[type="color"], .modal-box select, textarea.praca-input { background: var(--input-bg); border: 1px solid var(--border-color); padding: 12px; border-radius: 10px; color: var(--input-text); font-family: inherit; font-size: 1rem; box-shadow: var(--shadow-inner); outline: none; width: 100%; box-sizing: border-box; transition: background 0.3s, color 0.3s; }
         .modal-box input[type="color"] { padding: 4px 8px; cursor: pointer; height: 45px; }
         .modal-box input::placeholder, textarea.praca-input::placeholder { color: var(--input-text); opacity: 0.6; }
         textarea.praca-input { height: 180px; font-family: monospace; font-size: 0.85rem; resize: none; white-space: pre; }
@@ -183,8 +182,8 @@
         <div class="nav-row">
             <div class="controls-group">
                 <button id="btn-mobile-home" class="nav-btn" style="display:none;" onclick="pokazMobileLauncher()" title="Ekran startowy">🏠</button>
-                <!-- NOWY PRZYCISK DZISIEJSZEJ DATY -->
-                <button id="btn-today" class="nav-btn" style="color: var(--accent); font-weight: 800;" onclick="wrocDoDzisiaj()" title="Wróć do dzisiejszego dnia">Dzisiejsza data</button>
+                <button id="btn-today" class="nav-btn" style="color: var(--accent); font-weight: 800;" onclick="wrocDoDzisiaj()" title="Wróć do dzisiejszego dnia">--.--.----</button>
+                <button id="btn-clear-period" class="nav-btn" style="color: var(--highlight); font-weight: 800;" onclick="otworzModalCzyszczenia()" title="Usuń wpisy z wybranego okresu">🗑️ Wyczyść</button>
                 
                 <select id="app-theme" class="theme-select">
                     <option value="light">⚪ Klasyczny Jasny</option>
@@ -244,6 +243,27 @@
 
     <div id="view-month" class="view-container"><div class="month-grid" id="month-grid"></div></div>
     <div id="view-year" class="view-container"></div>
+
+    <!-- Modal Czyszczenia Okresowego -->
+    <div class="modal-overlay" id="clear-period-modal" style="z-index: 107;">
+        <div class="modal-box">
+            <h3>🗑️ Usuń wpisy z okresu</h3>
+            <p style="font-size: 0.75rem; color: var(--text-muted); text-align: center; margin-top: -10px;">
+                Wybierz zakres dat, aby trwale usunąć wszystkie rozpoczynające się w nim wydarzenia i zadania.
+            </p>
+            
+            <label style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: -5px;">Od dnia:</label>
+            <input type="date" id="clear-start-date">
+            
+            <label style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: -5px; margin-top: 10px;">Do dnia (włącznie):</label>
+            <input type="date" id="clear-end-date">
+
+            <div class="modal-btns" style="margin-top: 20px;">
+                <button class="nav-btn" onclick="zamknijModalCzyszczenia()">Anuluj</button>
+                <button class="nav-btn" style="background: var(--highlight); color: white;" onclick="wyczyscWybranyOkres()">Skasuj wpisy</button>
+            </div>
+        </div>
+    </div>
 
     <div class="modal-overlay" id="sync-modal">
         <div class="modal-box wide">
@@ -376,7 +396,6 @@
         function getCategoryDef(catId) { return CATEGORIES[catId] || CATEGORIES['inne'] || { name: 'Inne', gradient: '#94a3b8', textColor: '#ffffff' }; }
         function zgadnijKategorie(title) { const t = (title || "").toLowerCase(); if (t.includes('dzienna')) return 'zmiana-dzienna'; if (t.includes('nocna')) return 'zmiana-nocna'; if (t.includes('lekarz') || t.includes('dentysta') || t.includes('badanie') || t.includes('wizyta')) return 'zdrowie'; if (t.includes('spotkanie') || t.includes('praca') || t.includes('dyżur') || t.includes('szkolenie')) return 'praca'; if (t.includes('kino') || t.includes('impreza') || t.includes('basen') || t.includes('trening') || t.includes('mecz')) return 'rozrywka'; if (t.includes('urodziny') || t.includes('szkoła') || t.includes('wywiadówka') || t.includes('zakupy')) return 'dom'; if (t.includes('ważne') || t.includes('zapłacić') || t.includes('rat') || t.includes('rachunek') || t.includes('!')) return 'wazne'; return 'inne'; }
 
-        // --- Zegar i Data dzisiejsza ---
         let ostGodzina = -1; let ostMinuta = -1; let ostDzien = -1;
         
         function updateClock() { 
@@ -387,7 +406,6 @@
             if (h !== ostGodzina && hEl) { hEl.innerText = h; hEl.classList.remove('flip-anim'); void hEl.offsetWidth; hEl.classList.add('flip-anim'); ostGodzina = h; } 
             if (m !== ostMinuta && mEl) { mEl.innerText = m; mEl.classList.remove('flip-anim'); void mEl.offsetWidth; mEl.classList.add('flip-anim'); ostMinuta = m; } 
 
-            // Aktualizacja napisu na nowym przycisku o północy lub po uruchomieniu
             if (dzienMiesiaca !== ostDzien) {
                 aktualizujPrzyciskDzisiaj(now);
                 ostDzien = dzienMiesiaca;
@@ -395,7 +413,7 @@
         }
         setInterval(updateClock, 1000); updateClock();
 
-      function aktualizujPrzyciskDzisiaj(dataOdniesienia) {
+        function aktualizujPrzyciskDzisiaj(dataOdniesienia) {
             const btn = document.getElementById('btn-today');
             if (btn) {
                 const dz = String(dataOdniesienia.getDate()).padStart(2, '0');
@@ -405,7 +423,6 @@
             }
         }
 
-        // --- Logika przycisku Powrót do dzisiaj ---
         function wrocDoDzisiaj() {
             aktualnaDataPrzegladania = new Date();
             odswiezWidok();
@@ -452,6 +469,46 @@
         let localPeer = null; let activeConn = null; let mySyncPin = '';
         function otworzModalSync() { document.getElementById('sync-modal').style.display = 'flex'; initP2PSync(); const lastRemotePin = localStorage.getItem('LAST_REMOTE_PIN'); if (lastRemotePin) { const pinInput = document.getElementById('remotePinInput'); if (pinInput) pinInput.value = lastRemotePin; } }
         function zamknijModalSync() { document.getElementById('sync-modal').style.display = 'none'; }
+        
+        function otworzModalCzyszczenia() { 
+            document.getElementById('clear-period-modal').style.display = 'flex'; 
+            const dzis = new Date();
+            document.getElementById('clear-start-date').value = dzis.toISOString().split('T')[0];
+            const zaTydzien = new Date(dzis); zaTydzien.setDate(dzis.getDate() + 7);
+            document.getElementById('clear-end-date').value = zaTydzien.toISOString().split('T')[0];
+        }
+        function zamknijModalCzyszczenia() { document.getElementById('clear-period-modal').style.display = 'none'; }
+
+        function wyczyscWybranyOkres() {
+            const startStr = document.getElementById('clear-start-date').value;
+            const endStr = document.getElementById('clear-end-date').value;
+            
+            if(!startStr || !endStr) return alert("Proszę wybrać obie daty.");
+            
+            const startDate = new Date(startStr); startDate.setHours(0, 0, 0, 0);
+            const endDate = new Date(endStr); endDate.setHours(23, 59, 59, 999);
+            
+            if(startDate > endDate) return alert("Data początkowa nie może być późniejsza niż końcowa.");
+            
+            if(!confirm(`Czy na pewno chcesz bezpowrotnie usunąć wpisy rozpoczynające się w okresie od ${startStr} do ${endStr}?`)) return;
+
+            const poczatkowaLiczba = wydarzeniaLokalne.length;
+            
+            wydarzeniaLokalne = wydarzeniaLokalne.filter(ev => {
+                const evStart = new Date(ev.start);
+                // Zachowaj te wydarzenia, które zaczynają się przed wybranym okresem, albo po nim.
+                return evStart < startDate || evStart > endDate;
+            });
+            
+            const usunieto = poczatkowaLiczba - wydarzeniaLokalne.length;
+            localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne));
+            odswiezWidok();
+            zamknijModalCzyszczenia();
+            
+            if(usunieto > 0) alert(`Sukces! Usunięto ${usunieto} wpisów/serii z wybranego okresu.`);
+            else alert('W wybranym okresie nie znaleziono żadnych wpisów do usunięcia.');
+        }
+
         function initP2PSync() { if (typeof Peer === 'undefined' || typeof QRCode === 'undefined') return; if (localPeer && !localPeer.destroyed) return; let savedPin = localStorage.getItem('MY_SYNC_PIN'); if (!savedPin) { savedPin = Math.floor(100000 + Math.random() * 900000).toString(); localStorage.setItem('MY_SYNC_PIN', savedPin); } mySyncPin = savedPin; const pinEl = document.getElementById('mySyncPinDisplay'); if (pinEl) pinEl.textContent = mySyncPin; const statusEl = document.getElementById('syncPeerStatus'); if (statusEl) statusEl.textContent = "Inicjalizacja..."; const qrTarget = document.getElementById('qrcode'); if (qrTarget) { qrTarget.innerHTML = ''; const syncUrl = window.location.href.split('#')[0] + '#sync=' + mySyncPin; try { new QRCode(qrTarget, { text: syncUrl, width: 100, height: 100, colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M }); } catch(e) { } } try { localPeer = new Peer('kalendarz-' + mySyncPin, { config: { 'iceServers': [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:stun1.l.google.com:19302' }] } }); localPeer.on('open', () => { if (statusEl) statusEl.textContent = "Gotowy"; }); localPeer.on('connection', (conn) => { setupConnection(conn); alert('Drugie urządzenie się podłączyło!'); }); localPeer.on('error', (err) => { if (statusEl) statusEl.textContent = "Błąd"; }); } catch (e) { } }
         function connectAndPairPeer() { const pinInput = document.getElementById('remotePinInput'); const pin = pinInput ? pinInput.value.trim() : ''; if (!pin) return alert('Wpisz kod PIN!'); const statusEl = document.getElementById('syncPeerStatus'); if (statusEl && statusEl.textContent === "Inicjalizacja...") return alert('Poczekaj...'); localStorage.setItem('LAST_REMOTE_PIN', pin); if (!localPeer) return; if (statusEl) statusEl.textContent = "Łączenie..."; const conn = localPeer.connect('kalendarz-' + pin, { reliable: true }); let connectionTimeout = setTimeout(() => { if (statusEl && statusEl.textContent === "Łączenie...") { statusEl.textContent = "Gotowy"; alert('Brak odpowiedzi. Sieć blokuje sygnał P2P!'); conn.close(); } }, 8000); conn.on('open', () => { clearTimeout(connectionTimeout); setupConnection(conn); alert('Urządzenia sparowane pomyślnie!'); if (statusEl) statusEl.textContent = "Połączono"; }); }
         function setupConnection(conn) { activeConn = conn; activeConn.on('data', (payload) => { if (payload.type === 'PUSH_DATA') { if (confirm('Drugie urządzenie przesyła nową bazę danych. Zastąpić obecne dane?')) { if (payload.data.wydarzenia) { wydarzeniaLokalne = payload.data.wydarzenia; localStorage.setItem('mojeWydarzenia', JSON.stringify(wydarzeniaLokalne)); } if (payload.data.kategorie) { CATEGORIES = payload.data.kategorie; localStorage.setItem('mojeKategorie', JSON.stringify(CATEGORIES)); inicjalizujKategorie(); } zamknijModalSync(); odswiezWidok(); alert('Baza zaktualizowana!'); } } else if (payload.type === 'PULL_REQUEST') { if (confirm('Drugie urządzenie prosi o pobranie Twojej bazy kalendarza. Udostępnić?')) { activeConn.send({ type: 'PUSH_DATA', data: { wydarzenia: wydarzeniaLokalne, kategorie: CATEGORIES } }); alert('Wysłano dane do drugiego urządzenia!'); } } }); activeConn.on('close', () => { alert('Połączenie rozłączone.'); }); }
@@ -625,10 +682,11 @@
         setInterval(() => { if(currentView === 'day' || currentView.startsWith('week')) { updateCurrentTimeLine(currentView === 'day' ? 1 : 7); } }, 60000); 
 
         document.addEventListener('keydown', function(e) {
-            const modalEvent = document.getElementById('event-modal'); const modalPraca = document.getElementById('praca-modal'); const modalSync = document.getElementById('sync-modal'); const modalCat = document.getElementById('category-modal'); const modalManageCat = document.getElementById('manage-cat-modal');
-            const isEventOpen = modalEvent.style.display === 'flex'; const isPracaOpen = modalPraca.style.display === 'flex'; const isSyncOpen = modalSync.style.display === 'flex'; const isCatOpen = modalCat.style.display === 'flex'; const isManageCatOpen = modalManageCat.style.display === 'flex';
+            const modalEvent = document.getElementById('event-modal'); const modalPraca = document.getElementById('praca-modal'); const modalSync = document.getElementById('sync-modal'); const modalCat = document.getElementById('category-modal'); const modalManageCat = document.getElementById('manage-cat-modal'); const modalClear = document.getElementById('clear-period-modal');
+            const isEventOpen = modalEvent.style.display === 'flex'; const isPracaOpen = modalPraca.style.display === 'flex'; const isSyncOpen = modalSync.style.display === 'flex'; const isCatOpen = modalCat.style.display === 'flex'; const isManageCatOpen = modalManageCat.style.display === 'flex'; const isClearOpen = modalClear.style.display === 'flex';
             if (isCatOpen) { if (e.key === 'Escape') { e.preventDefault(); zamknijModalKategorii(); } else if (e.key === 'Enter') { e.preventDefault(); zapiszNowaKategorie(); }
             } else if (isManageCatOpen) { if (e.key === 'Escape') { e.preventDefault(); zamknijZarzadzanieKategoriami(); }
+            } else if (isClearOpen) { if (e.key === 'Escape') { e.preventDefault(); zamknijModalCzyszczenia(); } else if (e.key === 'Enter') { e.preventDefault(); wyczyscWybranyOkres(); }
             } else if (isEventOpen) { if (e.key === 'Escape') { e.preventDefault(); zamknijModal(); } else if (e.key === 'Enter') { e.preventDefault(); zapiszWydarzenieLokalne(); }
             } else if (isPracaOpen) { if (e.key === 'Escape') { e.preventDefault(); zamknijModalPraca(); }
             } else if (isSyncOpen) { if (e.key === 'Escape') { e.preventDefault(); zamknijModalSync(); }
